@@ -1,0 +1,14 @@
+# Results never live in the synced tree -- see getResultsDir.m
+results/
+*.mat
+
+# macOS / iCloud
+.DS_Store
+.icloud
+*.icloud
+
+# MATLAB
+*.asv
+*.m~
+slprj/
+codegen/
