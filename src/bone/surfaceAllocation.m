@@ -1,35 +1,75 @@
-function [eta, xi] = surfaceAllocation(mech, T, p)
-%SURFACEALLOCATION M7(a) -- distribute formation and resorption across the three surfaces.
+function [eta, xi] = surfaceAllocation(mech, T, doseFcn, p)
+%SURFACEALLOCATION M7(a) -- split formation and resorption across surfaces.
 %
-%   Formation is allocated by the strain gradient across the wall:
+%   [ETA, XI] = SURFACEALLOCATION(MECH, T, DOSEFCN, P) returns the
+%   formation split ETA and resorption split XI over
+%   [periosteal, endocortical, intracortical], each summing to 1.
 %
-%     eta_p : eta_e : eta_i = D(eps_p) : D(eps_e) : D(eps_bar)
+%   FORMATION follows the strain gradient across the wall:
 %
-%   Under bending eps_p > eps_e, and D is supralinear below saturation (the
-%   lower limb of the k_co(tau) sigmoid -- NOT the deleted exponent q), so
-%   the periosteum receives disproportionately more formation.  That is why
-%   loading makes bone bigger rather than denser, matching Haapasalo (V6f).
+%       eta_p : eta_e : eta_i = D(eps_p) : D(eps_e) : D(eps_bar)
 %
-%   Resorption is allocated by available surface area, modulated by TNF-alpha:
+%   Under bending eps_p > eps_e, and D is supralinear below saturation --
+%   that supralinearity now comes from the lower limb of the k_co(tau)
+%   sigmoid, NOT from the deleted exponent q (v1.4, appendix C5.2).  The
+%   periosteum therefore receives disproportionately more formation, which
+%   is why loading makes bone BIGGER rather than DENSER, matching
+%   Haapasalo (V6f).
 %
-%     xi_e ~ xi_e_0 (1 + lambda_xi T/(K_T + T))
+%   *** No free parameter is introduced by the formation split. ***
 %
-%   so oestrogen withdrawal shifts resorption endocortically (V15).
+%   RESORPTION follows available surface area, modulated by TNF-alpha:
 %
-%   *** No free parameters are introduced by the formation split. ***
+%       xi_e ~ xi_e_0 (1 + lambda_xi (T-1)/(K_T + T))
+%
+%   so oestrogen withdrawal shifts resorption endocortically -- the
+%   wider-but-thinner postmenopausal cortex (V15).
 %
 %   Inputs
-%     mech  (1,1) struct  ORGANMECHANICS output (eps_p, eps_e, eps_bar)
-%     T     (1,1) double  TNF-alpha                                [-]
-%     p     (1,1) struct  parameters
+%     mech    (1,1) struct    ORGANMECHANICS output (eps_p, eps_e, eps_bar)
+%     T       (1,1) double    TNF-alpha, baseline 1                     [-]
+%     doseFcn (1,1) function_handle  strain -> osteogenic dose; supplied
+%                             by the caller so this function stays free of
+%                             surrogate plumbing.  Must be monotonic.
+%     p       (1,1) struct    parameters
+%
 %   Outputs
-%     eta   (1,3) double  formation split [periosteal endocortical intracortical], sums to 1
-%     xi    (1,3) double  resorption split, same order, sums to 1
+%     eta  (1,3) double  formation split [per, endo, intra], sums to 1
+%     xi   (1,3) double  resorption split, same order, sums to 1
 %
-%   *** NOT IMPLEMENTED -- scheduled for phase P3 (M7) ***
-%
-%   Project: bone-mechanostat (PROJECT_PLAN v1.4)
+%   See also ORGANMECHANICS, BONESTRUCTURE, SPECIFICSURFACE.
 
-error("boneMechanostat:notImplemented", ...
-      "surfaceAllocation is a phase-P3 deliverable (M7) and is not implemented yet.");
+%   Project: bone-mechanostat (PROJECT_PLAN v1.6)
+
+arguments
+    mech (1,1) struct
+    T (1,1) double
+    doseFcn (1,1) function_handle
+    p (1,1) struct
+end
+
+% Available surface per compartment.  Formation cannot occur where there
+% is no surface, so the split is area-weighted and the strain gradient
+% MODULATES it -- it does not replace it.  (An earlier version used dose
+% alone; that handed the periosteum 35% of all formation despite its
+% having ~5% of the surface, and the resulting runaway periosteal
+% expansion swamped every other behaviour.)
+A = [p.xi_p_0, p.xi_e_0, p.xi_i_0];
+
+dP = max(doseFcn(mech.eps_p),   0);
+dE = max(doseFcn(mech.eps_e),   0);
+dI = max(doseFcn(mech.eps_bar), 0);
+
+w   = A .* [dP, dE, dI];
+tot = sum(w);
+if tot <= 0
+    eta = A / sum(A);          % complete unloading: fall back on area
+else
+    eta = w / tot;
+end
+
+% Resorption: baseline surface weighting, TNF-alpha biased endocortically.
+bias = 1 + p.lambda_xi * (T - 1) / (p.K_T + T);
+xi   = [p.xi_p_0, p.xi_e_0 * max(bias, 0), p.xi_i_0];
+xi   = xi / sum(xi);
 end

@@ -175,14 +175,43 @@ verifyTrue(tc, isfield(out.dens, "aBMD"), "SIMULATE must report aBMD.");
 verifyTrue(tc, isfield(out.dens, "vBMD"), "SIMULATE must report vBMD.");
 end
 
-function testStubModelIsFlat(tc)
-% The P1 stub relaxes towards baseline, so aBMD must not drift.  This is a
-% plumbing check, not a physiological result.
+function testBaselineDriftWithinTolerance(tc)
+% P3 acceptance (PROJECT_PLAN §8): undisturbed baseline BMD must drift by
+% less than 0.1 %/yr.
+%
+% Superseded the P1 check that required EXACT flatness -- that was only
+% meaningful while RHSFULL was a relaxation stub.  With M1-M7 live the
+% baseline is not a perfect fixed point and should not be: eta_p always
+% exceeds xi_p, so the periosteum gains while the endocortical surface
+% loses, and bone slowly changes shape at constant mass.  That is adult
+% physiology, not a defect (appendix C7).  What must hold is that MASS is
+% conserved, which is what k_form is calibrated against.
 s = scenarioLibrary("sedentary", durationDays = 730);
 out = simulate(s);
 
-drift = abs(out.dens.aBMD(end) - out.dens.aBMD(1)) / out.dens.aBMD(1);
-verifyLessThan(tc, drift, 1e-6, ...
-    "P1 stub should hold baseline; drift indicates a plumbing error.");
+yrs = 2;
+driftBMD = 100 * (out.dens.aBMD(end) / out.dens.aBMD(1) - 1) / yrs;
+driftBMC = 100 * (out.dens.BMC_L(end) / out.dens.BMC_L(1) - 1) / yrs;
+
+verifyLessThan(tc, abs(driftBMD), 0.1, ...
+    "Baseline aBMD drift must stay below 0.1 %/yr.");
+verifyLessThan(tc, abs(driftBMC), 0.1, ...
+    "Baseline bone mass drift must stay below 0.1 %/yr.");
+end
+
+function testLoadingRaisesBoneAndDisuseLowersIt(tc)
+% The whole point of the model: more load -> more bone, less load -> less.
+% Trivial to state, and exactly the thing a normalisation bug silently
+% breaks -- an earlier makeContext normalised each scenario to its OWN
+% baseline dose, so every protocol produced an identical response.
+p = tc.TestData.p;
+days = 56;
+
+ctrl = probeResponse(0, 0, 0, days, p);            % daily activity only
+load = probeResponse(3, 300, 0, days, p);          % plus vigorous loading
+dis  = probeResponse(0, 0, 0, days, p, background = false);   % near disuse
+
+verifyGreaterThan(tc, load, ctrl, "Loading must build bone above control.");
+verifyLessThan(tc, dis, ctrl, "Disuse must lose bone relative to control.");
 end
 

@@ -80,7 +80,7 @@ C_s_TGF,C_s,5.0e-3,-,1.0e-4,1.0e-1,M6,Lemaire2004,low,"TGF-beta 反應函數 pi_
 R_0,R_0,7.0e-4,-,1.0e-5,1.0e-2,M6,Lemaire2004,low,"骨母前驅細胞基線濃度（無因次化基準）"
 B_0,B_0,7.3e-4,-,1.0e-5,1.0e-2,M6,Lemaire2004,low,"骨母細胞基線濃度"
 C_0,C_0,9.1e-4,-,1.0e-5,1.0e-2,M6,Lemaire2004,low,"破骨細胞基線濃度"
-k_form,k_form,1.0e-7,m/day,1.0e-9,1.0e-5,M7,assumed,low,"單位骨母細胞之表面沉積速率。由 V1 骨轉換率 5-10%/yr 校正"
+k_form,k_form,9.78733e-8,m/day,1.0e-9,1.0e-5,M7,calibrated,low,"單位骨母細胞之表面沉積速率。**v1.7 由 k_form/k_res=0.97873 校正**，條件為成人骨量平衡 d(A_g*f_bm)/dt=0（非幾何靜止——見附錄 C7：eta_p 恆>xi_p，結構上不存在靜止不動點）"
 k_res,k_res,1.0e-7,m/day,1.0e-9,1.0e-5,M7,assumed,low,"單位破骨細胞之表面吸收速率。由 V1 校正"
 S_v_max,S_v_max,1.0,-,0.5,2.0,M7,assumed,low,"比表面積函數峰值（無因次化）。**佔位形式**：S_v = S_v_max * C * f^s1 * (1-f)^s2，待 B1 #6b (Martin 1984) 之五階多項式取代"
 s1_Sv,s1,1.0,-,0.5,2.0,M7,assumed,low,"比表面積佔位函數指數 1。峰值位於 f_bm = s1/(s1+s2)"

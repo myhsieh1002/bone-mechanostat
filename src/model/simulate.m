@@ -78,7 +78,8 @@ end
 
 switch mode
     case "single"
-        rhs = @(t, y) rhsFull(t, y, scenario, p);
+        ctx = makeContext(scenario, p);
+        rhs = @(t, y) rhsFull(t, y, ctx);
     case "two"
         rhs = @(t, y) rhsTwoSite(t, y, scenario, p);
 end
