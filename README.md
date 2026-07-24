@@ -14,7 +14,7 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 
 | 階段 | 內容 | 狀態 |
 |---|---|---|
-| **P1** | 目錄骨架、參數 CSV、單位測試、`simulate` 介面 | ✅ 檔案完成，**尚未在 MATLAB 執行驗證** |
+| **P1** | 目錄骨架、參數 CSV、單位測試、`simulate` 介面 | ✅ **完成並驗證**（27/27 測試通過，MATLAB R2026a） |
 | P2 | M1–M3 力學模組 | ⬜ |
 | P3 | M4–M7 生物模組 | ⬜ |
 | P4 | M8 鈣恆定 + 全模型校正 | ⬜ 阻塞於 Tier 1 文獻 |
@@ -95,9 +95,34 @@ src/systemic/  M8 鈣恆定        data/          參數 CSV、驗證標的 CSV
 而使 `load` 失敗。一律經 `getResultsDir()` 寫到
 `~/Documents/MATLAB/bone-mechanostat-results/`。
 
+## P1 驗證結果（MATLAB R2026a，2026-07-24）
+
+`checkcode` 零問題；三支測試 **27/27 通過**（0.82 s）。
+
+**閉環迴路已驗證**：$d\ln\varepsilon_p/d\ln f_{bm} = -2.5000$，與解析預期 $-\kappa_E$
+吻合至 $4.7\times10^{-12}$。骨量增加確實使應變下降 —— mechanostat 的負回饋成立。
+
+基線峰值應變（microstrain）：
+
+| 情境 | $\varepsilon_p$ | $\varepsilon_e$ | 判讀 |
+|---|---|---|---|
+| bedrest | 15 | 11 | 等同卸載 |
+| sedentary | 762 | 566 | 日常活動帶 400–1500 ✓ |
+| resistance | 2236 | 1648 | 高生理區，低於 3000 上限 ✓ |
+| tennis | 2851 | 2067 | 接近生理上限（菁英選手） ✓ |
+
+基線密度計量：aBMD 0.946 g/cm²、vBMD 1140 mg/cm³、Co.Ar 174 mm²、
+Tot.Ar 346 mm²、M.Cav 172 mm²、I 7191 mm⁴ —— 均為肱骨幹合理量級。
+
+24 個月積分：0.04 s，10 步，0 次失敗，aBMD 漂移 0.000e+00 %（stub 應為平坦）。
+
+> **附帶發現**：$f_{bm,0}=0.95$ 已接近 1.0 天花板（皮質孔隙率僅約 5%），
+> 故皮質骨幾乎無致密化空間，增加勁度只能靠幾何。且
+> $d\ln\varepsilon/d\ln r_p = -4.27$ 明顯強於 $-2.50$。此即 Haapasalo「骨變大而非變密」
+> 的力學根源，且係由參數設定自然湧現，非寫死。
+
 ## 待辦（P2 之前）
 
-- [ ] 在 MATLAB 中實際執行三支測試（本機負載過高時暫緩）
 - [ ] 取得 Tier 1 文獻 #1 Lemaire 2004、#2 Pivonka 2008、#3 Peterson & Riggs 2010
 - [ ] 取得 #5 Fu 2025（MSIC 三態速率常數）、#4 Weinbaum 1994、#6b Martin 1984
 - [ ] 以 Haapasalo 2000 全文替換 `r_p_0` / `r_e_0` 的推算值

@@ -113,7 +113,7 @@ switch name
               "Unknown scenario '%s'.  See HELP SCENARIOLIBRARY.", name);
 end
 
-s = localValidate(s);
+assertForceControlled(s);
 end
 
 % -------------------------------------------------------------------------
@@ -130,19 +130,3 @@ end
 b = o;
 end
 
-% -------------------------------------------------------------------------
-function s = localValidate(s)
-%LOCALVALIDATE Reject any attempt to prescribe strain directly.
-forbidden = ["strain" "eps" "epsilon" "microstrain" "SED", ...
-             "strainEnergy" "epsPeak" "eps_peak"];
-fn = string(fieldnames(s));
-hit = fn(ismember(lower(fn), lower(forbidden)));
-if ~isempty(hit)
-    error("boneMechanostat:strainControlledInput", ...
-          ["Scenario '%s' specifies strain-like field(s): %s.\n" ...
-           "Loading MUST be force-controlled (momentScale / axialScale). " ...
-           "Prescribing strain re-opens the mechanostat feedback loop " ...
-           "(PROJECT_PLAN v1.3 §4.2 M1, appendix C1)."], s.name, ...
-          strjoin(hit, ", "));
-end
-end

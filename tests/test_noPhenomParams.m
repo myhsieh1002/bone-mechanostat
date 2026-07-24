@@ -24,9 +24,23 @@ end
 % -------------------------------------------------------------------------
 function setupOnce(tc)
 tc.TestData.p = getDefaultParams();
-% Names and symbols removed in v1.4.
-tc.TestData.bannedNames = ["a_r" "tau_r" "p_cycle" "tau_th" "q_dose" ...
-                           "Phi_rest" "N_p" "q_exp"];
+
+% Distinctive names of constructs deleted in v1.4.  Kept as a blacklist
+% because these could reappear under any module tag.
+%
+% NOTE: speculative entries "N_p" and "q_exp" were removed from this list.
+% "N_p" lower-cases onto n_P, the PTH secretion Hill coefficient in M8 --
+% a legitimate parameter with no relation to the deleted cycle-count
+% exponent.  A guard that cries wolf gets deleted by the next person to
+% hit it, so the cycle/dose exponents are policed by the M3 whitelist
+% below instead of by guessing at their names.
+tc.TestData.bannedNames = ["a_r" "tau_r" "tau_th" "Phi_rest" "phi_rest"];
+
+% M3 may contain ONLY the mechanistic MSIC parameters.  This is a
+% whitelist, so any new M3 parameter -- whatever it is called -- fails
+% until someone justifies it.  Stronger than enumerating what we banned.
+tc.TestData.allowedM3 = ["tau_50" "k_tau_sig" "k_co_max" ...
+                         "k_oc" "k_oi" "k_ic" "T_day"];
 % Distinctive source tokens.  Deliberately excludes the bare "p" and "q"
 % exponents: "p" is the parameter struct everywhere in this code base, so
 % grepping it would be pure noise.
@@ -36,12 +50,28 @@ end
 function testCsvHasNoDeletedParameters(tc)
 t = tc.TestData.p.meta;
 found = intersect(lower(tc.TestData.bannedNames), lower(t.name));
-verifyEmpty(tc, found, sprintf( ...
-    ["parameters_literature.csv reintroduces phenomenological " ...
-     "parameter(s) deleted in v1.4: %s.\n" ...
-     "Cycle saturation (V4) must emerge from k_oi, rest insertion (V5) " ...
-     "from k_ic, threshold and supralinearity from tau_50 / k_tau_sig."], ...
-    strjoin(found, ", ")));
+% Concatenate with +, not [..].  ["a" "b"] is a string ARRAY and sprintf
+% rejects it as an invalid format -- which made this very test error out
+% unconditionally on its first run, passing no judgement at all.
+msg = "parameters_literature.csv reintroduces phenomenological " + ...
+      "parameter(s) deleted in v1.4: %s." + newline + ...
+      "Cycle saturation (V4) must emerge from k_oi, rest insertion (V5) " + ...
+      "from k_ic, threshold and supralinearity from tau_50 / k_tau_sig.";
+verifyEmpty(tc, found, sprintf(msg, strjoin(found, ", ")));
+end
+
+function testM3ContainsOnlyMsicParameters(tc)
+% Whitelist: the daily dose is int_day O(t) dt and nothing else.  Any extra
+% M3 parameter means a phenomenological term has crept back in beside the
+% three-state model -- the exact four-fold double counting v1.4 removed
+% (appendix C5.1).
+t = tc.TestData.p.meta;
+m3 = t.name(t.module == "M3");
+extra = setdiff(m3, tc.TestData.allowedM3);
+msg = "Module M3 contains unexpected parameter(s): %s." + newline + ...
+      "M3 is the three-state MSIC model only.  Cycle saturation and " + ...
+      "rest insertion must emerge from k_oi / k_ic, not from new terms.";
+verifyEmpty(tc, extra, sprintf(msg, strjoin(extra, ", ")));
 end
 
 function testMsicRateConstantsArePresent(tc)
@@ -71,10 +101,9 @@ for k = 1:numel(files)
     end
 end
 
-verifyEmpty(tc, offenders, sprintf( ...
-    ["Source reintroduces a deleted construct: %s.\n" ...
-     "Channel gating lives only in msicGating.m (v1.4, appendix C5.2)."], ...
-    strjoin(offenders, "; ")));
+msg = "Source reintroduces a deleted construct: %s." + newline + ...
+      "Channel gating lives only in msicGating.m (v1.4, appendix C5.2).";
+verifyEmpty(tc, offenders, sprintf(msg, strjoin(offenders, "; ")));
 end
 
 function testSingleFastSlowInterface(tc)

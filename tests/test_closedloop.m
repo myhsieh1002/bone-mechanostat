@@ -35,11 +35,42 @@ end
 
 % --- 1. interface contract: no strain may be prescribed ------------------
 function testScenariosRejectStrainFields(tc)
+% Exercises the REAL guard (assertForceControlled), not a copy.  The first
+% draft of this test called a private duplicate of the validation logic
+% defined inside this file; it passed while the shipped guard was throwing
+% MATLAB:badformat_mx instead of its own error ID.  A test that reimplements
+% what it is testing verifies nothing.
 s = scenarioLibrary("sedentary");
 s.epsilon = 1200e-6;                       % someone "helpfully" adds this
-verifyError(tc, @() localRevalidate(s), ...
+verifyError(tc, @() assertForceControlled(s), ...
     "boneMechanostat:strainControlledInput", ...
     "Scenario validation must reject strain-like fields.");
+end
+
+function testGuardMessageIsFormattable(tc)
+% The guard's message must survive being formatted -- see the note in
+% assertForceControlled about ["a" "b"] silently becoming a string array.
+% Caught by try/catch rather than verifyError because we need the
+% exception object itself, which verifyError does not return.
+s = scenarioLibrary("sedentary");
+s.strain = 1e-3;
+
+caught = MException.empty;
+try
+    assertForceControlled(s);
+catch err
+    caught = err;
+end
+
+verifyNotEmpty(tc, caught, "Guard did not throw on a strain field.");
+% string() the identifier: MException.identifier is char, and verifyEqual
+% compares class as well as value.
+verifyEqual(tc, string(caught.identifier), "boneMechanostat:strainControlledInput", ...
+    "Wrong error ID -- a bad format string can mask it as MATLAB:badformat_mx.");
+verifyGreaterThan(tc, strlength(caught.message), 50, ...
+    "Guard message did not render; check for a string-array format.");
+verifyTrue(tc, contains(caught.message, "strain"), ...
+    "Guard message should name the offending field.");
 end
 
 function testNoScenarioCarriesStrain(tc)
@@ -155,16 +186,3 @@ verifyLessThan(tc, drift, 1e-6, ...
     "P1 stub should hold baseline; drift indicates a plumbing error.");
 end
 
-% -------------------------------------------------------------------------
-function localRevalidate(s)
-%LOCALREVALIDATE Re-run the scenario guard on a mutated struct.
-forbidden = ["strain" "eps" "epsilon" "microstrain" "SED", ...
-             "strainEnergy" "epsPeak" "eps_peak"];
-fn = string(fieldnames(s));
-hit = fn(ismember(lower(fn), lower(forbidden)));
-if ~isempty(hit)
-    error("boneMechanostat:strainControlledInput", ...
-          "Scenario '%s' specifies strain-like field(s): %s.", ...
-          s.name, strjoin(hit, ", "));
-end
-end
