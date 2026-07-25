@@ -80,6 +80,13 @@ dydt(ix.C)    = dLoc.C;
 dydt(ix.r_p)  = dLoc.r_p;
 dydt(ix.r_e)  = dLoc.r_e;
 dydt(ix.f_bm) = dLoc.f_bm;
+% Bifurcation analysis (P6) freezes the slow envelope geometry to isolate
+% the porosity/remodelling bistability from the decades-slow envelope drift
+% (appendix C7.2 / C15).  Off in every normal simulation.
+if isfield(ctx, "freezeGeom") && ctx.freezeGeom
+    dydt(ix.r_p) = 0;
+    dydt(ix.r_e) = 0;
+end
 dydt(ix.rho_min) = dLoc.rho_min;
 dydt(ix.Ca_s) = dSys.Ca_s;
 dydt(ix.P)    = dSys.P;
