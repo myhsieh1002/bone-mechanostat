@@ -46,83 +46,53 @@ p  = ctx.p;
 ix = ctx.idx;
 
 % --- unpack -------------------------------------------------------------
-Ca   = y(ix.Ca_i);   Y  = y(ix.Y);    S    = y(ix.S);
-T    = y(ix.T);      n_ot = y(ix.n_ot);
-beta = y(ix.beta);
-R    = y(ix.R);      B  = y(ix.B);    C    = y(ix.C);
-r_p  = y(ix.r_p);    r_e = y(ix.r_e); f_bm = y(ix.f_bm);
-m1   = y(ix.m1);     m2  = y(ix.m2);
+s = struct( ...
+    Ca_i = y(ix.Ca_i), Y = y(ix.Y), S = y(ix.S), T = y(ix.T), ...
+    n_ot = y(ix.n_ot), beta = y(ix.beta), R = y(ix.R), B = y(ix.B), ...
+    C = y(ix.C), r_p = y(ix.r_p), r_e = y(ix.r_e), f_bm = y(ix.f_bm), ...
+    m1 = y(ix.m1), m2 = y(ix.m2));
 P_pth = y(ix.P);
 
-[~, rho_min] = mineralization(m1, m2, 1, 1, f_bm, p);
-
-% --- M1/M2/M3: mechanics -> the single fast/slow scalar ------------------
-st = struct(r_p = r_p, r_e = r_e, f_bm = f_bm, rho_min = rho_min);
-mech = organMechanics(ctx.peakBout, st, p);
-
-tau_max = shearSurrogate(mech.eps_p, ctx.peakBout.freqHz, p);
-D_eff   = loadingDose(tau_max, ctx.doseSurrogate, n_ot, p);
-D_hat   = D_eff / ctx.D_eff_0;
-
-% --- M4/M5: osteocyte signalling ----------------------------------------
 u_romo = localDrugOn(t, ctx.scenario.drug.romosozumab);
 E2     = ctx.scenario.E2;
 
-sig = struct(Ca_i = Ca, Y = Y, S = S, T = T, beta = beta);
-[dSig, alg] = osteocyteSignal(sig, D_hat, P_pth, E2, u_romo, p);
-alg.beta = beta;
-
-dT = estrogenTNF(T, E2, p);
-
-% --- M6: cell populations ------------------------------------------------
-dCell = boneCellPopulation(R, B, C, alg, p);
-
-% --- M7: structure and mineral ------------------------------------------
-% Surface velocities, expressed relative to baseline (B = C = 1).
-vForm = B;
-vRes  = C;
-
-doseFcn = @(e) ctx.doseSurrogate.F(shearSurrogate(e, ctx.peakBout.freqHz, p));
-[eta, xi] = surfaceAllocation(mech, T, doseFcn, p);
-
-dStruct = boneStructure(st, eta, xi, ...
-                        p.k_form * vForm, p.k_res * vRes, p);
-dMin    = mineralization(m1, m2, vForm, vRes, f_bm, p);
-dn_ot   = osteocyteDensity(n_ot, vForm, vRes, E2, p);
+% --- M1-M7 for the single site ------------------------------------------
+siteCtx = struct(peakBout = ctx.peakBout, ...
+                 doseSurrogate = ctx.doseSurrogate, D_eff_0 = ctx.D_eff_0);
+[dLoc, flux, aux] = siteRHS(s, siteCtx, P_pth, E2, u_romo, p);
 
 % --- M8: systemic calcium / PTH / 1,25D ---------------------------------
 Ca_s = y(ix.Ca_s);   V_D = y(ix.V_D);
 [dSys, algSys] = calciumPTHvitD(Ca_s, P_pth, V_D, ctx.scenario.I_Ca, ...
-                                vForm, vRes, p);
+                                flux.vForm, flux.vRes, p);
 
 % --- assemble ------------------------------------------------------------
 dydt = zeros(numel(y), 1);
-dydt(ix.Ca_i) = dSig.Ca_i;
-dydt(ix.Y)    = dSig.Y;
-dydt(ix.S)    = dSig.S;
-dydt(ix.T)    = dT;
-dydt(ix.n_ot) = dn_ot;
-dydt(ix.beta) = dSig.beta;
-dydt(ix.R)    = dCell.R;
-dydt(ix.B)    = dCell.B;
-dydt(ix.C)    = dCell.C;
-dydt(ix.r_p)  = dStruct.r_p;
-dydt(ix.r_e)  = dStruct.r_e;
-dydt(ix.f_bm) = dStruct.f_bm;
-dydt(ix.m1)   = dMin.m1;
-dydt(ix.m2)   = dMin.m2;
+dydt(ix.Ca_i) = dLoc.Ca_i;
+dydt(ix.Y)    = dLoc.Y;
+dydt(ix.S)    = dLoc.S;
+dydt(ix.T)    = dLoc.T;
+dydt(ix.n_ot) = dLoc.n_ot;
+dydt(ix.beta) = dLoc.beta;
+dydt(ix.R)    = dLoc.R;
+dydt(ix.B)    = dLoc.B;
+dydt(ix.C)    = dLoc.C;
+dydt(ix.r_p)  = dLoc.r_p;
+dydt(ix.r_e)  = dLoc.r_e;
+dydt(ix.f_bm) = dLoc.f_bm;
+dydt(ix.m1)   = dLoc.m1;
+dydt(ix.m2)   = dLoc.m2;
 dydt(ix.Ca_s) = dSys.Ca_s;
 dydt(ix.P)    = dSys.P;
 dydt(ix.V_D)  = dSys.V_D;
 
 if nargout > 1
-    aux = struct(eps_p = mech.eps_p, eps_e = mech.eps_e, ...
-                 tau_max = tau_max, D_eff = D_eff, D_eff_hat = D_hat, ...
-                 v_form = vForm, v_res = vRes, eta = eta, xi = xi, ...
-                 rho_min = rho_min, geom = mech.geom, ...
-                 L_RANKL = alg.L_RANKL, O_OPG = alg.O_OPG, pi_L = alg.pi_L, ...
-                 Abs = algSys.Abs, Renal = algSys.Renal, ...
-                 Pset = algSys.Pset, VDset = algSys.VDset);
+    aux.v_form = flux.vForm;
+    aux.v_res  = flux.vRes;
+    aux.Abs    = algSys.Abs;
+    aux.Renal  = algSys.Renal;
+    aux.Pset   = algSys.Pset;
+    aux.VDset  = algSys.VDset;
 end
 end
 

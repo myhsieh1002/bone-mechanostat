@@ -6,7 +6,7 @@
 
 > 鈣決定「能不能蓋」，負荷決定「要不要蓋」。
 
-MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.1）
+MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.2）
 
 ---
 
@@ -18,17 +18,20 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 | **P2** | M1–M3 力學模組 | ✅ **完成並驗證**（Biot 閉式解、MSIC 三態） |
 | **P3** | M4–M7 生物模組 | ✅ **完成並驗證**（C6.5 三項聯合檢定通過） |
 | **P4** | M8 鈣恆定 + **全模型校正** | ✅ **完成**（53/53）：5 標的＋2 盲測全達標，**V7 鈣命題成立** |
-| P5–P7 | 核心實驗、動力系統分析、論文 | ⬜ |
+| **P5** | 雙腔室（部位專一性 P2） | ⚠️ **P2 定性成立**（57 測試）；V6f 幾何/密度揭露 M7 礦化問題→P5b |
+| P6–P7 | 動力系統分析、論文 | ⬜ |
 
-**M1–M8 全模型可跑並已校正，53/53 測試通過。** `rhsFull` 串起完整訊號鏈：
+**M1–M8 全模型可跑並已校正，含雙腔室；57/57 測試通過。** `rhsFull` 串起完整訊號鏈：
 力學 → 剪應力 → MSIC 劑量 → 骨細胞訊號 → 細胞族群 → 三表面結構 + 礦化 → aBMD，
 外加全身鈣恆定雙向耦合。
 
 **已校正並附辨識性分析**：`calibrate` / `evalTargets` / `balanceBoneFormation` /
 `identifiability`（＋`plotIdentifiability` / `exportFigure`）。
 
-尚未實作（骨架，呼叫會拋 `notImplemented`）：`rhsTwoSite`（P5 雙腔室）、
-`steadyState`、`sensitivityLHS` / `sobolIndices` / `continuation`（P6）、
+**雙腔室（P5）**：`siteRHS`（單站生物學單一真相源）/ `rhsTwoSite` / `makeContextTwoSite`。
+
+尚未實作（骨架，呼叫會拋 `notImplemented`）：`steadyState`、
+`sensitivityLHS` / `sobolIndices` / `continuation`（P6）、
 其餘 `viz/*`、`experiments/E0-E6`。
 
 ## 快速開始
@@ -37,7 +40,7 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 cd('/path/to/骨骼鈣質吸收數學模型')
 addpath('src'); setupPath();
 
-runtests("tests")     % 53 tests: units/closedloop/noPhenom/mechanics/systemic/calibration
+runtests("tests")     % 57 tests: +twosite
 
 s   = scenarioLibrary("sedentary", durationDays = 730);
 out = simulate(s);
@@ -170,4 +173,6 @@ $K_S, h_S, K_Y, n_Y$（全部 `assumed`/`low`）承擔雙重解釋責任。
 - [ ] 取得 **Lemaire 2004**（#1，館際服務中）→ R/B/C 基線穩態複核
 - [ ] 取得 Fu 2025（#5）→ MSIC 三態；Weinbaum 1994（#4）→ M2 微結構；Martin 1984（#6b）→ $S_v$
 - [ ] 以 Haapasalo 2000 全文替換 `r_p_0` / `r_e_0` 的推算值
-- [ ] P5：`rhsTwoSite` 雙腔室（V6 網球）、E1–E5 實驗（含 E2 的 2×2 補鈣×負重因子分析）
+- [x] ✅ **P5 雙腔室**：P2 定性成立（局部負荷造成不對稱、全身介入不能）
+- [ ] **P5b**：M7 礦化修訂（rho_min 隨形成下降）+ 形成分配（包膜周長 vs 孔壁面）+ 重新校正 → 達 V6f 全套
+- [ ] E1–E5 實驗（含 E2 的 2×2 補鈣×負重因子分析）

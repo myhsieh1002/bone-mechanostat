@@ -81,7 +81,8 @@ switch mode
         ctx = makeContext(scenario, p);
         rhs = @(t, y) rhsFull(t, y, ctx);
     case "two"
-        rhs = @(t, y) rhsTwoSite(t, y, scenario, p);
+        ctx = makeContextTwoSite(scenario, p);
+        rhs = @(t, y) rhsTwoSite(t, y, ctx);
 end
 
 odeOpts = odeset(RelTol = opts.relTol, AbsTol = opts.absTol, ...
