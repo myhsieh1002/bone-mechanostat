@@ -12,3 +12,8 @@ results/
 *.m~
 slprj/
 codegen/
+
+# Copyrighted reference PDFs — kept local, not redistributed.
+# The version-controlled artifact is data/reference_parameters.md (our transcription).
+Reference/
+*.pdf

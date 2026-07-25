@@ -6,7 +6,7 @@
 
 > 鈣決定「能不能蓋」，負荷決定「要不要蓋」。
 
-MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v1.8）
+MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v1.9）
 
 ---
 
@@ -17,7 +17,7 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 | **P1** | 目錄骨架、參數 CSV、單位測試、`simulate` 介面 | ✅ **完成並驗證**（MATLAB R2026a） |
 | **P2** | M1–M3 力學模組 | ✅ **完成並驗證**（Biot 閉式解、MSIC 三態） |
 | **P3** | M4–M7 生物模組 | ✅ **完成並驗證**（C6.5 三項聯合檢定通過） |
-| **P4** | M8 鈣恆定 + 全模型校正 | ⚠️ **結構完成**（45/45 測試），**科學結論 V7 阻塞於文獻** |
+| **P4** | M8 鈣恆定 + 全模型校正 | ⚠️ **結構完成**（45/45）；Pivonka/P&R 參數回填後 **V7 平台出現、方向可翻轉**；正式校正待 Lemaire #1 |
 | P5–P7 | 核心實驗、動力系統分析、論文 | ⬜ |
 
 **M1–M8 全模型可跑，45/45 測試通過。** `rhsFull` 串起完整訊號鏈：
@@ -136,20 +136,26 @@ MSIC 仿射週期算子 vs 逐步積分，吻合至 **2.2e-15**。兩組皆為�
 $K_S, h_S, K_Y, n_Y$（全部 `assumed`/`low`）承擔雙重解釋責任。
 **P3 完成後須立即檢定**，早於任何全模型校正 —— 詳見計畫書附錄 C6.5。
 
-## P4 結果（2026-07-24）
+## P4 結果 + Tier 1 文獻回填（2026-07-25）
 
-M8 接上後基線為精確不動點。**兩個結構性發現決定 V7 成敗，均指向校正而非結構缺陷**：
+M8 接上後基線為精確不動點。血鈣恆定機制已修正（漂移 55%→7.7%），快子系統 0.1 年內達穩態。
 
-- **血鈣恆定機制已修正**（漂移 55%→7.7%）：腎排泄對血鈣陡峭（$n_{renal}$）＋副甲狀腺
-  Hill 陡峭。快子系統（Ca_s、PTH、1,25D）0.1 年內達穩態。
-- ⚠️ **V7 平台尚未出現**：aBMD 5 年仍攀升。力學回饋（幾何變化，$k_{form}\sim10^{-7}$）
-  太慢，無法在 1 年內 nullify 持續 PTH 經 SOST 的形成驅動。**結構支援得了平台，
-  增益待 Pivonka 2008 校正**。詳見計畫書附錄 C8。
+**取得 Pivonka 2008 與 Peterson & Riggs 2010 全文**（`Reference/`，逐表轉錄於
+[reference_parameters.md](data/reference_parameters.md)），回填後兩個 V7 障礙都鬆動：
 
-## 待辦（P4 校正，阻塞於文獻）
+- ✅ **V7 平台出現**：修正 M6 兩個嚴重錯誤的佔位速率（D_B 差 **7600×**、D_C 差 **100×**）後，
+  細胞動力學快到足以讓幾何回饋在生理時間內收斂 —— 低鈣 aBMD 斜率 5 年衰減至 **0.27%/yr**。
+  這確認了 C8.2 的診斷（平台被佔位速率阻擋）。
+- ✅ **V7 方向可翻轉**：兩篇原文皆**無 PTH→SOST 路徑**、持續 PTH 為異化。削弱本模型 M4 的
+  PTH→SOST（提高 `K_P_sost`≥30）即讓低鈣正確產生骨流失，幅度接近 V7 生理值。C8.3 路徑確立。
 
-- [ ] 取得 **Pivonka 2008**（#2）+ **Peterson & Riggs 2010**（#3）→ 校正 V7、裁決 C8.2/C8.3
-- [ ] 取得 Lemaire 2004（#1）→ M6 真實速率常數
+詳見計畫書附錄 C8、C9。
+
+## 待辦
+
+- [ ] **正式校正 pass**：開放 4–6 自由參數（`K_P_sost`, `lambda_P`, `k_form/k_res`…）
+  對 V1/V7/V8 擬合，hold-out V6/V10/V14；跑 `identifiability.m` profile likelihood
+- [ ] 取得 **Lemaire 2004**（#1，館際服務中）→ R/B/C 基線穩態、π 函數解離常數
 - [ ] 取得 Fu 2025（#5）→ MSIC 三態；Weinbaum 1994（#4）→ M2 微結構；Martin 1984（#6b）→ $S_v$
 - [ ] 以 Haapasalo 2000 全文替換 `r_p_0` / `r_e_0` 的推算值
 - [ ] P5：`rhsTwoSite` 雙腔室（V6 網球）、E1–E5 實驗
