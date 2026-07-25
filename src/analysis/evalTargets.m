@@ -85,6 +85,17 @@ r.resid = struct( ...
     V7slope = max(0, abs(r.V7slope) - 0.3) / 0.3, ...
     V8 = localBandResid(r.V8, 11, 14));
 
+% --- smooth chi-square-like metric, for PROFILE LIKELIHOOD ---------------
+% Standardised squared deviation from each band MIDPOINT.  Unlike the
+% banded residual (flat inside the band), this is smooth with a clear
+% minimum, so identifiability.m can trace a real profile.  half = half the
+% band width serves as the "1 sigma" scale.
+r.chi2 = localMidChi2(r.V1, 5, 10) ...
+       + localMidChi2(r.V2, 1.0, 1.5) ...
+       + localMidChi2(r.V7, 0.7, 1.8) ...
+       + (r.V7slope / 0.3)^2 ...
+       + localMidChi2(r.V8, 11, 14);
+
 if opts.holdout
     % V10: continue romosozumab run through 12 months washout.
     sW = scenarioLibrary("romosozumab", durationDays = 730);
@@ -120,4 +131,12 @@ end
 % small pull toward the midpoint keeps the optimiser from stalling on a
 % flat interior; negligible vs out-of-band penalty.
 e = e + 0.01 * abs(x - mid) / max(half, eps);
+end
+
+% -------------------------------------------------------------------------
+function c = localMidChi2(x, lo, hi)
+%LOCALMIDCHI2 Standardised squared deviation from the band midpoint.
+mid  = 0.5 * (lo + hi);
+half = 0.5 * (hi - lo);
+c = ((x - mid) / max(half, eps))^2;
 end

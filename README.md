@@ -6,7 +6,7 @@
 
 > 鈣決定「能不能蓋」，負荷決定「要不要蓋」。
 
-MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.0）
+MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.1）
 
 ---
 
@@ -24,8 +24,12 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 力學 → 剪應力 → MSIC 劑量 → 骨細胞訊號 → 細胞族群 → 三表面結構 + 礦化 → aBMD，
 外加全身鈣恆定雙向耦合。
 
+**已校正並附辨識性分析**：`calibrate` / `evalTargets` / `balanceBoneFormation` /
+`identifiability`（＋`plotIdentifiability` / `exportFigure`）。
+
 尚未實作（骨架，呼叫會拋 `notImplemented`）：`rhsTwoSite`（P5 雙腔室）、
-`steadyState`、`analysis/*`（P6 靈敏度/延續/校正/辨識性）、`viz/*`、`experiments/E0-E6`。
+`steadyState`、`sensitivityLHS` / `sobolIndices` / `continuation`（P6）、
+其餘 `viz/*`、`experiments/E0-E6`。
 
 ## 快速開始
 
@@ -161,7 +165,8 @@ $K_S, h_S, K_Y, n_Y$（全部 `assumed`/`low`）承擔雙重解釋責任。
 
 ## 待辦
 
-- [ ] `identifiability.m`（P6）：`K_P_sost` vs `lambda_P` 的 profile likelihood（兩者皆作用於 V7）
+- [x] ✅ **辨識性分析完成**（`identifiability.m`）：k_res/K_S/delta_ab 可辨識；(K_P_sost, lambda_P) 相關對（r=−0.89，聯合有界）。處置：固定其一 或 報告聯合 CI
+- [ ] 收緊 PTH 對：由獨立文獻固定 `lambda_P`（PTH→RANKL 劑量反應）或 `K_P_sost`（Bellido SOST–PTH）
 - [ ] 取得 **Lemaire 2004**（#1，館際服務中）→ R/B/C 基線穩態複核
 - [ ] 取得 Fu 2025（#5）→ MSIC 三態；Weinbaum 1994（#4）→ M2 微結構；Martin 1984（#6b）→ $S_v$
 - [ ] 以 Haapasalo 2000 全文替換 `r_p_0` / `r_e_0` 的推算值

@@ -47,9 +47,32 @@ arguments
     opts.label (1,1) string = "scenario"
 end
 
+% --- memoisation --------------------------------------------------------
+% The dose surrogate depends ONLY on the shear (M2) and channel (M3)
+% parameters plus the bout structure -- NOT on any downstream biology
+% (k_res, K_S, K_P_sost, ...).  During calibration and identifiability
+% those M2/M3 params never change, so rebuilding the surrogate hundreds of
+% times is pure waste.  Key the cache on the actual values it reads, so it
+% rebuilds the moment any of them changes (no stale-cache hazard).
 tauGrid = sort(unique(opts.tauGrid));
-dose    = zeros(size(tauGrid));
+key = localCacheKey(bouts, tauGrid, p);
 
+% Small multi-slot MRU cache: distinct scenarios present different bout
+% structures within one evalTargets call (adl vs bedrest), so a single slot
+% would thrash.  8 slots comfortably covers every scenario in play.
+persistent cacheKeys cacheVals
+if isempty(cacheKeys)
+    cacheKeys = {};
+    cacheVals = {};
+end
+for c = 1:numel(cacheKeys)
+    if isequal(cacheKeys{c}, key)
+        surrogate = cacheVals{c};
+        return
+    end
+end
+
+dose = zeros(size(tauGrid));
 for k = 1:numel(tauGrid)
     dose(k) = dailyDose(bouts, tauGrid(k), p);
 end
@@ -62,10 +85,32 @@ surrogate.bouts        = bouts;
 surrogate.label        = opts.label;
 surrogate.F = griddedInterpolant(tauGrid, dose, "pchip", "linear");
 
+cacheKeys{end+1} = key;
+cacheVals{end+1} = surrogate;
+if numel(cacheKeys) > 8       % drop oldest
+    cacheKeys(1) = [];
+    cacheVals(1) = [];
+end
+
 if opts.save
     outFile = fullfile(getResultsDir("surrogates"), ...
                        "doseSurrogate_" + opts.label + ".mat");
     save(outFile, "surrogate");
     fprintf("Saved: %s\n", outFile);
 end
+end
+
+% -------------------------------------------------------------------------
+function key = localCacheKey(bouts, tauGrid, p)
+%LOCALCACHEKEY Fingerprint of everything the dose surrogate depends on.
+%   Only the M2 shear params, M3 channel params, and the bout structure.
+mech = [p.K_tau, p.k_perm, p.mu_fluid, p.S_stor, p.L_poro, p.f_0, ...
+        p.tau_50, p.k_tau_sig, p.k_co_max, p.k_oc, p.k_oi, p.k_ic, p.T_day];
+boutVec = zeros(1, 6 * numel(bouts));
+for k = 1:numel(bouts)
+    b = bouts(k);
+    boutVec(6*k-5 : 6*k) = [b.momentScale, b.axialScale, b.nCycles, ...
+                            b.freqHz, b.restWithinSec, b.restAfterSec];
+end
+key = [mech, boutVec, tauGrid];
 end
