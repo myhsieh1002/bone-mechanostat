@@ -6,7 +6,7 @@
 
 > 鈣決定「能不能蓋」，負荷決定「要不要蓋」。
 
-MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v1.9）
+MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.0）
 
 ---
 
@@ -17,10 +17,10 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 | **P1** | 目錄骨架、參數 CSV、單位測試、`simulate` 介面 | ✅ **完成並驗證**（MATLAB R2026a） |
 | **P2** | M1–M3 力學模組 | ✅ **完成並驗證**（Biot 閉式解、MSIC 三態） |
 | **P3** | M4–M7 生物模組 | ✅ **完成並驗證**（C6.5 三項聯合檢定通過） |
-| **P4** | M8 鈣恆定 + 全模型校正 | ⚠️ **結構完成**（45/45）；Pivonka/P&R 參數回填後 **V7 平台出現、方向可翻轉**；正式校正待 Lemaire #1 |
+| **P4** | M8 鈣恆定 + **全模型校正** | ✅ **完成**（53/53）：5 標的＋2 盲測全達標，**V7 鈣命題成立** |
 | P5–P7 | 核心實驗、動力系統分析、論文 | ⬜ |
 
-**M1–M8 全模型可跑，45/45 測試通過。** `rhsFull` 串起完整訊號鏈：
+**M1–M8 全模型可跑並已校正，53/53 測試通過。** `rhsFull` 串起完整訊號鏈：
 力學 → 剪應力 → MSIC 劑量 → 骨細胞訊號 → 細胞族群 → 三表面結構 + 礦化 → aBMD，
 外加全身鈣恆定雙向耦合。
 
@@ -33,7 +33,7 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 cd('/path/to/骨骼鈣質吸收數學模型')
 addpath('src'); setupPath();
 
-runtests("tests")     % 45 tests across units/closedloop/noPhenom/mechanics/systemic
+runtests("tests")     % 53 tests: units/closedloop/noPhenom/mechanics/systemic/calibration
 
 s   = scenarioLibrary("sedentary", durationDays = 730);
 out = simulate(s);
@@ -136,26 +136,33 @@ MSIC 仿射週期算子 vs 逐步積分，吻合至 **2.2e-15**。兩組皆為�
 $K_S, h_S, K_Y, n_Y$（全部 `assumed`/`low`）承擔雙重解釋責任。
 **P3 完成後須立即檢定**，早於任何全模型校正 —— 詳見計畫書附錄 C6.5。
 
-## P4 結果 + Tier 1 文獻回填（2026-07-25）
+## P4 全模型校正（2026-07-25）— 里程碑
 
-M8 接上後基線為精確不動點。血鈣恆定機制已修正（漂移 55%→7.7%），快子系統 0.1 年內達穩態。
+先取得 Pivonka 2008 與 Peterson & Riggs 2010 全文（逐表轉錄於
+[reference_parameters.md](data/reference_parameters.md)），修正 M6 兩個嚴重錯誤的佔位速率
+（D_B 差 **7600×**、D_C 差 **100×**），再以 `surrogateopt` 對 V1/V2/V7/V8 校正 5 個自由參數
+（`k_res`, `K_S`, `K_P_sost`, `lambda_P`, `delta_ab`；`k_form` 由骨量平衡導出）。
 
-**取得 Pivonka 2008 與 Peterson & Riggs 2010 全文**（`Reference/`，逐表轉錄於
-[reference_parameters.md](data/reference_parameters.md)），回填後兩個 V7 障礙都鬆動：
+| 標的 | 值 | 目標 | |
+|---|---|---|---|
+| V1 骨轉換率 | 7.19 %/yr | 5–10 | ✅ |
+| V2 廢用流失 | 1.15 %/mo | 1.0–1.5 | ✅ |
+| **V7 鈣效應** | **+0.97 %** | 0.7–1.8 | ✅ |
+| V7 平台斜率 | +0.036 %/yr | \|·\|<0.3 | ✅ |
+| V8 romosozumab@12mo | +12.8 % | 11–14 | ✅ |
+| **V10 停藥回落**（盲測） | **−5.8 %** | <0 | ✅ |
+| **V14 湧現 ε\***（盲測） | **762 με** | 100–1500 | ✅ |
 
-- ✅ **V7 平台出現**：修正 M6 兩個嚴重錯誤的佔位速率（D_B 差 **7600×**、D_C 差 **100×**）後，
-  細胞動力學快到足以讓幾何回饋在生理時間內收斂 —— 低鈣 aBMD 斜率 5 年衰減至 **0.27%/yr**。
-  這確認了 C8.2 的診斷（平台被佔位速率阻擋）。
-- ✅ **V7 方向可翻轉**：兩篇原文皆**無 PTH→SOST 路徑**、持續 PTH 為異化。削弱本模型 M4 的
-  PTH→SOST（提高 `K_P_sost`≥30）即讓低鈣正確產生骨流失，幅度接近 V7 生理值。C8.3 路徑確立。
+**兩個 hold-out 盲測（V10, V14）未參與擬合卻自動通過 —— 預測力的直接證據。**
 
-詳見計畫書附錄 C8、C9。
+**使用者的原始問題現在有量化解答**：補鈣（800→1500 mg）使 aBMD **+0.97% 且一年達平台**，
+與 Tai 2015 統合分析的「非漸進式、+0.7–1.8%」吻合。方向正確源於 PTH 經 RANKL 主導
+（與 Lemaire/Pivonka 一致）。詳見計畫書附錄 C8–C10。
 
 ## 待辦
 
-- [ ] **正式校正 pass**：開放 4–6 自由參數（`K_P_sost`, `lambda_P`, `k_form/k_res`…）
-  對 V1/V7/V8 擬合，hold-out V6/V10/V14；跑 `identifiability.m` profile likelihood
-- [ ] 取得 **Lemaire 2004**（#1，館際服務中）→ R/B/C 基線穩態、π 函數解離常數
+- [ ] `identifiability.m`（P6）：`K_P_sost` vs `lambda_P` 的 profile likelihood（兩者皆作用於 V7）
+- [ ] 取得 **Lemaire 2004**（#1，館際服務中）→ R/B/C 基線穩態複核
 - [ ] 取得 Fu 2025（#5）→ MSIC 三態；Weinbaum 1994（#4）→ M2 微結構；Martin 1984（#6b）→ $S_v$
 - [ ] 以 Haapasalo 2000 全文替換 `r_p_0` / `r_e_0` 的推算值
-- [ ] P5：`rhsTwoSite` 雙腔室（V6 網球）、E1–E5 實驗
+- [ ] P5：`rhsTwoSite` 雙腔室（V6 網球）、E1–E5 實驗（含 E2 的 2×2 補鈣×負重因子分析）
