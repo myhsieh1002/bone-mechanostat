@@ -18,11 +18,9 @@ function [dydt, aux] = rhsFull(t, y, ctx)
 %                        -> boneCellPopulation -> R, B, C
 %       B, C             -> boneStructure    -> r_p, r_e, f_bm
 %                        -> mineralization   -> m1, m2
-%
-%   *** M8 IS NOT IMPLEMENTED (P4) ***
-%   Ca_s, P and V_D are held at baseline.  Every M4 term that reads PTH
-%   therefore sees P = 1.  Anything about calcium intake (V7, V7b, P1) is
-%   meaningless until P4 lands.
+%       B, C, I_Ca       -> calciumPTHvitD   -> Ca_s, P, V_D
+%                            \--> P feeds back into osteocyteSignal (SOST,
+%                                 RANKL), closing the systemic loop.
 %
 %   Inputs
 %     t    (1,1) double  time                                      [day]
@@ -92,6 +90,11 @@ dStruct = boneStructure(st, eta, xi, ...
 dMin    = mineralization(m1, m2, vForm, vRes, f_bm, p);
 dn_ot   = osteocyteDensity(n_ot, vForm, vRes, E2, p);
 
+% --- M8: systemic calcium / PTH / 1,25D ---------------------------------
+Ca_s = y(ix.Ca_s);   V_D = y(ix.V_D);
+[dSys, algSys] = calciumPTHvitD(Ca_s, P_pth, V_D, ctx.scenario.I_Ca, ...
+                                vForm, vRes, p);
+
 % --- assemble ------------------------------------------------------------
 dydt = zeros(numel(y), 1);
 dydt(ix.Ca_i) = dSig.Ca_i;
@@ -108,17 +111,18 @@ dydt(ix.r_e)  = dStruct.r_e;
 dydt(ix.f_bm) = dStruct.f_bm;
 dydt(ix.m1)   = dMin.m1;
 dydt(ix.m2)   = dMin.m2;
-% M8 not implemented (P4): systemic states held.
-dydt(ix.Ca_s) = 0;
-dydt(ix.P)    = 0;
-dydt(ix.V_D)  = 0;
+dydt(ix.Ca_s) = dSys.Ca_s;
+dydt(ix.P)    = dSys.P;
+dydt(ix.V_D)  = dSys.V_D;
 
 if nargout > 1
     aux = struct(eps_p = mech.eps_p, eps_e = mech.eps_e, ...
                  tau_max = tau_max, D_eff = D_eff, D_eff_hat = D_hat, ...
                  v_form = vForm, v_res = vRes, eta = eta, xi = xi, ...
                  rho_min = rho_min, geom = mech.geom, ...
-                 L_RANKL = alg.L_RANKL, O_OPG = alg.O_OPG, pi_L = alg.pi_L);
+                 L_RANKL = alg.L_RANKL, O_OPG = alg.O_OPG, pi_L = alg.pi_L, ...
+                 Abs = algSys.Abs, Renal = algSys.Renal, ...
+                 Pset = algSys.Pset, VDset = algSys.VDset);
 end
 end
 

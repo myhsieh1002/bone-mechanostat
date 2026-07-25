@@ -6,7 +6,7 @@
 
 > 鈣決定「能不能蓋」，負荷決定「要不要蓋」。
 
-MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v1.4）
+MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v1.8）
 
 ---
 
@@ -15,17 +15,17 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 | 階段 | 內容 | 狀態 |
 |---|---|---|
 | **P1** | 目錄骨架、參數 CSV、單位測試、`simulate` 介面 | ✅ **完成並驗證**（MATLAB R2026a） |
-| **P2** | M1–M3 力學模組 | ✅ **核心完成並驗證**（39/39 測試通過） |
-| P3 | M4–M7 生物模組 | ⬜ |
-| P4 | M8 鈣恆定 + 全模型校正 | ⬜ 阻塞於 Tier 1 文獻 |
+| **P2** | M1–M3 力學模組 | ✅ **完成並驗證**（Biot 閉式解、MSIC 三態） |
+| **P3** | M4–M7 生物模組 | ✅ **完成並驗證**（C6.5 三項聯合檢定通過） |
+| **P4** | M8 鈣恆定 + 全模型校正 | ⚠️ **結構完成**（45/45 測試），**科學結論 V7 阻塞於文獻** |
 | P5–P7 | 核心實驗、動力系統分析、論文 | ⬜ |
 
-**已實作**：`projectRoot` `getResultsDir` `setupPath` `getDefaultParams` `paramBounds`
-`scenarioLibrary` `crossSection` `organMechanics` `densitometry` `stateVector`
-`baselineState` `simulate` `rhsFull`(stub)
+**M1–M8 全模型可跑，45/45 測試通過。** `rhsFull` 串起完整訊號鏈：
+力學 → 剪應力 → MSIC 劑量 → 骨細胞訊號 → 細胞族群 → 三表面結構 + 礦化 → aBMD，
+外加全身鈣恆定雙向耦合。
 
-其餘 `src/**` 皆為**簽章 + 單位註解骨架**，呼叫會拋 `boneMechanostat:notImplemented`
-並指出所屬階段。
+尚未實作（骨架，呼叫會拋 `notImplemented`）：`rhsTwoSite`（P5 雙腔室）、
+`steadyState`、`analysis/*`（P6 靈敏度/延續/校正/辨識性）、`viz/*`、`experiments/E0-E6`。
 
 ## 快速開始
 
@@ -33,9 +33,7 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 cd('/path/to/骨骼鈣質吸收數學模型')
 addpath('src'); setupPath();
 
-runtests("tests/test_units.m")
-runtests("tests/test_closedloop.m")
-runtests("tests/test_noPhenomParams.m")
+runtests("tests")     % 45 tests across units/closedloop/noPhenom/mechanics/systemic
 
 s   = scenarioLibrary("sedentary", durationDays = 730);
 out = simulate(s);
@@ -138,9 +136,20 @@ MSIC 仿射週期算子 vs 逐步積分，吻合至 **2.2e-15**。兩組皆為�
 $K_S, h_S, K_Y, n_Y$（全部 `assumed`/`low`）承擔雙重解釋責任。
 **P3 完成後須立即檢定**，早於任何全模型校正 —— 詳見計畫書附錄 C6.5。
 
-## 待辦（P3 之前）
+## P4 結果（2026-07-24）
 
-- [ ] **優先**：P3 生物模組完成後立即執行 C6.5 的三項聯合檢定
-- [ ] 取得 Tier 1 文獻 #1 Lemaire 2004、#2 Pivonka 2008、#3 Peterson & Riggs 2010
-- [ ] 取得 #5 Fu 2025（MSIC 三態速率常數）、#4 Weinbaum 1994、#6b Martin 1984
+M8 接上後基線為精確不動點。**兩個結構性發現決定 V7 成敗，均指向校正而非結構缺陷**：
+
+- **血鈣恆定機制已修正**（漂移 55%→7.7%）：腎排泄對血鈣陡峭（$n_{renal}$）＋副甲狀腺
+  Hill 陡峭。快子系統（Ca_s、PTH、1,25D）0.1 年內達穩態。
+- ⚠️ **V7 平台尚未出現**：aBMD 5 年仍攀升。力學回饋（幾何變化，$k_{form}\sim10^{-7}$）
+  太慢，無法在 1 年內 nullify 持續 PTH 經 SOST 的形成驅動。**結構支援得了平台，
+  增益待 Pivonka 2008 校正**。詳見計畫書附錄 C8。
+
+## 待辦（P4 校正，阻塞於文獻）
+
+- [ ] 取得 **Pivonka 2008**（#2）+ **Peterson & Riggs 2010**（#3）→ 校正 V7、裁決 C8.2/C8.3
+- [ ] 取得 Lemaire 2004（#1）→ M6 真實速率常數
+- [ ] 取得 Fu 2025（#5）→ MSIC 三態；Weinbaum 1994（#4）→ M2 微結構；Martin 1984（#6b）→ $S_v$
 - [ ] 以 Haapasalo 2000 全文替換 `r_p_0` / `r_e_0` 的推算值
+- [ ] P5：`rhsTwoSite` 雙腔室（V6 網球）、E1–E5 實驗
