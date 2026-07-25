@@ -50,7 +50,7 @@ s = struct( ...
     Ca_i = y(ix.Ca_i), Y = y(ix.Y), S = y(ix.S), T = y(ix.T), ...
     n_ot = y(ix.n_ot), beta = y(ix.beta), R = y(ix.R), B = y(ix.B), ...
     C = y(ix.C), r_p = y(ix.r_p), r_e = y(ix.r_e), f_bm = y(ix.f_bm), ...
-    m1 = y(ix.m1), m2 = y(ix.m2));
+    rho_min = y(ix.rho_min));
 P_pth = y(ix.P);
 
 u_romo = localDrugOn(t, ctx.scenario.drug.romosozumab);
@@ -80,8 +80,7 @@ dydt(ix.C)    = dLoc.C;
 dydt(ix.r_p)  = dLoc.r_p;
 dydt(ix.r_e)  = dLoc.r_e;
 dydt(ix.f_bm) = dLoc.f_bm;
-dydt(ix.m1)   = dLoc.m1;
-dydt(ix.m2)   = dLoc.m2;
+dydt(ix.rho_min) = dLoc.rho_min;
 dydt(ix.Ca_s) = dSys.Ca_s;
 dydt(ix.P)    = dSys.P;
 dydt(ix.V_D)  = dSys.V_D;

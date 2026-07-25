@@ -8,13 +8,13 @@ function tests = test_twosite()
 %   intervention cannot.  These are the robust qualitative claims of the
 %   two-compartment model.
 %
-%   NOT asserted here: the V6f geometry-vs-density split (Haapasalo: the
-%   gain is geometric, vBMD unchanged).  The current M7 puts too much of the
-%   loading response into density -- a known limitation documented in
-%   appendix C12, pending an M7 mineralisation/allocation revision.  This
-%   test guards what the model gets RIGHT, and does not overclaim.
+%   V6 now EMERGES as a held-out blind test (v2.3, appendix C14): the Frost
+%   modelling term + intensive mineralisation give Haapasalo's pattern --
+%   geometric gain with volumetric density essentially unchanged.  V6 was
+%   never in the calibration objective, so these assertions are genuine
+%   predictions of the improved structure.
 %
-%   Project: bone-mechanostat (PROJECT_PLAN v2.2)
+%   Project: bone-mechanostat (PROJECT_PLAN v2.3)
 
 tests = functiontests(localfunctions);
 end
@@ -25,9 +25,9 @@ tc.TestData.p = getDefaultParams(reload = true);
 end
 
 function testTwoSiteIntegrates(tc)
-% 31-state two-compartment model must integrate cleanly.
+% 29-state two-compartment model must integrate cleanly.
 o = simulate(scenarioLibrary("tennis"), p = tc.TestData.p);
-verifyEqual(tc, numel(o.names), 31, "Two-site model should have 31 states.");
+verifyEqual(tc, numel(o.names), 29, "Two-site model should have 29 states (v2.3).");
 verifyTrue(tc, all(isfinite(o.y), "all"), "Non-finite state.");
 verifyTrue(tc, all(o.y(:) >= -1e-9), "Negative state.");
 verifyTrue(tc, isfield(o.dens, "aBMD_A") && isfield(o.dens, "aBMD_B"), ...
@@ -61,6 +61,25 @@ dBMC = 100 * (o.dens.BMC_L_A(end) / o.dens.BMC_L_B(end) - 1);
 
 verifyLessThan(tc, abs(dBMC), 0.05, ...
     "A systemic intervention must not create a side-to-side difference.");
+end
+
+function testV6_geometricGain_notDensity(tc)
+% V6f (HARD, hold-out): the loaded arm's gain is GEOMETRIC, with volumetric
+% density essentially unchanged.  This is the discriminating Haapasalo
+% result and it emerges here without being fitted.
+p = tc.TestData.p;
+o = simulate(scenarioLibrary("tennis"), p = p);
+
+dVBMD = 100 * (o.dens.vBMD_A(end)  / o.dens.vBMD_B(end)  - 1);
+dTot  = 100 * (o.dens.Tot_Ar_A(end)/ o.dens.Tot_Ar_B(end)- 1);
+dImax = 100 * (o.dens.I_max_A(end) / o.dens.I_max_B(end) - 1);
+
+verifyLessThan(tc, abs(dVBMD), 2.0, ...
+    "V6f: loaded-side volumetric density must be ~unchanged (|Delta vBMD| < 2%).");
+verifyGreaterThan(tc, dTot, 5, ...
+    "V6b: loaded side must expand its total cross-section (geometric gain).");
+verifyGreaterThan(tc, dImax, dTot, ...
+    "V6: second moment of area must gain more than area (periosteal expansion).");
 end
 
 function testSharedSystemicPool(tc)

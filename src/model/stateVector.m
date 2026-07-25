@@ -29,16 +29,18 @@ arguments
     mode (1,1) string {mustBeMember(mode, ["single" "two"])} = "single"
 end
 
-% --- local (per-site) states: 14 -----------------------------------------
+% --- local (per-site) states: 13 -----------------------------------------
+% (v2.3: the two mineral pools m1, m2 collapsed to one intensive rho_min --
+%  see MINERALIZATION / appendix C13.)
 localNames = ["Ca_i" "Y"   "S"   "T"   "n_ot" "beta" ...
               "R"    "B"   "C"   ...
-              "r_p"  "r_e" "f_bm" "m1" "m2"];
+              "r_p"  "r_e" "f_bm" "rho_min"];
 localUnits = ["-"    "-"   "-"   "-"   "-"    "-"    ...
               "-"    "-"   "-"   ...
-              "m"    "m"   "-"   "kg/m^3" "kg/m^3"];
+              "m"    "m"   "-"   "kg/m^3"];
 localMods  = ["M4"   "M4"  "M4"  "M4"  "M4"   "M5"   ...
               "M6"   "M6"  "M6"  ...
-              "M7"   "M7"  "M7"  "M7" "M7"];
+              "M7"   "M7"  "M7"  "M7"];
 
 % --- shared systemic states: 3 -------------------------------------------
 sysNames = ["Ca_s"    "P"  "V_D"];

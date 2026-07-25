@@ -6,7 +6,7 @@
 
 > 鈣決定「能不能蓋」，負荷決定「要不要蓋」。
 
-MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.2.1）
+MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.3）
 
 ---
 
@@ -18,10 +18,10 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 | **P2** | M1–M3 力學模組 | ✅ **完成並驗證**（Biot 閉式解、MSIC 三態） |
 | **P3** | M4–M7 生物模組 | ✅ **完成並驗證**（C6.5 三項聯合檢定通過） |
 | **P4** | M8 鈣恆定 + **全模型校正** | ✅ **完成**（53/53）：5 標的＋2 盲測全達標，**V7 鈣命題成立** |
-| **P5** | 雙腔室（部位專一性 P2） | ⚠️ **P2 定性成立**（57 測試）；V6f 診斷確立需 2 獨立修正（礦化 ODE + 骨膜分配），列 P5b(續)/P5c |
+| **P5** | 雙腔室（部位專一性 P2/V6） | ✅ **P2 定量成立**（58 測試）：V6 盲測湧現（幾何增益、密度不變）。V8/V10 重定位為小樑範疇→P5d |
 | P6–P7 | 動力系統分析、論文 | ⬜ |
 
-**M1–M8 全模型可跑並已校正，含雙腔室；57/57 測試通過。** `rhsFull` 串起完整訊號鏈：
+**M1–M8 全模型可跑並已校正，含雙腔室；58/58 測試通過。** `rhsFull` 串起完整訊號鏈：
 力學 → 剪應力 → MSIC 劑量 → 骨細胞訊號 → 細胞族群 → 三表面結構 + 礦化 → aBMD，
 外加全身鈣恆定雙向耦合。
 
@@ -40,7 +40,7 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 cd('/path/to/骨骼鈣質吸收數學模型')
 addpath('src'); setupPath();
 
-runtests("tests")     % 57 tests: +twosite
+runtests("tests")     % 58 tests
 
 s   = scenarioLibrary("sedentary", durationDays = 730);
 out = simulate(s);
@@ -156,11 +156,15 @@ $K_S, h_S, K_Y, n_Y$（全部 `assumed`/`low`）承擔雙重解釋責任。
 | V2 廢用流失 | 1.15 %/mo | 1.0–1.5 | ✅ |
 | **V7 鈣效應** | **+0.97 %** | 0.7–1.8 | ✅ |
 | V7 平台斜率 | +0.036 %/yr | \|·\|<0.3 | ✅ |
-| V8 romosozumab@12mo | +12.8 % | 11–14 | ✅ |
-| **V10 停藥回落**（盲測） | **−5.8 %** | <0 | ✅ |
+| V8 romosozumab@12mo | +12.8 % | 11–14 | ⚠️ 見下 |
+| **V10 停藥回落**（盲測） | **−5.8 %** | <0 | ⚠️ 見下 |
 | **V14 湧現 ε\***（盲測） | **762 με** | 100–1500 | ✅ |
 
-**兩個 hold-out 盲測（V10, V14）未參與擬合卻自動通過 —— 預測力的直接證據。**
+> **⚠️ v2.3 更正**：P4 的 V8/V10「通過」後來發現**倚賴礦化膨脹假影**（舊 M7 使 rho_min
+> 於形成時錯誤上升）。v2.3 修正礦化後，V8/V10 重定位為**小樑/脊椎範疇**（本模型為皮質截面，
+> 無法在不靠假影下重現 +11–14% 之脊椎值）。詳見附錄 C14；V6/V14 盲測不受影響仍成立。
+
+**V14 hold-out 盲測未參與擬合卻通過 —— 預測力的直接證據。**（另 v2.3 新增 V6 盲測，見 P5）
 
 **使用者的原始問題現在有量化解答**：補鈣（800→1500 mg）使 aBMD **+0.97% 且一年達平台**，
 與 Tai 2015 統合分析的「非漸進式、+0.7–1.8%」吻合。方向正確源於 PTH 經 RANKL 主導
@@ -174,6 +178,6 @@ $K_S, h_S, K_Y, n_Y$（全部 `assumed`/`low`）承擔雙重解釋責任。
 - [ ] 取得 Fu 2025（#5）→ MSIC 三態；Weinbaum 1994（#4）→ M2 微結構；Martin 1984（#6b）→ $S_v$
 - [ ] 以 Haapasalo 2000 全文替換 `r_p_0` / `r_e_0` 的推算值
 - [x] ✅ **P5 雙腔室**：P2 定性成立（局部負荷造成不對稱、全身介入不能）
-- [ ] **P5b(續)**：intensive 礦化 ODE（rho_min 隨形成下降，已驗證方向）+ **併同開放 mu_turn/kappa_m 重新校正**（V8/V10）→ V6f 密度側（診斷見 C13）
-- [ ] **P5c**：力學鏈重校（tau_50/k_tau_sig 使正常活動不飽和）→ 負荷可推形成至骨膜 → V6a–e 幾何增益
+- [x] ✅ **P5b+P5c**：intensive 礦化 ODE + Frost modeling → **V6 盲測湧現**（幾何增益、密度不變，附錄 C14）
+- [ ] **P5d**：加小樑腔室（低 f_bm）→ 定量重現 V8/V10 脊椎 romosozumab
 - [ ] E1–E5 實驗（含 E2 的 2×2 補鈣×負重因子分析）

@@ -1,56 +1,63 @@
-function [d, rho_min] = mineralization(m1, m2, v_form, v_res, f_bm, p)
-%MINERALIZATION M7(c) -- two-compartment primary/secondary mineralisation.
+function [d, rho_min] = mineralization(rho, vForm, vRes, p)
+%MINERALIZATION M7(c) -- mean matrix mineralisation (turnover-dilution model).
 %
-%   [D, RHO_MIN] = MINERALIZATION(M1, M2, V_FORM, V_RES, F_BM, P) evaluates
+%   [D, RHO_MIN] = MINERALIZATION(RHO, VFORM, VRES, P) evolves the mean
+%   mineral density of the bone matrix as an intensive state:
 %
-%       dm1/dt  = v_form_hat m_prim rho_ref - kappa_m m1
-%       dm2/dt  = kappa_m m1 - v_res_hat mbar
-%       rho_min = (m1 + m2) / f_bm                             [kg/m^3]
+%       d rho_min/dt = mu_turn_0 vForm (rho_prim - rho_min)   (dilution)
+%                    + kappa_m          (rho_ref  - rho_min)   (maturation)
 %
-%   V_FORM and V_RES are surface velocities NORMALISED to baseline, so the
-%   pools stay in kg/m^3 and are unaffected by the placeholder k_form /
-%   k_res magnitudes.  Deposition and removal are scaled so that the
-%   baseline partition (m_prim, 1 - m_prim) x f_bm_0 rho_min_0 is a fixed
-%   point.
+%   *** WHY THIS REPLACES THE TWO-POOL AREAL MODEL (v2.3, appendix C13) ***
+%   The previous model tracked areal mineral pools m1, m2 and divided by
+%   f_bm.  Under net formation those pools grew, so rho_min ROSE with
+%   turnover -- backwards.  New bone is deposited at primary mineralisation
+%   (~60% of mature) and only slowly matures, so faster turnover means MORE
+%   young, less-mineralised bone and a LOWER mean density.  That is why the
+%   tennis player's loaded arm gains bone geometrically with volumetric
+%   density UNCHANGED (Haapasalo, V6f): the extra formation is diluted by
+%   young bone, cancelling any density rise.
 %
-%   Secondary mineralisation is slow (kappa_m ~ 0.004 /day, i.e. months to
-%   years).  That lag is why BMD keeps drifting after remodelling activity
-%   has already changed -- relevant to V9/V10 (romosozumab self-limitation
-%   and post-withdrawal loss).
+%   rho_ref (fully-mature density) is DERIVED so rho_min = rho_min_0 is a
+%   fixed point at vForm = 1 -- baseline-relative, like M4-M8.  Two rates set
+%   the balance: mu_turn_0 (baseline turnover, tied to V1) and kappa_m
+%   (secondary-mineralisation rate, years).  kappa_m also carries the slow
+%   post-treatment BMD drift relevant to V9/V10.
+%
+%   VRES is accepted for interface symmetry but does not enter: resorption
+%   removes bone at the current mean density and so does not change the mean
+%   of what remains (to first order).
 %
 %   Inputs
-%     m1, m2  (1,1) double  mineral pools                        [kg/m^3]
-%     v_form  (1,1) double  formation velocity / baseline              [-]
-%     v_res   (1,1) double  resorption velocity / baseline             [-]
-%     f_bm    (1,1) double  bone volume fraction                       [-]
-%     p       (1,1) struct  parameters
+%     rho     (1,1) double  current mean mineral density          [kg/m^3]
+%     vForm   (1,1) double  formation velocity / baseline (B)          [-]
+%     vRes    (1,1) double  resorption velocity / baseline (C)         [-]
+%     p       (1,1) struct  parameters (rho_min_0, m_prim, kappa_m,
+%                           mu_turn_0)
 %
 %   Outputs
-%     d        (1,1) struct  .m1 .m2                      [kg/(m^3 day)]
-%     rho_min  (1,1) double  mean mineral density                [kg/m^3]
+%     d        (1,1) struct  .rho_min derivative           [kg/(m^3 day)]
+%     rho_min  (1,1) double  the input, echoed for convenience    [kg/m^3]
 %
 %   See also BONESTRUCTURE, DENSITOMETRY.
 
-%   Project: bone-mechanostat (PROJECT_PLAN v1.6)
+%   Project: bone-mechanostat (PROJECT_PLAN v2.3)
 
 arguments
-    m1 (1,1) double
-    m2 (1,1) double
-    v_form (1,1) double
-    v_res (1,1) double
-    f_bm (1,1) double
+    rho (1,1) double
+    vForm (1,1) double
+    vRes (1,1) double %#ok<INUSA>  interface symmetry; see docstring
     p (1,1) struct
 end
 
-m1_0 = p.m_prim * p.f_bm_0 * p.rho_min_0;
-m2_0 = (1 - p.m_prim) * p.f_bm_0 * p.rho_min_0;
+% rho_ref (mature) and rho_prim = m_prim*rho_ref (deposition), derived
+% together so baseline rho_min_0 is a fixed point:
+%   0 = mu*(m_prim*rho_ref - rho0) + kappa*(rho_ref - rho0)
+rho_ref  = p.rho_min_0 * (p.mu_turn_0 + p.kappa_m) ...
+         / (p.mu_turn_0 * p.m_prim + p.kappa_m);
+rho_prim = p.m_prim * rho_ref;
 
-% Baseline balance: deposition = kappa_m m1_0 = removal, so both pools sit
-% still when v_form_hat = v_res_hat = 1.
-dep = p.kappa_m * m1_0;
+d.rho_min = p.mu_turn_0 * vForm * (rho_prim - rho) ...
+          + p.kappa_m * (rho_ref - rho);
 
-d.m1 = dep * v_form - p.kappa_m * m1;
-d.m2 = p.kappa_m * m1 - (p.kappa_m * m1_0) * v_res * (m2 / m2_0);
-
-rho_min = (m1 + m2) / max(f_bm, p.f_bm_min);
+rho_min = rho;
 end

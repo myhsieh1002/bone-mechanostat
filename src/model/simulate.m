@@ -128,12 +128,10 @@ dens = struct();
 for s = suffixes
     ix = info.idx;
     f_bm = out.y(:, ix.(matlab.lang.makeValidName("f_bm" + s)));
-    m1   = out.y(:, ix.(matlab.lang.makeValidName("m1" + s)));
-    m2   = out.y(:, ix.(matlab.lang.makeValidName("m2" + s)));
+    rho  = out.y(:, ix.(matlab.lang.makeValidName("rho_min" + s)));
     r_p  = out.y(:, ix.(matlab.lang.makeValidName("r_p" + s)));
     r_e  = out.y(:, ix.(matlab.lang.makeValidName("r_e" + s)));
 
-    rho = (m1 + m2) ./ max(f_bm, p.f_bm_min);
     d = densitometry(r_p, r_e, f_bm, rho, p);
 
     fn = string(fieldnames(d));

@@ -145,8 +145,8 @@ end
 function testStateVectorConsistency(tc)
 single = stateVector("single");
 two    = stateVector("two");
-verifyEqual(tc, single.n, 17, "Single-compartment model should have 17 states (§4.4).");
-verifyEqual(tc, two.n, 31, "Two-compartment model should have 31 states (§4.4).");
+verifyEqual(tc, single.n, 16, "Single-compartment model should have 16 states (13 local + 3 systemic; v2.3).");
+verifyEqual(tc, two.n, 29, "Two-compartment model should have 29 states (13x2 + 3; v2.3).");
 verifyEqual(tc, numel(single.units), single.n, "Every state needs a unit.");
 verifyEqual(tc, numel(two.units), two.n, "Every state needs a unit.");
 end

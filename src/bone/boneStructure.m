@@ -1,4 +1,4 @@
-function d = boneStructure(st, eta, xi, v_form, v_res, p)
+function d = boneStructure(st, eta, xi, v_form, v_res, p, mech)
 %BONESTRUCTURE M7 -- three-surface structural evolution.
 %
 %   D = BONESTRUCTURE(ST, ETA, XI, V_FORM, V_RES, P) evaluates
@@ -38,11 +38,24 @@ arguments
     v_form (1,1) double
     v_res (1,1) double
     p (1,1) struct
+    mech (1,1) struct = struct(eps_p = 0)
 end
 
 [~, S_v_hat] = specificSurface(st.f_bm, p);
 
-d.r_p = v_form * eta(1) - v_res * xi(1);
+% --- Frost MODELING term (v2.3, appendix C13/C14) ------------------------
+% Vigorous loading drives direct periosteal apposition (bone MODELING),
+% distinct from the dose/remodelling pathway.  It has a strain threshold
+% (Frost's minimum effective strain for modelling, MES_m ~ 1000-1500 ue):
+% ZERO at normal daily activity (~760 ue), active only above the threshold.
+% This is what produces Haapasalo's geometric gain (V6a-e) without touching
+% any calibration scenario (all below threshold), and it self-limits -- as
+% r_p grows, I_g rises, peak strain falls back below MES_m.
+% Gated by the osteocyte-sensing gain so a thinned network responds less.
+sensing  = (st.n_ot / p.n_ot_0) ^ p.zeta;
+modeling = p.k_model * max(0, mech.eps_p - p.eps_model_star) * sensing;
+
+d.r_p = v_form * eta(1) - v_res * xi(1) + modeling;
 d.r_e = v_res  * xi(2)  - v_form * eta(2);
 
 df = (S_v_hat / p.w_wall) * (v_form * eta(3) - v_res * xi(3));
