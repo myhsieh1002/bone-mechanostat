@@ -6,7 +6,7 @@
 
 > 鈣決定「能不能蓋」，負荷決定「要不要蓋」。
 
-MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.2）
+MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.2.1）
 
 ---
 
@@ -18,7 +18,7 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 | **P2** | M1–M3 力學模組 | ✅ **完成並驗證**（Biot 閉式解、MSIC 三態） |
 | **P3** | M4–M7 生物模組 | ✅ **完成並驗證**（C6.5 三項聯合檢定通過） |
 | **P4** | M8 鈣恆定 + **全模型校正** | ✅ **完成**（53/53）：5 標的＋2 盲測全達標，**V7 鈣命題成立** |
-| **P5** | 雙腔室（部位專一性 P2） | ⚠️ **P2 定性成立**（57 測試）；V6f 幾何/密度揭露 M7 礦化問題→P5b |
+| **P5** | 雙腔室（部位專一性 P2） | ⚠️ **P2 定性成立**（57 測試）；V6f 診斷確立需 2 獨立修正（礦化 ODE + 骨膜分配），列 P5b(續)/P5c |
 | P6–P7 | 動力系統分析、論文 | ⬜ |
 
 **M1–M8 全模型可跑並已校正，含雙腔室；57/57 測試通過。** `rhsFull` 串起完整訊號鏈：
@@ -174,5 +174,6 @@ $K_S, h_S, K_Y, n_Y$（全部 `assumed`/`low`）承擔雙重解釋責任。
 - [ ] 取得 Fu 2025（#5）→ MSIC 三態；Weinbaum 1994（#4）→ M2 微結構；Martin 1984（#6b）→ $S_v$
 - [ ] 以 Haapasalo 2000 全文替換 `r_p_0` / `r_e_0` 的推算值
 - [x] ✅ **P5 雙腔室**：P2 定性成立（局部負荷造成不對稱、全身介入不能）
-- [ ] **P5b**：M7 礦化修訂（rho_min 隨形成下降）+ 形成分配（包膜周長 vs 孔壁面）+ 重新校正 → 達 V6f 全套
+- [ ] **P5b(續)**：intensive 礦化 ODE（rho_min 隨形成下降，已驗證方向）+ **併同開放 mu_turn/kappa_m 重新校正**（V8/V10）→ V6f 密度側（診斷見 C13）
+- [ ] **P5c**：力學鏈重校（tau_50/k_tau_sig 使正常活動不飽和）→ 負荷可推形成至骨膜 → V6a–e 幾何增益
 - [ ] E1–E5 實驗（含 E2 的 2×2 補鈣×負重因子分析）
