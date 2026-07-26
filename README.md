@@ -117,6 +117,7 @@ src/viz/        figure house style
 experiments/    E0–E6, one figure each
 tests/          81 assertions across 13 files
 data/           parameter and validation-target tables
+docs/           model equations, parameter provenance
 ```
 
 ### Two files worth reading first
@@ -173,7 +174,8 @@ Stated here because they bound what the model can be used for.
 |---|---|
 | `PROJECT_PLAN_bone_mechanostat.md` | Full specification and a dated decision log (appendices C1–C23) recording every correction, artefact and reversal |
 | `HANDOFF.md` | Orientation for anyone picking the project up |
-| `投稿PLOS Comp Biol/` | Manuscript, figures, supporting information, and a line-by-line reference verification record |
+| `docs/model_equations.md` | Modules M1–M8 as implemented, the trabecular compartment, the validity domain and numerical methods |
+| `docs/parameter_provenance.md` | Where every literature-derived parameter comes from, and the record of verifying all 22 citations |
 | `README.zh-TW.md` | Chinese working README |
 
 The decision log is worth a look if you are evaluating the model's

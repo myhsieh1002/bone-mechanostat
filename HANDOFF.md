@@ -2,6 +2,8 @@
 
 **接手者請先讀這份，再讀 `PROJECT_PLAN_bone_mechanostat.md`（v2.11，含附錄 C1–C23）與 `README.zh-TW.md`（中文工作版；`README.md` 現為對外英文版）。**
 
+> ⚠️ **`投稿PLOS Comp Biol/` 已移出版本控制**（v2.12）。公開 repo 與 Zenodo 存檔只含程式碼與資料。該資料夾仍在本機，但 **git 不再追蹤，也不在歷史中** —— 換機器或重新 clone 時不會帶過去，請自行備份。資料夾內兩份屬於程式碼的文件已搬到 `docs/model_equations.md` 與 `docs/parameter_provenance.md`。
+
 主持人：謝明諭 (Ming-Yu Hsieh)｜MATLAB R2026a｜語言：程式碼英文、討論與計畫書中文。
 
 ---

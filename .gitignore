@@ -19,9 +19,10 @@ codegen/
 Reference/
 
 # Default-deny on PDFs so a paper dropped anywhere in the tree cannot be
-# committed by accident.  Figures WE generate are allowlisted below --
-# without the exception the blanket rule silently swallowed the seven
-# vector figures that are part of the submission.
+# committed by accident.
 *.pdf
-!投稿PLOS Comp Biol/figures/*.pdf
-!投稿PLOS Comp Biol/supporting_information/*.pdf
+
+# Manuscript kept out of version control: the public archive is code and data.
+# The two documents in there that belong WITH the code -- the model equations
+# and the parameter provenance record -- live in docs/ instead.
+投稿PLOS Comp Biol/
