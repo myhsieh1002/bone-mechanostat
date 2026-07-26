@@ -99,9 +99,27 @@ fprintf("      combination is still positive and much larger than either alone -
 fprintf("      the qualitative claim (unlike bisphosphonate) survives; strict\n");
 fprintf("      additivity does not.\n");
 
+% --- trabecular compartment: where V8/V10 actually live (P5d, C19) ------
+q    = trabecularParams(p);
+oTr  = simulate(sR, p = q);
+oTrC = simulate(scenarioLibrary("sedentary", durationDays = nDays), p = q);
+dTr  = pct(oTr.dens.aBMD); dTrC = pct(oTrC.dens.aBMD);
+v8Tr  = dTr(k12) - dTrC(k12);
+v10Tr = dTr(end) - dTr(k12);
+amp   = v8Tr / v8;
+
+fprintf("\n  --- trabecular compartment (P5d) ---\n");
+fprintf("      V8  @12 mo   cortical %+.3f %%  ->  trabecular %+.3f %%   (%.1fx amplification)\n", ...
+        v8, v8Tr, amp);
+fprintf("      V10 washout  cortical %+.3f %%  ->  trabecular %+.3f %%\n", v10, v10Tr);
+fprintf("      target V8 +11 to +14 %% is NOT reached, and BV/TV is not the lever\n");
+fprintf("      (flat 4.33-4.59 %% across BV/TV 0.06-0.15).  The gap is delta_ab,\n");
+fprintf("      whose value was fitted in P4 against the artefact-contaminated V8.\n");
+fprintf("      See appendix C19.  valid: drug=%d control=%d\n", oTr.validity.ok, oTrC.validity.ok);
+
 % --- figure -------------------------------------------------------------
-fig = figure(Position = [100 100 900 340], Color = "w");
-tl  = tiledlayout(fig, 1, 2, TileSpacing = "compact", Padding = "compact");
+fig = figure(Position = [100 100 1050 340], Color = "w");
+tl  = tiledlayout(fig, 1, 3, TileSpacing = "compact", Padding = "compact");
 
 nexttile(tl); hold on;
 for k = 1:4
@@ -121,9 +139,20 @@ xline(stopD / 30, "--", "drug stopped", Color = col.muted);
 xlabel("months"); ylabel("osteoblasts / baseline");
 title("V9: the anabolic effect self-limits"); grid on; box off;
 
+nexttile(tl); hold on;
+plot(oTr.t / 30, dTr, LineWidth = 1.8, Color = col.primary);
+plot(o{2}.t / 30, pct(o{2}.dens.aBMD), LineWidth = 1.8, Color = col.muted);
+fill([0 24 24 0], [11 11 14 14], col.accent, FaceAlpha = 0.15, EdgeColor = "none");
+xline(stopD / 30, "--", Color = col.muted);
+xlabel("months"); ylabel("\DeltaaBMD [%]");
+legend(["trabecular" "cortical" "V8 target band"], Location = "northwest", Box = "off");
+title(sprintf("V8: %.1fx amplification, target not reached", amp));
+grid on; box off;
+
 title(tl, "E4 -- romosozumab, withdrawal and loading", FontWeight = "bold");
 exportFigure(fig, "E4_pharmacology");
 
 save(fullfile(getResultsDir("E4_pharmacology"), "E4_pharmacology.mat"), ...
      "arms", "d12", "d24", "v8", "v10", "rollover", "decel", "Bpk", ...
-     "gainDrug", "gainLoad", "gainBoth", "interaction", "relDev");
+     "gainDrug", "gainLoad", "gainBoth", "interaction", "relDev", ...
+     "v8Tr", "v10Tr", "amp");

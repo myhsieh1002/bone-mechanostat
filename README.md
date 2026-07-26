@@ -6,7 +6,7 @@
 
 > 鈣決定「能不能蓋」，負荷決定「要不要蓋」。
 
-MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.7）
+MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.8）
 
 ---
 
@@ -22,6 +22,7 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 | **P6** | 動力系統分析（P3） | ✅ **完成**（61 測試）：**P3 否證 —— 模型單穩**，骨鬆為陡峭連續位移非雙穩 |
 | **P5e** | modeling 飽和界 + 彈性有效域守衛 | ✅ **完成**（67 測試）：假影修掉，**P3 否證獲第二條獨立佐證**（附錄 C17） |
 | **E0–E6** | 實驗腳本 + 七張論文圖 | ✅ **完成**（附錄 C18）：P1 量化、**V5 平反**、**V5b 骨層級符號翻轉**、V9/V12 部分成立 |
+| **P5d** | 小樑腔室 | ⚠️ **部分完成**（72 測試，附錄 C19）：3.6× 放大確認，V8 未達；**診斷缺口為 `delta_ab` 而非 BV/TV** |
 | P7 | 論文 | 🔄 敘事已定調（v2.5，附錄 C16）：P1✅／P2✅／**P3❌ 如實入主論文** |
 
 **M1–M8 全模型可跑並已校正，含雙腔室與分歧分析；61/61 測試通過。** `rhsFull` 串起完整訊號鏈：
@@ -50,7 +51,7 @@ run(fullfile(projectRoot(), "experiments", "E6_bifurcation.m"))      % P3
 cd('/path/to/骨骼鈣質吸收數學模型')
 addpath('src'); setupPath();
 
-runtests("tests")     % 67 tests
+runtests("tests")     % 72 tests
 
 s   = scenarioLibrary("sedentary", durationDays = 730);
 out = simulate(s);
@@ -194,7 +195,9 @@ $K_S, h_S, K_Y, n_Y$（全部 `assumed`/`low`）承擔雙重解釋責任。
 - [ ] 以 Haapasalo 2000 全文替換 `r_p_0` / `r_e_0` 的推算值
 - [x] ✅ **P5 雙腔室**：P2 定性成立（局部負荷造成不對稱、全身介入不能）
 - [x] ✅ **P5b+P5c**：intensive 礦化 ODE + Frost modeling → **V6 盲測湧現**（幾何增益、密度不變，附錄 C14）
-- [ ] **P5d**：加小樑腔室（低 f_bm）→ 定量重現 V8/V10 脊椎 romosozumab
+- [x] ⚠️ **P5d 部分完成**：`trabecularParams.m` 建成，3.6× 放大確認但 V8 停在 +4.5%。**BV/TV 不是槓桿**（附錄 C19）
+- [ ] **P5g（目前最高價值）**：重擬 `delta_ab` —— 現值是對 C14 已證為假影的 V8 擬合出來的；×2.5–3 可同時達成 V8 與翻正 V10。須走完整校正流程並複驗皮質結果與 V6/V14 盲測
+- [ ] 雙腔室管線（皮質＋小樑共用鈣池，N3 延伸）—— 在 `delta_ab` 重擬之後再做（C19.5）
 - [x] ✅ **P6 分歧分析**：P3 否證（單穩），骨鬆為陡峭連續位移（附錄 C15）
 - [x] ✅ **P3 敘事改寫**（v2.5，附錄 C16）：全文統一為「已否證」，三條措辭紀律 —— 陡峭≠雙穩、速率不對稱≠動力學不可逆、否證入主論文
 - [x] ✅ **P5e**：modeling 飽和界＋彈性有效域守衛 `out.validity`（附錄 C17）。V6 盲測未重校仍存活；**首次取得不凍結幾何的有效遲滯探針，f_bm 0.95→0.40→0.9485，無遲滯 —— P3 否證第二條佐證**
