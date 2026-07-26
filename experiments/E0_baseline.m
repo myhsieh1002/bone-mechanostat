@@ -43,12 +43,19 @@ plot(out.t / 365, out.get.f_bm, LineWidth = 1.8, Color = col.primary);
 xlabel("years"); ylabel("f_{bm} [-]"); title("Bone volume fraction");
 grid on; box off;
 
-nexttile(tl);
-bar(1, r.V14, FaceColor = col.primary, EdgeColor = "none");
-hold on;
-yline(100,  "--", "Frost lower", Color = col.muted);
-yline(1500, "--", "Frost upper", Color = col.muted);
-ylabel("\epsilon^* [\mue]"); xticks(1); xticklabels("model");
+nexttile(tl); hold on;
+% Frost gives TWO thresholds, not one band: remodelling is released below
+% 100-300 ue, modelling adds bone at or above 1500-3000 ue.  The lazy zone
+% is what they bracket, and that is what V14 is tested against -- drawing a
+% single 100-1500 band would restate the mis-reading corrected in v2.12.
+fill([0.4 1.6 1.6 0.4], [300 300 1500 1500], col.muted, ...
+     FaceAlpha = 0.18, EdgeColor = "none");
+bar(1, r.V14, 0.45, FaceColor = col.primary, EdgeColor = "none");
+yline(300,  "--", "remodelling threshold (100-300)", Color = col.accent, ...
+      LabelHorizontalAlignment = "left");
+yline(1500, "--", "modelling threshold (1500-3000)", Color = col.accent, ...
+      LabelHorizontalAlignment = "left");
+ylabel("\epsilon^* [\mue]"); xticks(1); xticklabels("model"); xlim([0.4 1.6]);
 title("V14: emergent set point (hold-out)"); ylim([0 1800]); box off;
 
 title(tl, "E0 -- baseline steady state", FontWeight = "bold");

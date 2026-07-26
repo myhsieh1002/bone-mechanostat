@@ -190,6 +190,10 @@ and how it was caught.
 
 See [`CITATION.cff`](CITATION.cff). Please cite both the software and the paper.
 
+**Paper** — Lee H-L, Wang T-L, Hsieh M-Y. *From fluid shear to sclerostin: a
+mechanotransduction-resolved multiscale model of bone adaptation, and what it
+falsifies.* Submitted to PLOS Computational Biology, 2026.
+
 **Software** — concept DOI, always resolves to the newest version:
 [`10.5281/zenodo.21592303`](https://doi.org/10.5281/zenodo.21592303)
 To cite the exact version used here, v2.12: [`10.5281/zenodo.21592304`](https://doi.org/10.5281/zenodo.21592304)

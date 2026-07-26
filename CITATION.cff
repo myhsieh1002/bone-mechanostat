@@ -1,5 +1,9 @@
 cff-version: 1.2.0
-message: "If you use this model, please cite both the software and the paper."
+message: >-
+  If you use this model, please cite both the software (this repository, via
+  the concept DOI) and the paper. Note the author lists differ: the software
+  entry names who wrote the code, the preferred-citation names the paper's
+  authors.
 title: "bone-mechanostat: a mechanotransduction-resolved multiscale model of bone adaptation"
 abstract: >-
   An eight-module multiscale model of bone remodelling that carries a
@@ -42,9 +46,24 @@ preferred-citation:
     From fluid shear to sclerostin: a mechanotransduction-resolved multiscale
     model of bone adaptation, and what it falsifies
   authors:
+    - family-names: Lee
+      given-names: Hsiang-Lin
+      orcid: "https://orcid.org/0000-0003-1422-1042"
+      affiliation: >-
+        Institute of Medicine, Chung Shan Medical University; Department of
+        Surgery, Chung Shan Medical University Hospital, Taichung, Taiwan
+    - family-names: Wang
+      given-names: Tzu-Ling
+      orcid: "https://orcid.org/0000-0003-3520-0531"
+      affiliation: "School of Nursing, Chung Shan Medical University, Taichung, Taiwan"
     - family-names: Hsieh
       given-names: Ming-Yu
       orcid: "https://orcid.org/0000-0002-5797-3474"
+      email: cshy1392@csh.org.tw
+      affiliation: >-
+        School of Medicine, Chung Shan Medical University; Division of
+        Pediatric Surgery and Center for Evidence-Based Medicine, Chung Shan
+        Medical University Hospital, Taichung, Taiwan
   journal: "PLOS Computational Biology"
   year: 2026
   # status: submitted -- update volume/pages/doi on acceptance
