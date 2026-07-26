@@ -43,7 +43,7 @@ end
 
 [~, S_v_hat] = specificSurface(st.f_bm, p);
 
-% --- Frost MODELING term (v2.3, appendix C13/C14) ------------------------
+% --- Frost MODELING term (v2.3, appendix C13/C14; SATURATED v2.6, C17) ---
 % Vigorous loading drives direct periosteal apposition (bone MODELING),
 % distinct from the dose/remodelling pathway.  It has a strain threshold
 % (Frost's minimum effective strain for modelling, MES_m ~ 1000-1500 ue):
@@ -52,8 +52,20 @@ end
 % any calibration scenario (all below threshold), and it self-limits -- as
 % r_p grows, I_g rises, peak strain falls back below MES_m.
 % Gated by the osteocyte-sensing gain so a thinned network responds less.
+%
+% P5e: the strain excess SATURATES.  The v2.3 form was linear in the excess
+% and therefore unbounded, which is only harmless while strain stays
+% physiological.  At pathological f_bm the apparent modulus E_app = E_ref
+% f_bm^kappa_E collapses, strain runs to ~1.2e4 ue *per cent*, and the
+% linear term demanded 1513 mm/yr of periosteal apposition -- the 99 mm
+% cortex artefact that nearly produced a false-positive P3 (appendix C15.4).
+% Saturating at EPS_MODEL_SAT caps the rate at k_model*eps_model_sat =
+% 1.93 um/day, the documented ceiling for rapid/woven mineral apposition,
+% and puts half-maximal response at the yield strain of cortical bone,
+% beyond which tissue damages rather than adapts.
 sensing  = (st.n_ot / p.n_ot_0) ^ p.zeta;
-modeling = p.k_model * max(0, mech.eps_p - p.eps_model_star) * sensing;
+excess   = max(0, mech.eps_p - p.eps_model_star);
+modeling = p.k_model * excess / (1 + excess / p.eps_model_sat) * sensing;
 
 d.r_p = v_form * eta(1) - v_res * xi(1) + modeling;
 d.r_e = v_res  * xi(2)  - v_form * eta(2);

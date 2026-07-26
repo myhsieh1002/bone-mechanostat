@@ -29,6 +29,10 @@ function out = simulate(scenario, opts)
 %       units      (1,m) string  state units
 %       get        (1,1) struct  name -> column vector, e.g. out.get.f_bm
 %       dens       (1,1) struct  DENSITOMETRY outputs along the trajectory
+%       validity   (1,1) struct  .ok .maxStrain .limit .firstExceededDay
+%                                .site -- FALSE means the run left the
+%                                linear-elastic domain and its geometry is
+%                                not a physical result (see P5e / C15.4)
 %       scenario   (1,1) struct  the scenario as run
 %       p          (1,1) struct  the parameters as run
 %       solverStats(1,1) struct  nsteps / nfailed / nfevals
@@ -109,9 +113,64 @@ end
 
 out.dens = localDensitometry(out, info, p, mode);
 
+out.validity = localValidity(out, info, ctx, p, mode);
+
 out.solverStats = struct(nsteps = sol.stats.nsteps, ...
                          nfailed = sol.stats.nfailed, ...
                          nfevals = sol.stats.nfevals);
+end
+
+% -------------------------------------------------------------------------
+function v = localValidity(out, info, ctx, p, mode)
+%LOCALVALIDITY Flag trajectories that leave the linear-elastic domain.
+%
+%   Every mechanical layer of this model -- E_app = E_ref f_bm^kappa_E, the
+%   Euler-Bernoulli section, the Biot poroelastic solution -- assumes linear
+%   elasticity.  Cortical bone yields near 7000 ue; past that the tissue
+%   damages instead of adapting, so a trajectory that goes there is not a
+%   slowly remodelling bone and its geometry must not be read as a result.
+%
+%   This is what turns the appendix C15.4 artefact from silent into loud.
+%   Saturating the modelling term (P5e) bounds the RATE of the runaway but
+%   does NOT move its fixed point, so pathological runs still drift towards
+%   an absurd cortex -- just slowly.  The flag says so.
+switch mode
+    case "single"
+        siteCtx  = {ctx};
+        suffixes = "";
+    case "two"
+        siteCtx  = {ctx.A, ctx.B};
+        suffixes = ["_A" "_B"];
+end
+
+v = struct(ok = true, maxStrain = 0, limit = p.eps_elastic_max, ...
+           firstExceededDay = NaN, site = "");
+ix = info.idx;
+
+for k = 1:numel(suffixes)
+    s     = suffixes(k);
+    eps_p = zeros(numel(out.t), 1);
+    for i = 1:numel(out.t)
+        st = struct( ...
+            r_p     = out.y(i, ix.(matlab.lang.makeValidName("r_p"     + s))), ...
+            r_e     = out.y(i, ix.(matlab.lang.makeValidName("r_e"     + s))), ...
+            f_bm    = out.y(i, ix.(matlab.lang.makeValidName("f_bm"    + s))), ...
+            rho_min = out.y(i, ix.(matlab.lang.makeValidName("rho_min" + s))), ...
+            n_ot    = out.y(i, ix.(matlab.lang.makeValidName("n_ot"    + s))));
+        eps_p(i) = organMechanics(siteCtx{k}.peakBout, st, p).eps_p;
+    end
+
+    if max(eps_p) > v.maxStrain
+        v.maxStrain = max(eps_p);
+        v.site      = s;
+    end
+
+    iBad = find(eps_p > p.eps_elastic_max, 1, "first");
+    if ~isempty(iBad)
+        v.ok = false;
+        v.firstExceededDay = min(v.firstExceededDay, out.t(iBad), "omitnan");
+    end
+end
 end
 
 % -------------------------------------------------------------------------

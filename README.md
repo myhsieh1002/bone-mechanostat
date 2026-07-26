@@ -6,7 +6,7 @@
 
 > 鈣決定「能不能蓋」，負荷決定「要不要蓋」。
 
-MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.5）
+MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.6）
 
 ---
 
@@ -20,6 +20,7 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 | **P4** | M8 鈣恆定 + **全模型校正** | ✅ **完成**（53/53）：5 標的＋2 盲測全達標，**V7 鈣命題成立** |
 | **P5** | 雙腔室（部位專一性 P2/V6） | ✅ **P2 定量成立**（58 測試）：V6 盲測湧現（幾何增益、密度不變）。V8/V10 重定位為小樑範疇→P5d |
 | **P6** | 動力系統分析（P3） | ✅ **完成**（61 測試）：**P3 否證 —— 模型單穩**，骨鬆為陡峭連續位移非雙穩 |
+| **P5e** | modeling 飽和界 + 彈性有效域守衛 | ✅ **完成**（67 測試）：假影修掉，**P3 否證獲第二條獨立佐證**（附錄 C17） |
 | P7 | 論文 | 🔄 敘事已定調（v2.5，附錄 C16）：P1✅／P2✅／**P3❌ 如實入主論文** |
 
 **M1–M8 全模型可跑並已校正，含雙腔室與分歧分析；61/61 測試通過。** `rhsFull` 串起完整訊號鏈：
@@ -39,11 +40,16 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 cd('/path/to/骨骼鈣質吸收數學模型')
 addpath('src'); setupPath();
 
-runtests("tests")     % 61 tests
+runtests("tests")     % 67 tests
 
 s   = scenarioLibrary("sedentary", durationDays = 730);
 out = simulate(s);
 plot(out.t/365, out.dens.aBMD); xlabel("years"); ylabel("aBMD [kg/m^2]");
+
+% ALWAYS check this before reading a result off a run (v2.6, appendix C17):
+% false means the trajectory left the linear-elastic domain that the whole
+% mechanics stack assumes, so its geometry is not a physical result.
+out.validity.ok
 ```
 
 ## 三條不可違反的規則
@@ -181,5 +187,7 @@ $K_S, h_S, K_Y, n_Y$（全部 `assumed`/`low`）承擔雙重解釋責任。
 - [ ] **P5d**：加小樑腔室（低 f_bm）→ 定量重現 V8/V10 脊椎 romosozumab
 - [x] ✅ **P6 分歧分析**：P3 否證（單穩），骨鬆為陡峭連續位移（附錄 C15）
 - [x] ✅ **P3 敘事改寫**（v2.5，附錄 C16）：全文統一為「已否證」，三條措辭紀律 —— 陡峭≠雙穩、速率不對稱≠動力學不可逆、否證入主論文
-- [ ] **P5e**：Frost modeling 項於極端應變加飽和界（避免 r_p 吹爆）
+- [x] ✅ **P5e**：modeling 飽和界＋彈性有效域守衛 `out.validity`（附錄 C17）。V6 盲測未重校仍存活；**首次取得不凍結幾何的有效遲滯探針，f_bm 0.95→0.40→0.9485，無遲滯 —— P3 否證第二條佐證**
+- [ ] 重製 `bifurcation_E2.png`，標註 f_bm < 0.391 為線性彈性域外外推（C17.5）
+- [ ] **P5f 候選**：bedrest 超過 ~7.5 個月塌到孔隙率地板（缺不依賴力學的基礎形成率）
 - [ ] E1–E5 實驗（含 E2 的 2×2 補鈣×負重因子分析）
