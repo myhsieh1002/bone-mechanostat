@@ -1,0 +1,51 @@
+cff-version: 1.2.0
+message: "If you use this model, please cite both the software and the paper."
+title: "bone-mechanostat: a mechanotransduction-resolved multiscale model of bone adaptation"
+abstract: >-
+  An eight-module multiscale model of bone remodelling that carries a
+  mechanical load continuously from organ-level bending, through poroelastic
+  lacunocanalicular shear and three-state mechanosensitive channel gating, to
+  osteocyte signalling, bone-cell populations, three-surface cortical geometry,
+  mineralisation and areal bone mineral density, with systemic
+  calcium-PTH-vitamin D coupled bidirectionally. Loading enters as force;
+  strain is a regulated output, which preserves the mechanostat feedback loop.
+type: software
+authors:
+  - family-names: Hsieh
+    given-names: Ming-Yu
+    orcid: "https://orcid.org/0000-0002-5797-3474"
+    email: myhsieh@me.com
+    affiliation: >-
+      School of Medicine, Chung Shan Medical University; Division of Pediatric
+      Surgery and Center for Evidence-Based Medicine, Chung Shan Medical
+      University Hospital, Taichung, Taiwan
+repository-code: "https://github.com/REPLACE-ME/bone-mechanostat"
+license: MIT
+version: "2.12"
+date-released: "2026-07-26"
+keywords:
+  - bone remodelling
+  - mechanotransduction
+  - mechanostat
+  - osteocyte
+  - sclerostin
+  - multiscale model
+  - systems biology
+  - osteoporosis
+# Fill in once the Zenodo integration has minted a DOI. Prefer the CONCEPT
+# DOI (the one that always resolves to the newest version) here, so the
+# citation stays valid as the model advances.
+# doi: "10.5281/zenodo.XXXXXXX"
+
+preferred-citation:
+  type: article
+  title: >-
+    From fluid shear to sclerostin: a mechanotransduction-resolved multiscale
+    model of bone adaptation, and what it falsifies
+  authors:
+    - family-names: Hsieh
+      given-names: Ming-Yu
+      orcid: "https://orcid.org/0000-0002-5797-3474"
+  journal: "PLOS Computational Biology"
+  year: 2026
+  # status: submitted -- update volume/pages/doi on acceptance

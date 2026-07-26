@@ -1,6 +1,6 @@
 # HANDOFF — bone-mechanostat
 
-**接手者請先讀這份，再讀 `PROJECT_PLAN_bone_mechanostat.md`（v2.11，含附錄 C1–C23）與 `README.md`。**
+**接手者請先讀這份，再讀 `PROJECT_PLAN_bone_mechanostat.md`（v2.11，含附錄 C1–C23）與 `README.zh-TW.md`（中文工作版；`README.md` 現為對外英文版）。**
 
 主持人：謝明諭 (Ming-Yu Hsieh)｜MATLAB R2026a｜語言：程式碼英文、討論與計畫書中文。
 

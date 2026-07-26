@@ -13,7 +13,15 @@ results/
 slprj/
 codegen/
 
-# Copyrighted reference PDFs — kept local, not redistributed.
-# The version-controlled artifact is data/reference_parameters.md (our transcription).
+# Copyrighted reference PDFs — kept local, never redistributed.
+# The version-controlled artifact is data/reference_parameters.md (our
+# transcription of the parameter tables), not the PDFs themselves.
 Reference/
+
+# Default-deny on PDFs so a paper dropped anywhere in the tree cannot be
+# committed by accident.  Figures WE generate are allowlisted below --
+# without the exception the blanket rule silently swallowed the seven
+# vector figures that are part of the submission.
 *.pdf
+!投稿PLOS Comp Biol/figures/*.pdf
+!投稿PLOS Comp Biol/supporting_information/*.pdf

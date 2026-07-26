@@ -465,7 +465,8 @@ M3 的 MSIC 三態 $(O, I)$ 於日內以 QSSA 求解並建成代理函數，不�
 
 ```
 bone-mechanostat/
-├── README.md
+├── README.md            % 對外英文版
+├── README.zh-TW.md      % 中文工作版
 ├── PROJECT_PLAN.md                     ← 本文件
 ├── src/
 │   ├── getResultsDir.m                 % 【v1.3】results 路徑（本機，非 iCloud）—— 見 §7.1
