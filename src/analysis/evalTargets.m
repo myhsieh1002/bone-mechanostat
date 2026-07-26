@@ -18,7 +18,7 @@ function r = evalTargets(p, opts)
 %     V8  romosozumab @12mo         +11-14 %         (romosozumab)
 %   Hold-out (opts.holdout):
 %     V10 post-withdrawal loss      < 0 within 12mo  (romosozumab washout)
-%     V14 emergent epsilon*         100-1500 ue      (baseline peak strain)
+%     V14 emergent epsilon*         300-1500 ue      (baseline peak strain)
 %
 %   Inputs
 %     p            (1,1) struct  parameters
@@ -140,7 +140,13 @@ if opts.holdout
 
     r.passHoldout = struct( ...
         V10 = r.V10 < 0, ...
-        V14 = r.V14 >= 100 && r.V14 <= 1500);
+        ... % Frost's lazy zone lies BETWEEN his two thresholds: remodelling is
+        ... % released below 100-300 ue, modelling adds bone at or above
+        ... % 1500-3000 ue (PMID 3688455).  The strict zone is therefore
+        ... % 300-1500, not 100-1500 -- the old lower bound was the bottom of
+        ... % the remodelling range and made the hold-out easier than the
+        ... % source warrants (v2.12).
+        V14 = r.V14 >= 300 && r.V14 <= 1500);
 end
 end
 

@@ -19,6 +19,6 @@ V10,停藥後 BMD 回落,dBMD_after_stop,NaN,NaN,-,NaN,qualitative,E4,TRUE,"12 �
 V11,流失–回復不對稱,recovery_to_loss_ratio,3,Inf,-,NaN,quantitative,E3;E6,FALSE,"比值大於 3。v1.3 後由 S_v(f_bm) 之吸收態機制產生"
 V12,負荷 × 藥物交互作用,interaction_sign,NaN,NaN,-,NaN,qualitative,E4,FALSE,"負荷與 anabolic 藥（PTH、Scl-Ab）為加成／協同；與 bisphosphonate 則否"
 V13,Sclerostin 之雙效性,RANKL_OPG_ratio,NaN,NaN,-,NaN,qualitative,E4,FALSE,"外源 sclerostin 使 RANKL 上升、OPG 下降，破骨活性可增至約 7 倍"
-V14,湧現的 mechanostat 設定點,epsilon_star,100,1500,microstrain,NaN,quantitative,E0;E6,TRUE,"v1.3 新增，零成本標的。模型算出的 epsilon* 應落在 Frost 區間。HOLD-OUT"
+V14,湧現的 mechanostat 設定點,epsilon_star,300,1500,microstrain,NaN,quantitative,E0;E6,TRUE,"v1.3 新增，零成本標的。**v2.12 依原文收緊**：Frost 1987 (PMID 3688455) 給的是**兩個分離閾值** —— modelling 於 >=1500-3000 ue 增骨、remodelling 於 <100-300 ue 移除骨。lazy zone 嚴格為兩者之間，故標的由 100-1500 改為 **300-1500**（舊下界 100 是 remodelling 區間的下緣，把標的放寬了）。模型湧現值 761.8 ue 在收緊後仍通過。HOLD-OUT"
 V15,停經表型的幾何特徵,r_p_and_r_e_direction,NaN,NaN,-,NaN,qualitative,E6,FALSE,"E2 下降後 r_p 緩慢外擴且 r_e 加速外擴（皮質變薄、骨徑變寬）。兩者方向須同時正確"
 V16,停藥後吸收標記過衝,CTX_overshoot,1.2,1.4,-,0.15,quantitative,E4,FALSE,"romosozumab 停藥後 CTX 升逾基線 (約 +20-40%)。**v2.10 (P5h) 新增**：作為停藥反彈機制的獨立校正標的，使 V10 (BMD 回落) 得以維持為 hold-out 預測而非擬合對象"
