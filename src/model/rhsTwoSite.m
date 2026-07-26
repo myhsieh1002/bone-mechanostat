@@ -47,8 +47,9 @@ E2     = ctx.scenario.E2;
 % --- per-site M1-M7 (shared PTH) ----------------------------------------
 sA = localUnpack(y, ix, "_A");
 sB = localUnpack(y, ix, "_B");
-[dA, fluxA] = siteRHS(sA, ctx.A, P_pth, E2, u_romo, p);
-[dB, fluxB] = siteRHS(sB, ctx.B, P_pth, E2, u_romo, p);
+A_reb = y(ix.A_reb);
+[dA, fluxA] = siteRHS(sA, ctx.A, P_pth, E2, u_romo, A_reb, p);
+[dB, fluxB] = siteRHS(sB, ctx.B, P_pth, E2, u_romo, A_reb, p);
 
 % --- shared M8: driven by the mean of the two sites ---------------------
 vForm = 0.5 * (fluxA.vForm + fluxB.vForm);
@@ -63,6 +64,7 @@ dydt = localPack(dydt, ix, "_B", dB);
 dydt(ix.Ca_s) = dSys.Ca_s;
 dydt(ix.P)    = dSys.P;
 dydt(ix.V_D)  = dSys.V_D;
+dydt(ix.A_reb) = (p.sost_reb * u_romo - A_reb) / p.tau_reb;
 
 if nargout > 1
     aux = struct(vForm = vForm, vRes = vRes, ...

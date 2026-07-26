@@ -1,4 +1,4 @@
-function [dLoc, flux, aux] = siteRHS(s, siteCtx, P_pth, E2, u_romo, p)
+function [dLoc, flux, aux] = siteRHS(s, siteCtx, P_pth, E2, u_romo, A_reb, p)
 %SITERHS Per-site M1-M7 derivatives (one skeletal site).
 %
 %   [DLOC, FLUX, AUX] = SITERHS(S, SITECTX, P_PTH, E2, U_ROMO, P) computes
@@ -15,6 +15,7 @@ function [dLoc, flux, aux] = siteRHS(s, siteCtx, P_pth, E2, u_romo, p)
 %     P_pth    (1,1) double  shared PTH, baseline 1                     [-]
 %     E2       (1,1) double  oestrogen, baseline 1                      [-]
 %     u_romo   (1,1) double  romosozumab on/off                        [-]
+%     A_reb    (1,1) double  shared post-antibody SOST up-regulation    [-]
 %     p        (1,1) struct  parameters
 %
 %   Outputs
@@ -33,6 +34,7 @@ arguments
     P_pth (1,1) double
     E2 (1,1) double
     u_romo (1,1) double
+    A_reb (1,1) double
     p (1,1) struct
 end
 
@@ -47,7 +49,7 @@ D_hat   = D_eff / siteCtx.D_eff_0;
 
 % --- M4/M5: osteocyte signalling ----------------------------------------
 sig = struct(Ca_i = s.Ca_i, Y = s.Y, S = s.S, T = s.T, beta = s.beta);
-[dSig, alg] = osteocyteSignal(sig, D_hat, P_pth, E2, u_romo, p);
+[dSig, alg] = osteocyteSignal(sig, D_hat, P_pth, E2, u_romo, A_reb, p);
 alg.beta = s.beta;
 
 dT = estrogenTNF(s.T, E2, p);

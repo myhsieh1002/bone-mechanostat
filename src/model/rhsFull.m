@@ -59,7 +59,8 @@ E2     = ctx.scenario.E2;
 % --- M1-M7 for the single site ------------------------------------------
 siteCtx = struct(peakBout = ctx.peakBout, ...
                  doseSurrogate = ctx.doseSurrogate, D_eff_0 = ctx.D_eff_0);
-[dLoc, flux, aux] = siteRHS(s, siteCtx, P_pth, E2, u_romo, p);
+A_reb = y(ix.A_reb);
+[dLoc, flux, aux] = siteRHS(s, siteCtx, P_pth, E2, u_romo, A_reb, p);
 
 % --- M8: systemic calcium / PTH / 1,25D ---------------------------------
 Ca_s = y(ix.Ca_s);   V_D = y(ix.V_D);
@@ -91,6 +92,12 @@ dydt(ix.rho_min) = dLoc.rho_min;
 dydt(ix.Ca_s) = dSys.Ca_s;
 dydt(ix.P)    = dSys.P;
 dydt(ix.V_D)  = dSys.V_D;
+
+% Post-antibody SOST up-regulation (P5h, appendix C21): a first-order
+% adaptation that relaxes towards SOST_REB while the drug is on and back to
+% zero once it stops -- on ITS clock (TAU_REB), not the antibody's.  That
+% lag is the whole mechanism.
+dydt(ix.A_reb) = (p.sost_reb * u_romo - A_reb) / p.tau_reb;
 
 if nargout > 1
     aux.v_form = flux.vForm;

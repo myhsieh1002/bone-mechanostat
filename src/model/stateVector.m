@@ -2,8 +2,8 @@ function info = stateVector(mode)
 %STATEVECTOR Canonical ordering and metadata of the ODE state vector.
 %
 %   INFO = STATEVECTOR() or STATEVECTOR("single") describes the 17-state
-%   single-compartment system.  STATEVECTOR("two") describes the 31-state
-%   two-compartment system (14 local states duplicated per site + 3 shared
+%   single-compartment system.  STATEVECTOR("two") describes the 30-state
+%   two-compartment system (13 local states duplicated per site + 4 shared
 %   systemic states), per PROJECT_PLAN v1.3 §4.4.
 %
 %   Every module must index the state through this function.  Hard-coding
@@ -42,10 +42,15 @@ localMods  = ["M4"   "M4"  "M4"  "M4"  "M4"   "M5"   ...
               "M6"   "M6"  "M6"  ...
               "M7"   "M7"  "M7"  "M7"];
 
-% --- shared systemic states: 3 -------------------------------------------
-sysNames = ["Ca_s"    "P"  "V_D"];
-sysUnits = ["mmol/L"  "-"  "-"];
-sysMods  = ["M8"      "M8" "M8"];
+% --- shared systemic states: 4 -------------------------------------------
+% A_reb (v2.10, P5h) is the compensatory up-regulation of SOST transcription
+% built up during sustained anti-sclerostin antibody exposure.  It is a
+% property of the treatment, not of a site, so it is shared -- and it is
+% ZERO unless romosozumab has been given, which is what keeps every
+% drug-free target (V1, V2, V7, V6, V14) untouched by construction.
+sysNames = ["Ca_s"    "P"  "V_D" "A_reb"];
+sysUnits = ["mmol/L"  "-"  "-"   "-"];
+sysMods  = ["M8"      "M8" "M8"  "M4"];
 
 switch mode
     case "single"

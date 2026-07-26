@@ -1,4 +1,4 @@
-function [d, alg] = osteocyteSignal(s, D_eff_hat, P_pth, E2, u_romo, p)
+function [d, alg] = osteocyteSignal(s, D_eff_hat, P_pth, E2, u_romo, A_reb, p)
 %OSTEOCYTESIGNAL M4-M5 -- Piezo1/Ca -> YAP/TAZ -> SOST -> Wnt, plus RANKL/OPG.
 %
 %   [D, ALG] = OSTEOCYTESIGNAL(S, D_EFF_HAT, P_PTH, E2, U_ROMO, P) returns
@@ -40,6 +40,9 @@ function [d, alg] = osteocyteSignal(s, D_eff_hat, P_pth, E2, u_romo, p)
 %     P_pth      (1,1) double  PTH, baseline 1                          [-]
 %     E2         (1,1) double  oestrogen, baseline 1                    [-]
 %     u_romo     (1,1) double  romosozumab on/off                       [-]
+%     A_reb      (1,1) double  compensatory SOST up-regulation built up
+%                              under sustained antibody exposure; 0 in any
+%                              drug-free run (P5h, appendix C21)         [-]
 %     p          (1,1) struct  parameters
 %
 %   Outputs
@@ -56,6 +59,7 @@ arguments
     P_pth (1,1) double {mustBeNonnegative}
     E2 (1,1) double {mustBeNonnegative}
     u_romo (1,1) double {mustBeNonnegative}
+    A_reb (1,1) double {mustBeNonnegative}
     p (1,1) struct
 end
 
@@ -79,10 +83,22 @@ fTnf  = @(t) 1 + p.lambda_T * t / (p.K_T + t);
 Sset = (fMech(Y) * fPth(P_pth) * fTnf(T)) / ...
        (fMech(1) * fPth(1)     * fTnf(1));
 
-% Production is unchanged; romosozumab adds clearance, so the sclerostin
-% set point falls to delta_S*Sset/clr and its time constant shortens.
+% Romosozumab adds CLEARANCE, so the sclerostin set point falls to
+% delta_S*Sset*(1+A_reb)/clr and its time constant shortens.
+%
+% *** WITHDRAWAL REBOUND (v2.10, P5h, appendix C21) ***
+% Sustained antibody exposure also up-regulates SOST TRANSCRIPTION -- the
+% osteocyte compensates for the loss of sclerostin signalling.  A_REB
+% carries that compensation, and it decays on its own slow clock rather
+% than with the antibody.  So on withdrawal the clearance term vanishes
+% while the raised production does not, and free sclerostin overshoots
+% baseline before settling back.  That overshoot is what drives the
+% clinically observed post-withdrawal resorption surge.
+%
+% A_reb is 0 in any run that never sees the drug, so this term cannot
+% perturb a single drug-free target.
 clr  = p.delta_S + p.delta_ab * u_romo;
-d.S  = p.delta_S * Sset - clr * S;
+d.S  = p.delta_S * Sset * (1 + A_reb) - clr * S;
 
 % --- M5: Wnt / beta-catenin ---------------------------------------------
 W    = @(x) p.K_W^p.m_W / (p.K_W^p.m_W + x^p.m_W);

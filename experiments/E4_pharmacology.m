@@ -3,17 +3,18 @@
 %   Four arms over 24 months: control, romosozumab (12 months on, then 12
 %   months washout), loading alone, and romosozumab + loading.
 %
-%   *** SCOPE (appendices C14, C19, C20) ***  V8/V10 are LUMBAR SPINE
+%   *** SCOPE (appendices C14, C19, C20, C21) ***  V8/V10 are LUMBAR SPINE
 %   numbers and the spine is trabecular.  The cortical arms below are
 %   reported for direction only; the quantitative V8 comparison happens on
-%   the trabecular compartment, which is also where delta_ab was refitted
-%   (P5g).  V8 now passes there.  V10 still does not, and C20 pins that on
-%   the reversal timescale rather than on any parameter.
+%   the trabecular compartment, where delta_ab was refitted (P5g).  Since
+%   P5h added the withdrawal rebound, V10 passes there too -- and passes as
+%   a HOLD-OUT, because the rebound was calibrated against V16 (the CTX
+%   overshoot), not against BMD.
 %
 %   Writes:  <results>/E4_pharmacology/E4_pharmacology.mat
 %            <results>/figures/E4_pharmacology.{png,pdf}
 %
-%   Project: bone-mechanostat (PROJECT_PLAN v2.7)
+%   Project: bone-mechanostat (PROJECT_PLAN v2.10)
 
 p     = getDefaultParams(reload = true);
 col   = houseColors();
@@ -79,16 +80,22 @@ fprintf("     peak on-drug value %.3f x baseline at month %.1f\n", Bpk / B(1), o
 
 % --- V10 withdrawal ------------------------------------------------------
 v10 = d24(2) - d12(2);
-fprintf("  V10 change over the 12-month washout: %+.3f %%   (spine reports a fall;\n", v10);
-fprintf("      cortical section holds as the small gain matures -- documented limit)\n");
+fprintf("  V10 CORTICAL arm over the 12-month washout: %+.3f %%   (the quantitative\n", v10);
+fprintf("      spine comparison is on the trabecular compartment below)\n");
 
 % --- V12 loading x drug interaction --------------------------------------
-gainDrug = d24(2) - d24(1);
-gainLoad = d24(3) - d24(1);
-gainBoth = d24(4) - d24(1);
+% *** EVALUATED ON TREATMENT, NOT AT 24 MONTHS (v2.10) ***
+% V12 asks how loading and an anabolic drug combine.  Once the withdrawal
+% rebound exists (P5h), the 24-month drug arm has already given its gain
+% back, so a 24-month contrast measures the rebound rather than the
+% interaction.  The comparison belongs at month 12, while the drug is on --
+% which is also how Schulte 2026 ran it.
+gainDrug = d12(2) - d12(1);
+gainLoad = d12(3) - d12(1);
+gainBoth = d12(4) - d12(1);
 interaction = gainBoth - (gainDrug + gainLoad);
 relDev = 100 * interaction / (gainDrug + gainLoad);
-fprintf("\n  V12 loading x anabolic drug, at 24 months\n");
+fprintf("\n  V12 loading x anabolic drug, at 12 months (ON treatment)\n");
 fprintf("      drug alone %+.3f, loading alone %+.3f, combined %+.3f %%\n", ...
         gainDrug, gainLoad, gainBoth);
 fprintf("      strictly additive would be %+.3f, so interaction %+.3f %% points (%+.1f %% of additive)\n", ...
@@ -115,11 +122,11 @@ fprintf("      V8  @12 mo   cortical %+.3f %%  ->  trabecular %+.3f %%   (%.1fx 
 fprintf("      V8 target +11 to +14 %%:  pass=%d\n", v8Tr >= 11 && v8Tr <= 14);
 fprintf("      V10 washout  cortical %+.3f %%  ->  trabecular %+.3f %%   target < 0: pass=%d\n", ...
         v10, v10Tr, v10Tr < 0);
-fprintf("      V10 is a TIMESCALE failure, not a structural one (C20): the gain does\n");
-fprintf("      reverse, but aBMD peaks 2.85 yr after withdrawal and only drops below\n");
-fprintf("      its 12-month value by year six -- roughly 5x too slow.  Neither\n");
-fprintf("      lambda_S nor K_L moves it; the missing piece is a pharmacological\n");
-fprintf("      withdrawal rebound.  valid: drug=%d control=%d\n", oTr.validity.ok, oTrC.validity.ok);
+fprintf("      V10 now PASSES, and as a hold-out: the rebound mechanism (P5h) was\n");
+fprintf("      calibrated against V16, the post-withdrawal CTX overshoot, so the BMD\n");
+fprintf("      fall is a prediction rather than the thing fitted.  V16 = %.3f\n", ...
+        max(oTr.get.C(k12:end)) / oTr.get.C(1));
+fprintf("      (band 1.2-1.4).  valid: drug=%d control=%d\n", oTr.validity.ok, oTrC.validity.ok);
 
 % --- figure -------------------------------------------------------------
 fig = figure(Position = [100 100 1050 340], Color = "w");
@@ -141,7 +148,7 @@ hold on;
 xline(o{2}.t(iPk) / 30, ":", "peak", Color = col.accent);
 xline(stopD / 30, "--", "drug stopped", Color = col.muted);
 xlabel("months"); ylabel("osteoblasts / baseline");
-title("V9: the anabolic effect self-limits"); grid on; box off;
+title("V9: formation peaks, then self-limits"); grid on; box off;
 
 nexttile(tl); hold on;
 plot(oTr.t / 30, dTr, LineWidth = 1.8, Color = col.primary);
@@ -150,7 +157,7 @@ fill([0 24 24 0], [11 11 14 14], col.accent, FaceAlpha = 0.15, EdgeColor = "none
 xline(stopD / 30, "--", Color = col.muted);
 xlabel("months"); ylabel("\DeltaaBMD [%]");
 legend(["trabecular" "cortical" "V8 target band"], Location = "northwest", Box = "off");
-title(sprintf("V8: %.1fx amplification, target not reached", amp));
+title(sprintf("V8 in band, V10 falls: %.1fx amplification", amp));
 grid on; box off;
 
 title(tl, "E4 -- romosozumab, withdrawal and loading", FontWeight = "bold");

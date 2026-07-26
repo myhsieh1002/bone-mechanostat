@@ -25,9 +25,9 @@ tc.TestData.p = getDefaultParams(reload = true);
 end
 
 function testTwoSiteIntegrates(tc)
-% 29-state two-compartment model must integrate cleanly.
+% 30-state two-compartment model must integrate cleanly.
 o = simulate(scenarioLibrary("tennis"), p = tc.TestData.p);
-verifyEqual(tc, numel(o.names), 29, "Two-site model should have 29 states (v2.3).");
+verifyEqual(tc, numel(o.names), 30, "Two-site model should have 30 states (v2.10: A_reb added).");
 verifyTrue(tc, all(isfinite(o.y), "all"), "Non-finite state.");
 verifyTrue(tc, all(o.y(:) >= -1e-9), "Negative state.");
 verifyTrue(tc, isfield(o.dens, "aBMD_A") && isfield(o.dens, "aBMD_B"), ...

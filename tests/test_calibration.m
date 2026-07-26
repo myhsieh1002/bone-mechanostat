@@ -70,22 +70,29 @@ end
 
 % --- hold-out targets (blind) -------------------------------------------
 function testHoldout_V10_postWithdrawal(tc)
-% *** DOCUMENTED LIMITATION, with a sharper diagnosis than before (C20) ***
-% V10 asks for BMD to FALL within 12 months of withdrawal.  It does not: at
-% the delta_ab that V8 selects the model still gains +1.7 % over that window.
+% *** V10 NOW PASSES, AND PASSES AS A HOLD-OUT (v2.10, P5h, appendix C21) ***
+% Up to v2.9 the model still GAINED +1.7 % over the washout window: C20
+% traced that to the reversal timescale (aBMD peaked 2.85 years after
+% withdrawal instead of falling within one), not to any parameter --
+% lambda_S and K_L were scanned across their whole CSV range and moved it
+% by under 0.2 points.  What was missing was a pharmacological rebound.
 %
-% What P5g established is that this is a TIMESCALE failure, not a structural
-% one.  Run out to six years and the gain does reverse -- aBMD peaks 2.85
-% years after withdrawal and is back below its 12-month value by year six.
-% The model reverses on the mechanostat's own clock, roughly 5x too slowly.
-% Neither lambda_S nor K_L moves it (both scanned across their whole CSV
-% range), because the sclerostin overshoot itself is only +7.2 % -- a
-% mechanostat consequence, not a parameter.  What is missing is a
-% pharmacological withdrawal rebound.
-%
-% Recorded, not asserted, until that mechanism exists.
-verifyTrue(tc, isfinite(tc.TestData.r.V10), ...
-    "V10 is recorded as a documented timescale limitation. See appendix C20.");
+% P5h added one: A_REB, the compensatory SOST up-regulation built up under
+% sustained antibody exposure, which decays on its own clock rather than
+% the antibody's.  Crucially it was calibrated against V16 -- the
+% post-withdrawal CTX overshoot, a RESORPTION MARKER -- so this BMD result
+% was never fitted and remains a genuine blind prediction.
+verifyTrue(tc, tc.TestData.r.passHoldout.V10, sprintf( ...
+    "HOLD-OUT V10 post-withdrawal change %+.2f %%; must be negative.", ...
+    tc.TestData.r.V10));
+end
+
+function testWithdrawalOvershoot_V16(tc)
+% The marker target the rebound was actually fitted to.  Keeping it as its
+% own assertion is what stops V10 from quietly becoming the fitted quantity.
+verifyTrue(tc, tc.TestData.r.pass.V16, sprintf( ...
+    "V16 post-withdrawal CTX overshoot %.3f x baseline, outside 1.2-1.4.", ...
+    tc.TestData.r.V16));
 end
 
 function testHoldout_V14_emergentSetPoint(tc)
