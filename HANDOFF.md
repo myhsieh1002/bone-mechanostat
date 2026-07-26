@@ -1,6 +1,6 @@
 # HANDOFF — bone-mechanostat
 
-**接手者請先讀這份，再讀 `PROJECT_PLAN_bone_mechanostat.md`（v2.8，含附錄 C1–C19）與 `README.md`。**
+**接手者請先讀這份，再讀 `PROJECT_PLAN_bone_mechanostat.md`（v2.9，含附錄 C1–C20）與 `README.md`。**
 
 主持人：謝明諭 (Ming-Yu Hsieh)｜MATLAB R2026a｜語言：程式碼英文、討論與計畫書中文。
 
@@ -23,7 +23,7 @@
 
 ## 1b. ⚡ 2026-07-26 session 的四項工作（A/B/D/C 全做完）
 
-版本推進 v2.4 → **v2.8**，測試 61 → **72**，新增附錄 **C16–C19**。四項各自的定論：
+版本推進 v2.4 → **v2.9**，測試 61 → **72**，新增附錄 **C16–C20**。各項定論：
 
 | | 工作 | 結果 |
 |---|---|---|
@@ -31,13 +31,17 @@
 | **B** | P5e modeling 飽和界（C17） | 假影修掉。**飽和界必要但不充分**（不移動不動點），故補上 `out.validity` 彈性有效域守衛。**成果：首次取得不凍結幾何的有效遲滯探針，f_bm 0.95→0.40→0.9485，P3 否證獲第二條獨立佐證** |
 | **D** | E0–E6 實驗＋七張論文圖（C18） | P1 量化成立。**V5 由否轉是**（C6.4 風險解除）；**V5b 骨層級符號翻轉**（降級，待 Fu 2025）；V9 弱形式成立、V12 次相加 7.7% |
 | **C** | P5d 小樑腔室（C19） | 3.6× 放大確認，但 **V8 停在 +4.5% 未達標**。**診斷推翻 P5d 前提：BV/TV 不是槓桿**，缺口是 `delta_ab` |
+| **P5g** | 重擬 `delta_ab`（C20） | 修的是**目標函數的腔室範疇錯誤**（V8/V10 一直算在皮質模型上還進 `chi2`）。`delta_ab` 0.09184 → **0.24875**，**V8 = 12.506% 首次真正達標**；V1/V2/V7/V6/V14 逐字不變 |
 
-**下一步的最高價值單一動作 = P5g：重擬 `delta_ab`。** 現值 0.0918 是 P4 對著 **C14 已證為假影**的 V8 擬合出來的；掃描顯示 ×2.5–3 可**同時**達成 V8（+11–14%）並使 V10 翻為正確負號。但 `delta_ab` 是**共用**參數，須走完整 `calibrate` 流程並複驗皮質 V1/V2/V7 與 V6/V14 盲測。
+**下一步 = P5h：加 romosozumab 停藥反彈機制達成 V10 —— 目前唯一仍未達的定量標的。** 已診斷清楚（C20.4）：這是**時間尺度**問題不是結構問題。模型的增益**確實會逆轉**，但停藥後 2.85 年才達峰、第 6 年才跌回 12 個月水準，比臨床慢約 5 倍。`lambda_S` 與 `K_L` 掃遍文獻全域都無效（`gS` 飽和使 `lambda_S` 在 `gS(S)/gS(1)` 中相消；且硬化蛋白過衝本身只有 +7.2%，那是 mechanostat 的後果不是參數）。缺的是**藥理層面的停藥反彈**（臨床 CTX 會衝到基線以上）。
 
-**新增的三個踩雷點**：
+> ⚠️ **C19.4 有一處已更正的錯誤**：它曾聲稱 `delta_ab` ×2.5–3 可同時達成 V8 與翻正 V10。**不成立** —— V10 對 `delta_ab` 非單調，過零在 ×4（該處 V8 已 +18.45%，出帶）。更正見 C20.4。
+
+**新增的踩雷點**：
 1. `continuation` 回傳的 `branch.stable{k}` 是**對 `branch.fps{k}` 的邏輯遮罩**，不是不動點值。誤讀會讓整條分支變成常數 1.0。取值用 `fps(find(st,1))`。
 2. **讀任何模擬結果前先看 `out.validity.ok`**。false 代表軌跡逸出線性彈性域（>7000 με），其幾何不是物理結果。
 3. **bedrest 超過約 7.5 個月會塌到孔隙率地板**（V2 的 180 天視窗仍完全有效）。長期廢用模擬目前無效 —— P5f 候選。
+4. **`evalTargets` 現在會呼叫 `trabecularParams`**（V8/V10 算在小樑腔室）。故 `trabecularParams` **絕不可**再呼叫 `evalTargets`，否則無限遞迴 —— 它改用閉式的 `turnoverRate.m`。
 
 ---
 
@@ -85,7 +89,8 @@ runtests("tests")     % 61 tests, 8 files
 1. **負荷輸入必須是「力」（M_L, F_L），永遠不是「應變」。** 應變是 `organMechanics` 由當下幾何算出的輸出。違反 = 剪斷 mechanostat 負回饋（v1.2 的致命缺陷）。→ `test_closedloop.m`。
 2. **通道只建模一次**：MSIC 三態只在 `msicGating.m`。不得另寫 P_o(τ) sigmoid，參數表不得出現 a_r, τ_r, p, τ_th, q。→ `test_noPhenomParams.m`。
 3. **絕不 `savepath`**：本機多個 CCD session 各自 driving 一個 MATLAB R2026a，workspace 隔離但**共用 preferences 目錄**。`savepath` 會污染其他 session。路徑一律 `setupPath.m` 於 session 內加。`parpool` 必須 `parpool('Processes',3)` 上限（10 核機器，其他 session 也要用）。
-4. **`results/` 不進 iCloud**：專案在 iCloud Drive，`.mat` 會被 evict 成佔位檔而使 `load` 失敗。一律經 `getResultsDir()` 寫到 `~/Documents/MATLAB/bone-mechanostat-results/`。`.gitignore` 已排除 `results/`、`*.mat`、`Reference/`（版權 PDF）。
+4b. **`delta_ab` 只在用藥時生效**（`clr = delta_S + delta_ab*u_romo`），故 V1/V2/V7/V6/V14 在數學上與它無關 —— 這是 P5g 得以單參數重擬的根據。
+5. **`results/` 不進 iCloud**：專案在 iCloud Drive，`.mat` 會被 evict 成佔位檔而使 `load` 失敗。一律經 `getResultsDir()` 寫到 `~/Documents/MATLAB/bone-mechanostat-results/`。`.gitignore` 已排除 `results/`、`*.mat`、`Reference/`（版權 PDF）。
 
 ---
 
@@ -183,4 +188,4 @@ runtests("tests")     % 61 tests, 8 files
 
 ---
 
-*Handoff 撰於 2026-07-26｜v2.4/61 測試（Opus 4.8）→ **v2.8/72 測試、附錄 C16–C19**（Opus 5，同日 A/B/D/C 四項）*
+*Handoff 撰於 2026-07-26｜v2.4/61 測試（Opus 4.8）→ **v2.9/72 測試、附錄 C16–C20**（Opus 5，同日 A/B/D/C 四項 + P5g）*
