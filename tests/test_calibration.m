@@ -49,28 +49,43 @@ verifyTrue(tc, tc.TestData.r.pass.V7slope, sprintf( ...
     "V7 plateau slope %+.3f %%/yr not flat.", tc.TestData.r.V7slope));
 end
 
-function testRomosozumab_V8_direction(tc)
-% *** SCOPE (v2.3, appendix C14) ***
-% V8's +11-14% target is LUMBAR SPINE -- a trabecular site with low bone
-% volume fraction and ample room to densify.  This model is a CORTICAL
-% cross-section (humeral shaft, f_bm ~ 0.95, near the density ceiling), so
-% it cannot reproduce that magnitude without the density-inflation ARTIFACT
-% that the v2.3 mineralisation fix removed.  The earlier "V8 pass" relied on
-% that artifact.  In cortical bone romosozumab gives a small positive BMD
-% change; we assert only the DIRECTION here.  Quantitative V8/V10 need a
-% trabecular compartment (P5d).
-verifyGreaterThan(tc, tc.TestData.r.V8, 0, ...
-    "Romosozumab must raise cortical aBMD (direction); the +11-14% spine magnitude is trabecular, out of scope.");
+function testRomosozumab_V8(tc)
+% *** V8 IS NOW A REAL QUANTITATIVE TEST (v2.9, P5g, appendix C20) ***
+% Its +11-14 % is a LUMBAR SPINE number, so up to v2.8 it was evaluated on
+% the cortical section (f_bm ~ 0.95, near the density ceiling) where that
+% magnitude is unreachable without the mineralisation artefact the v2.3 fix
+% removed -- and delta_ab had been fitted against exactly that.  EVALTARGETS
+% now evaluates V8 on the trabecular compartment and delta_ab was refitted
+% there, so the band can be asserted rather than just the direction.
+verifyTrue(tc, tc.TestData.r.pass.V8, sprintf( ...
+    "V8 (trabecular) %.2f %% outside 11-14.", tc.TestData.r.V8));
+
+% delta_ab is SHARED, so the cortical arm must not have gone somewhere
+% absurd while the spine was being fitted.
+verifyGreaterThan(tc, tc.TestData.r.V8cort, 0, ...
+    "Romosozumab must still raise cortical aBMD.");
+verifyLessThan(tc, tc.TestData.r.V8cort, tc.TestData.r.V8, ...
+    "Cortical gain must stay below trabecular -- that asymmetry is the point of P5d.");
 end
 
 % --- hold-out targets (blind) -------------------------------------------
 function testHoldout_V10_postWithdrawal(tc)
-% V10 (post-withdrawal spine BMD loss) is trabecular like V8 (see above).
-% In the cortical model the small formation gain simply matures after
-% withdrawal, so aBMD holds rather than falling.  Out of cortical scope;
-% asserted as a documented limitation, not a pass/fail on the spine value.
+% *** DOCUMENTED LIMITATION, with a sharper diagnosis than before (C20) ***
+% V10 asks for BMD to FALL within 12 months of withdrawal.  It does not: at
+% the delta_ab that V8 selects the model still gains +1.7 % over that window.
+%
+% What P5g established is that this is a TIMESCALE failure, not a structural
+% one.  Run out to six years and the gain does reverse -- aBMD peaks 2.85
+% years after withdrawal and is back below its 12-month value by year six.
+% The model reverses on the mechanostat's own clock, roughly 5x too slowly.
+% Neither lambda_S nor K_L moves it (both scanned across their whole CSV
+% range), because the sclerostin overshoot itself is only +7.2 % -- a
+% mechanostat consequence, not a parameter.  What is missing is a
+% pharmacological withdrawal rebound.
+%
+% Recorded, not asserted, until that mechanism exists.
 verifyTrue(tc, isfinite(tc.TestData.r.V10), ...
-    "V10 (trabecular/spine) is out of the cortical model's scope; recorded, not asserted. See appendix C14.");
+    "V10 is recorded as a documented timescale limitation. See appendix C20.");
 end
 
 function testHoldout_V14_emergentSetPoint(tc)

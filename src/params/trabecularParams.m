@@ -84,13 +84,9 @@ tauT = shearSurrogate(organMechanics(bout, stT, q).eps_p, bout.freqHz, q);
 q.K_tau = q.K_tau * tauC / tauT;      % shearSurrogate is linear in K_tau
 
 % --- k_res: calibrate to the trabecular turnover target -----------------
-for it = 1:10
-    q.k_form = balanceBoneFormation(q);
-    tv = evalTargets(q).V1;
-    if abs(tv - opts.turnover) < 0.3 * opts.turnover / 20
-        break
-    end
-    q.k_res = q.k_res * opts.turnover / tv;
-end
+% Turnover is closed form in k_res (TURNOVERRATE), so this is one division,
+% not a fitting loop -- and it does NOT call EVALTARGETS, which now
+% evaluates V8/V10 on this very compartment and would otherwise recurse.
+q.k_res  = q.k_res * opts.turnover / turnoverRate(q);
 q.k_form = balanceBoneFormation(q);
 end

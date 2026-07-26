@@ -44,9 +44,7 @@ r = struct();
 % --- V1: adult turnover, sedentary steady state -------------------------
 % Turnover = annual gross resorbed bone fraction. At baseline B=C=1, the
 % intracortical resorption flux is (S_v/w) k_res xi_i; annualise vs f_bm.
-[~, S_v_hat] = specificSurface(p.f_bm_0, p);
-grossRes = (S_v_hat / p.w_wall) * (p.k_res * 1) * p.xi_i_0;   % [1/day] of f_bm
-r.V1 = 100 * 365 * grossRes / p.f_bm_0;                       % %/yr
+r.V1 = turnoverRate(p);                                       % %/yr
 
 % --- V2: disuse loss, bedrest -------------------------------------------
 oB = simulate(scenarioLibrary("bedrest", durationDays = 180), p = p);
@@ -65,9 +63,23 @@ tL = oL.t / 365;
 aL = 100 * (oL.dens.aBMD / oL.dens.aBMD(1) - 1);
 r.V7slope = (aL(end) - aL(k1)) / 0.5;               % %/yr, want ~0
 
-% --- V8: romosozumab @ 12 months ----------------------------------------
-oR = simulate(scenarioLibrary("romosozumab", durationDays = 365), p = p);
+% --- V8: romosozumab @ 12 months, on the TRABECULAR compartment ---------
+% *** SCOPE FIX (P5g, appendix C20) ***
+% V8's +11-14 % is a LUMBAR SPINE number and the spine is trabecular.  Up to
+% v2.8 this was evaluated on the cortical section, which sits at f_bm ~ 0.95
+% with almost no room to densify -- so the P4 "pass" only ever came from the
+% mineralisation artefact that v2.3 removed (appendix C14), and delta_ab was
+% fitted against it.  Evaluating a spine target on a spine compartment is
+% what makes delta_ab meaningful at all.
+%
+% delta_ab is SHARED, so the cortical arm is reported alongside as V8cort:
+% refitting against the spine must not send the cortex somewhere absurd.
+pT = trabecularParams(p);
+oR = simulate(scenarioLibrary("romosozumab", durationDays = 365), p = pT);
 r.V8 = 100 * (oR.dens.aBMD(end) / oR.dens.aBMD(1) - 1);
+
+oRc = simulate(scenarioLibrary("romosozumab", durationDays = 365), p = p);
+r.V8cort = 100 * (oRc.dens.aBMD(end) / oRc.dens.aBMD(1) - 1);
 
 % --- pass/fail ----------------------------------------------------------
 r.pass = struct( ...
@@ -97,9 +109,12 @@ r.chi2 = localMidChi2(r.V1, 5, 10) ...
        + localMidChi2(r.V8, 11, 14);
 
 if opts.holdout
-    % V10: continue romosozumab run through 12 months washout.
+    % V10: continue romosozumab run through 12 months washout.  Same scope
+    % fix as V8 -- post-withdrawal spine loss is measured in the spine.  V10
+    % remains a HOLD-OUT: only V8 enters the objective, so V10's sign is a
+    % prediction of whatever delta_ab V8 selects.
     sW = scenarioLibrary("romosozumab", durationDays = 730);
-    oW = simulate(sW, p = p);
+    oW = simulate(sW, p = trabecularParams(p));
     tW = oW.t;
     [~, kStop] = min(abs(tW - 365));
     r.V10 = 100 * (oW.dens.aBMD(end) / oW.dens.aBMD(kStop) - 1);  % want < 0

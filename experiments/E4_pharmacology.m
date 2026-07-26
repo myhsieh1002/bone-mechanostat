@@ -3,13 +3,12 @@
 %   Four arms over 24 months: control, romosozumab (12 months on, then 12
 %   months washout), loading alone, and romosozumab + loading.
 %
-%   *** SCOPE (appendix C14) ***  V8/V10 are LUMBAR SPINE numbers and the
-%   spine is trabecular.  This model is a cortical diaphyseal section with
-%   f_bm ~ 0.95, i.e. almost no room to densify, so it cannot reproduce
-%   +11-14 % at 12 months without the mineralisation artefact that v2.3
-%   removed.  Direction and shape are therefore reported; the spine
-%   magnitude is not claimed.  Quantitative V8/V10 wait on the trabecular
-%   compartment (P5d).
+%   *** SCOPE (appendices C14, C19, C20) ***  V8/V10 are LUMBAR SPINE
+%   numbers and the spine is trabecular.  The cortical arms below are
+%   reported for direction only; the quantitative V8 comparison happens on
+%   the trabecular compartment, which is also where delta_ab was refitted
+%   (P5g).  V8 now passes there.  V10 still does not, and C20 pins that on
+%   the reversal timescale rather than on any parameter.
 %
 %   Writes:  <results>/E4_pharmacology/E4_pharmacology.mat
 %            <results>/figures/E4_pharmacology.{png,pdf}
@@ -49,8 +48,10 @@ end
 
 % --- V8 direction --------------------------------------------------------
 v8 = d12(2) - d12(1);
-fprintf("\n  V8 romosozumab @12 mo, over control: %+.3f %%   (direction must be +; spine\n", v8);
-fprintf("     magnitude 11-14 %% is trabecular and out of scope -- see C14)   pass=%d\n", v8 > 0);
+fprintf("\n  V8 CORTICAL arm @12 mo, over control: %+.3f %%\n", v8);
+fprintf("     The +11-14 %% target is a lumbar SPINE number and belongs to the\n");
+fprintf("     trabecular compartment below (P5g, C20).  Here only the sign matters:\n");
+fprintf("     romosozumab must raise cortical aBMD too.   pass=%d\n", v8 > 0);
 
 % --- V9 self-limitation: the formation marker should roll over ON drug ---
 B    = o{2}.get.B;
@@ -108,14 +109,17 @@ v8Tr  = dTr(k12) - dTrC(k12);
 v10Tr = dTr(end) - dTr(k12);
 amp   = v8Tr / v8;
 
-fprintf("\n  --- trabecular compartment (P5d) ---\n");
+fprintf("\n  --- trabecular compartment: where V8/V10 live (P5d + P5g) ---\n");
 fprintf("      V8  @12 mo   cortical %+.3f %%  ->  trabecular %+.3f %%   (%.1fx amplification)\n", ...
         v8, v8Tr, amp);
-fprintf("      V10 washout  cortical %+.3f %%  ->  trabecular %+.3f %%\n", v10, v10Tr);
-fprintf("      target V8 +11 to +14 %% is NOT reached, and BV/TV is not the lever\n");
-fprintf("      (flat 4.33-4.59 %% across BV/TV 0.06-0.15).  The gap is delta_ab,\n");
-fprintf("      whose value was fitted in P4 against the artefact-contaminated V8.\n");
-fprintf("      See appendix C19.  valid: drug=%d control=%d\n", oTr.validity.ok, oTrC.validity.ok);
+fprintf("      V8 target +11 to +14 %%:  pass=%d\n", v8Tr >= 11 && v8Tr <= 14);
+fprintf("      V10 washout  cortical %+.3f %%  ->  trabecular %+.3f %%   target < 0: pass=%d\n", ...
+        v10, v10Tr, v10Tr < 0);
+fprintf("      V10 is a TIMESCALE failure, not a structural one (C20): the gain does\n");
+fprintf("      reverse, but aBMD peaks 2.85 yr after withdrawal and only drops below\n");
+fprintf("      its 12-month value by year six -- roughly 5x too slow.  Neither\n");
+fprintf("      lambda_S nor K_L moves it; the missing piece is a pharmacological\n");
+fprintf("      withdrawal rebound.  valid: drug=%d control=%d\n", oTr.validity.ok, oTrC.validity.ok);
 
 % --- figure -------------------------------------------------------------
 fig = figure(Position = [100 100 1050 340], Color = "w");

@@ -40,7 +40,7 @@ beta_S,beta_S,1.0,1/day,0.2,5.0,M4,assumed,low,"Sclerostin 基礎分泌率。E6 
 K_S,K_S,1.27,-,0.1,5.0,M4,calibrated,medium,"YAP/TAZ 抑制 SOST 之半飽和常數。**v2.3 重校為 1.27**（原 2.13）：正確礦化(rho_min 隨形成下降)後廢用流失不再被錯誤礦化放大，須更敏感的 SOST 力學響應。定 V2=1.15%/mo。**V2 對 K_S 高度敏感（1.25→1.28, 1.30→1.00%/mo）——set-point 附近之陡變，E6 關鍵**。仍為力學設定點核心參數"
 h_S,h,3,-,1,6,M4,assumed,low,"SOST 力學抑制 Hill 係數"
 delta_S,delta_S,1.0,1/day,0.2,5.0,M4,assumed,low,"Sclerostin 清除速率"
-delta_ab,delta_ab,0.09184,1/day,0.02,2.0,M4,calibrated,medium,"抗 Sclerostin 抗體（romosozumab）誘發之額外 SOST 清除。**v2.0 校正**（surrogateopt, rng 20260722, 對 V1/V2/V7/V8 擬合, hold-out V6/V10/V14）：定 V8 腰椎 BMD@12mo=12.8%"
+delta_ab,delta_ab,0.24875,1/day,0.02,2.0,M4,calibrated,medium,"抗 Sclerostin 抗體（romosozumab）誘發之額外 SOST 清除。**v2.9 (P5g) 重擬**：舊值 0.09184 係 v2.0 對著**皮質**模型的 V8 擬合，而 C14 已證該次通過倚賴礦化膨脹假影 —— 亦即舊值是對污染標的的擬合產物。P5g 將 V8/V10 移至正確的**小樑**腔室評估後重擬（幾何二分, 目標帶中點 12.5%），得 V8@12mo=12.51% (帶 11-14)。delta_ab 僅在用藥時生效 (clr = delta_S + delta_ab*u_romo)，故 V1/V2/V7 與 V6/V14 盲測逐字不變；皮質臂 V8cort 由 +1.25% 升為 +2.41%，方向仍正確。V10 未達 (見附錄 C20，時間尺度而非增益問題)"
 K_P_sost,K_P,31.34,-,0.2,100,M4,calibrated,medium,"PTH 抑制 SOST 之半飽和常數。**v2.0 校正**（surrogateopt, rng 20260722, 對 V1/V2/V7/V8 擬合, hold-out V6/V10/V14）：定 V7 方向與幅度。**大值=PTH對SOST抑制弱**，與 Lemaire/Pivonka 無此路徑一致（附錄 C9.3）。與 lambda_P 有互償，須 identifiability"
 lambda_T,lambda_T,2.0,-,0.0,10.0,M4,assumed,low,"TNF-alpha 促進 SOST 之最大倍率。與 lambda_E 有互償風險，須 profile likelihood"
 K_T,K_T,0.5,-,0.1,2.0,M4,assumed,low,"TNF-alpha 作用之半飽和常數"
