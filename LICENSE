@@ -19,19 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-NOTE ON SCOPE
-
-This licence covers the code, the parameter and validation-target tables, and
-the documentation in this repository.
-
-It does NOT cover, and this repository does not redistribute, the primary
-literature from which parameter values were taken. Those papers remain under
-their publishers' copyright. What is version-controlled here is our own
-transcription of the published parameter values, with the source cited for
-every entry in data/parameters_literature.csv.
-
-This is a purely computational study. No human or animal data were generated
-or are contained here.
