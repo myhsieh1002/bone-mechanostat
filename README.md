@@ -109,8 +109,9 @@ src/systemic/  M8 鈣恆定        data/          參數 CSV、驗證標的 CSV
 - `data/parameters_literature.csv` — 每個參數的值、單位、上下界、模組、**出處**、信心度。
   程式一律從此讀取；`src/**` 內硬編碼數值視為缺陷。目前多數為 `source=assumed` 佔位，
   待計畫書附錄 B1–B3 的文獻到手後替換。
-- `data/validation_targets.csv` — V1–V15。`holdout=TRUE` 者（V6a–V6f 網球、V10 停藥、
-  V14 湧現 ε\*）為**盲測**，不得進入校正目標函數。
+- `data/validation_targets.csv` — V1–V16。`holdout=TRUE` 者（V6a–V6f 網球、V10 停藥、
+  V14 湧現 ε\*）為**盲測**，不得進入校正目標函數。V16（停藥後 CTX 過衝）為 v2.10 新增的
+  校正標的 —— 它存在的理由正是**讓 V10 得以維持盲測身分**（附錄 C21.3）。
 
 ## 輸出路徑
 
