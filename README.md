@@ -5,6 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![MATLAB R2026a](https://img.shields.io/badge/MATLAB-R2026a-orange.svg)](https://www.mathworks.com)
 [![tests 81/81](https://img.shields.io/badge/tests-81%2F81-brightgreen.svg)](tests/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21592303.svg)](https://doi.org/10.5281/zenodo.21592303)
 
 Ming-Yu Hsieh, MD, PhD · [ORCID 0000-0002-5797-3474](https://orcid.org/0000-0002-5797-3474)
 Chung Shan Medical University, Taichung, Taiwan
@@ -187,8 +188,11 @@ and how it was caught.
 
 ## Citing
 
-See [`CITATION.cff`](CITATION.cff). Please cite both the software (Zenodo DOI)
-and the paper.
+See [`CITATION.cff`](CITATION.cff). Please cite both the software and the paper.
+
+**Software** — concept DOI, always resolves to the newest version:
+[`10.5281/zenodo.21592303`](https://doi.org/10.5281/zenodo.21592303)
+To cite the exact version used here, v2.12: [`10.5281/zenodo.21592304`](https://doi.org/10.5281/zenodo.21592304)
 
 ## Licence
 

@@ -19,7 +19,7 @@ authors:
       School of Medicine, Chung Shan Medical University; Division of Pediatric
       Surgery and Center for Evidence-Based Medicine, Chung Shan Medical
       University Hospital, Taichung, Taiwan
-repository-code: "https://github.com/REPLACE-ME/bone-mechanostat"
+repository-code: "https://github.com/myhsieh1002/bone-mechanostat"
 license: MIT
 version: "2.12"
 date-released: "2026-07-26"
@@ -32,10 +32,9 @@ keywords:
   - multiscale model
   - systems biology
   - osteoporosis
-# Fill in once the Zenodo integration has minted a DOI. Prefer the CONCEPT
-# DOI (the one that always resolves to the newest version) here, so the
-# citation stays valid as the model advances.
-# doi: "10.5281/zenodo.XXXXXXX"
+# Concept DOI: always resolves to the newest version, so this citation stays
+# valid as the model advances. The v2.12 version DOI is 10.5281/zenodo.21592304.
+doi: "10.5281/zenodo.21592303"
 
 preferred-citation:
   type: article
