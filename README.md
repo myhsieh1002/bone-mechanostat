@@ -6,7 +6,7 @@
 
 > 鈣決定「能不能蓋」，負荷決定「要不要蓋」。
 
-MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.6）
+MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.7）
 
 ---
 
@@ -21,6 +21,7 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 | **P5** | 雙腔室（部位專一性 P2/V6） | ✅ **P2 定量成立**（58 測試）：V6 盲測湧現（幾何增益、密度不變）。V8/V10 重定位為小樑範疇→P5d |
 | **P6** | 動力系統分析（P3） | ✅ **完成**（61 測試）：**P3 否證 —— 模型單穩**，骨鬆為陡峭連續位移非雙穩 |
 | **P5e** | modeling 飽和界 + 彈性有效域守衛 | ✅ **完成**（67 測試）：假影修掉，**P3 否證獲第二條獨立佐證**（附錄 C17） |
+| **E0–E6** | 實驗腳本 + 七張論文圖 | ✅ **完成**（附錄 C18）：P1 量化、**V5 平反**、**V5b 骨層級符號翻轉**、V9/V12 部分成立 |
 | P7 | 論文 | 🔄 敘事已定調（v2.5，附錄 C16）：P1✅／P2✅／**P3❌ 如實入主論文** |
 
 **M1–M8 全模型可跑並已校正，含雙腔室與分歧分析；61/61 測試通過。** `rhsFull` 串起完整訊號鏈：
@@ -32,7 +33,16 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 
 **雙腔室（P5）**：`siteRHS`（單站生物學單一真相源）/ `rhsTwoSite` / `makeContextTwoSite`。
 
-尚未實作（骨架，呼叫會拋 `notImplemented`）：`sensitivityLHS` / `sobolIndices`（P6 Sobol）、其餘 `viz/*`、`experiments/E0-E6`。
+**E0–E6 七支實驗腳本可執行**，各產出一張論文圖到 `~/Documents/MATLAB/bone-mechanostat-results/figures/`：
+
+```matlab
+run(fullfile(projectRoot(), "experiments", "E2_calciumLoading.m"))   % P1
+run(fullfile(projectRoot(), "experiments", "E5_siteSpecificity.m"))  % P2
+run(fullfile(projectRoot(), "experiments", "E6_bifurcation.m"))      % P3
+```
+
+尚未實作（骨架，呼叫會拋 `notImplemented`）：`sensitivityLHS` / `sobolIndices`（Sobol）、
+`plotDoseSurface` / `plotTrajectories` / `plotStructure` / `plotBifurcation`（圖形目前直接寫在實驗腳本內）。
 
 ## 快速開始
 
@@ -188,6 +198,10 @@ $K_S, h_S, K_Y, n_Y$（全部 `assumed`/`low`）承擔雙重解釋責任。
 - [x] ✅ **P6 分歧分析**：P3 否證（單穩），骨鬆為陡峭連續位移（附錄 C15）
 - [x] ✅ **P3 敘事改寫**（v2.5，附錄 C16）：全文統一為「已否證」，三條措辭紀律 —— 陡峭≠雙穩、速率不對稱≠動力學不可逆、否證入主論文
 - [x] ✅ **P5e**：modeling 飽和界＋彈性有效域守衛 `out.validity`（附錄 C17）。V6 盲測未重校仍存活；**首次取得不凍結幾何的有效遲滯探針，f_bm 0.95→0.40→0.9485，無遲滯 —— P3 否證第二條佐證**
-- [ ] 重製 `bifurcation_E2.png`，標註 f_bm < 0.391 為線性彈性域外外推（C17.5）
+- [x] ✅ 重製分歧圖為 `E6_bifurcation.png`，已標註 f_bm < 0.391 為線性彈性域外（C18.6）
+- [x] ✅ **E0–E6 實驗腳本 + 七張論文圖**（附錄 C18）
+- [ ] **Fu 2025 到手後首要複驗 V5b 骨層級符號**（模型與 Hsieh & Turner 方向相反，C18.3）
+- [ ] **M7 的 `r_e` 對負荷反應**（V6e 髓腔方向相反）—— 可與 P5d 併案
 - [ ] **P5f 候選**：bedrest 超過 ~7.5 個月塌到孔隙率地板（缺不依賴力學的基礎形成率）
+- [ ] Sobol / LHS 全域靈敏度（`sensitivityLHS`、`sobolIndices` 仍為骨架）
 - [ ] E1–E5 實驗（含 E2 的 2×2 補鈣×負重因子分析）
