@@ -6,7 +6,7 @@
 
 > 鈣決定「能不能蓋」，負荷決定「要不要蓋」。
 
-MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.4）
+MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.5）
 
 ---
 
@@ -20,7 +20,7 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 | **P4** | M8 鈣恆定 + **全模型校正** | ✅ **完成**（53/53）：5 標的＋2 盲測全達標，**V7 鈣命題成立** |
 | **P5** | 雙腔室（部位專一性 P2/V6） | ✅ **P2 定量成立**（58 測試）：V6 盲測湧現（幾何增益、密度不變）。V8/V10 重定位為小樑範疇→P5d |
 | **P6** | 動力系統分析（P3） | ✅ **完成**（61 測試）：**P3 否證 —— 模型單穩**，骨鬆為陡峭連續位移非雙穩 |
-| P7 | 論文 | ⬜ |
+| P7 | 論文 | 🔄 敘事已定調（v2.5，附錄 C16）：P1✅／P2✅／**P3❌ 如實入主論文** |
 
 **M1–M8 全模型可跑並已校正，含雙腔室與分歧分析；61/61 測試通過。** `rhsFull` 串起完整訊號鏈：
 力學 → 剪應力 → MSIC 劑量 → 骨細胞訊號 → 細胞族群 → 三表面結構 + 礦化 → aBMD，
@@ -180,5 +180,6 @@ $K_S, h_S, K_Y, n_Y$（全部 `assumed`/`low`）承擔雙重解釋責任。
 - [x] ✅ **P5b+P5c**：intensive 礦化 ODE + Frost modeling → **V6 盲測湧現**（幾何增益、密度不變，附錄 C14）
 - [ ] **P5d**：加小樑腔室（低 f_bm）→ 定量重現 V8/V10 脊椎 romosozumab
 - [x] ✅ **P6 分歧分析**：P3 否證（單穩），骨鬆為陡峭連續位移（附錄 C15）
+- [x] ✅ **P3 敘事改寫**（v2.5，附錄 C16）：全文統一為「已否證」，三條措辭紀律 —— 陡峭≠雙穩、速率不對稱≠動力學不可逆、否證入主論文
 - [ ] **P5e**：Frost modeling 項於極端應變加飽和界（避免 r_p 吹爆）
 - [ ] E1–E5 實驗（含 E2 的 2×2 補鈣×負重因子分析）
