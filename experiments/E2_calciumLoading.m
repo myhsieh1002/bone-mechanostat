@@ -1,28 +1,35 @@
 %E2_CALCIUMLOADING Factorial calcium x loading -- the direct test of P1.
 %
 %   P1 says calcium is PERMISSIVE and loading is INSTRUCTIVE.  Stated as
-%   numbers (PROJECT_PLAN §0): in the calcium-replete range the marginal
-%   effect of calcium intake on 24-month aBMD is < 1 %, while an appropriate
-%   loading programme gives > 4 %, and the two interact synergistically
-%   rather than additively -- loading's effect is TRUNCATED when calcium is
-%   deficient, because there is no substrate to build with.
+%   numbers (PROJECT_PLAN §0, restated v2.11): in the calcium-replete range
+%   the marginal effect of calcium intake on 24-month aBMD is < 1 %, while an
+%   APPROPRIATE loading programme -- peak strain ~2900 ue, the
+%   "resistanceVigorous" scenario -- raises bone MASS (BMC) by > 4 %.
 %
-%   The core comparison is the 2x2 {800, 1500 mg/day} x {sedentary,
-%   resistance}.  A third calcium arm at 400 mg/day is added because the
+%   *** WHY BMC AND WHY "APPROPRIATE" IS NOW EXPLICIT (appendix C23) ***
+%   Once the modelling drift exists (P5i), loading translates the cortex
+%   outward, and aBMD divides bone mass by the projected width 2*r_p.  DXA
+%   therefore dilutes the loading response by about half.  Clause 2 was
+%   written in aBMD against an unspecified "appropriate" programme; both
+%   halves are now pinned, and the aBMD number is reported alongside because
+%   the gap between the two measures is itself a result.
+%
+%   Calcium arms run from severe deficiency to supplementation, because the
 %   truncation claim is only visible below the replete range -- a 2x2 inside
 %   the replete range cannot show it.
 %
 %   Writes:  <results>/E2_calciumLoading/E2_calciumLoading.mat
 %            <results>/figures/E2_calciumLoading.{png,pdf}
 %
-%   Project: bone-mechanostat (PROJECT_PLAN v2.7)
+%   Project: bone-mechanostat (PROJECT_PLAN v2.11)
 
 p   = getDefaultParams(reload = true);
 col = houseColors();
 
 caLevels   = [100 400 800 1500];             % mg/day: severe, deficient, adequate, supplemented
 caLabels   = ["100 (severe)" "400 (deficient)" "800 (adequate)" "1500 (supplemented)"];
-loadLevels = ["sedentary" "resistance"];
+loadLevels = ["sedentary" "resistance" "resistanceVigorous"];
+loadLabels = ["sedentary" "resistance (2236 ue)" "vigorous (2949 ue)"];
 nDays      = 730;
 
 dBMD  = nan(numel(caLevels), numel(loadLevels));   % % change over 24 months
@@ -43,28 +50,26 @@ for i = 1:numel(caLevels)
 end
 
 % --- P1 as numbers -------------------------------------------------------
-iSev = 1; iAdeq = 3; iSupp = 4; jSed = 1; jRes = 2;
+iSev = 1; iAdeq = 3; iSupp = 4; jSed = 1; jRes = 2; jVig = 3;
 
-caMarginal   = dBMD(iSupp,jSed) - dBMD(iAdeq,jSed);   % 800 -> 1500, sedentary
-loadMarginal = dBMD(iAdeq,jRes) - dBMD(iAdeq,jSed);   % sedentary -> resistance, adequate Ca
+% Clause 1 stays in aBMD: calcium acts on mineral, not on size, so the two
+% measures agree there and the DXA literature (Tai 2015) reports aBMD.
+caMarginal = dBMD(iSupp,jSed) - dBMD(iAdeq,jSed);      % 800 -> 1500, sedentary
+
+% Clause 2 is now BMC at the appropriate intensity (C23).
+loadMarginalBMC  = dBMC(iAdeq,jVig) - dBMC(iAdeq,jSed);
+loadMarginal     = dBMD(iAdeq,jVig) - dBMD(iAdeq,jSed);   % same contrast, DXA
+loadModerateBMC  = dBMC(iAdeq,jRes) - dBMC(iAdeq,jSed);
 
 fprintf("\n  --- P1, clauses 1 and 2 ---\n");
-fprintf("  calcium marginal (800->1500, sedentary)     %+6.3f %%   [P1 predicts < 1]\n", caMarginal);
-fprintf("  loading marginal (sed->resist, Ca adequate) %+6.3f %%   [P1 predicts > 4]\n", loadMarginal);
-fprintf("  loading / calcium effect ratio              %6.1f x\n", loadMarginal / max(caMarginal, eps));
-
-% *** WHICH DENSITOMETRIC MEASURE (v2.11, P5i, appendix C22) ***
-% Since the modelling drift exists, loading moves r_p outward, and aBMD
-% divides bone mass by the projected width 2*r_p.  DXA therefore DILUTES the
-% loading response -- the same size artefact DENSITOMETRY deliberately keeps
-% so the model can be read against both the DXA and pQCT literatures.  P1's
-% ">4 %" was written in aBMD; in BMC it is a different number, and the gap
-% between them is itself the result.
-loadMarginalBMC = dBMC(iAdeq,jRes) - dBMC(iAdeq,jSed);
-fprintf("  same contrast measured as BMC (bone MASS)  %+6.3f %%\n", loadMarginalBMC);
-fprintf("     -> DXA dilutes the loading response by %.0f %%.  P1 clause 2 must state\n", ...
-        100 * (1 - loadMarginal / loadMarginalBMC));
-fprintf("        which measure it is claimed in; see appendix C22.3.\n");
+fprintf("  clause 1  calcium marginal (800->1500, sedentary, aBMD)  %+6.3f %%   [< 1]\n", caMarginal);
+fprintf("  clause 2  loading marginal, APPROPRIATE (2949 ue), BMC   %+6.3f %%   [> 4]\n", loadMarginalBMC);
+fprintf("            same contrast in aBMD                          %+6.3f %%   (DXA dilutes %.0f %%)\n", ...
+        loadMarginal, 100 * (1 - loadMarginal / loadMarginalBMC));
+fprintf("            moderate resistance (2236 ue), BMC             %+6.3f %%   <- below the claim,\n", loadModerateBMC);
+fprintf("            which is why ""appropriate"" had to be pinned (C23)\n");
+fprintf("  loading / calcium effect ratio (BMC vs aBMD basis)        %6.1f x\n", ...
+        loadMarginalBMC / max(caMarginal, eps));
 
 % --- P1 clause 3: the two framings of "truncation" DISAGREE IN SIGN ------
 % P1 as pre-registered says loading's effect is truncated when calcium is
@@ -77,53 +82,56 @@ fprintf("        which measure it is claimed in; see appendix C22.3.\n");
 %                        REVERSES, because deficiency drags the sedentary
 %                        arm down faster than the loaded arm.  It is a floor
 %                        effect in the comparator, not synergy.
-absGain     = dBMD(:,jRes);                           % achieved gain per Ca level
-absTrunc    = dBMD(iSupp,jRes) - dBMD(iSev,jRes);     % >0 means deficiency costs bone
-interaction = (dBMD(iAdeq,jRes) - dBMD(iAdeq,jSed)) ...
-            - (dBMD(iSev,jRes)  - dBMD(iSev,jSed));   % pre-registered metric
+% Clause 3 is evaluated in BMC too, for consistency with clause 2.
+absGain     = dBMC(:,jVig);                           % achieved gain per Ca level
+absTrunc    = dBMC(iSupp,jVig) - dBMC(iSev,jVig);     % >0 means deficiency costs bone
+interaction = (dBMC(iAdeq,jVig) - dBMC(iAdeq,jSed)) ...
+            - (dBMC(iSev,jVig)  - dBMC(iSev,jSed));   % pre-registered metric
 
 fprintf("\n  --- P1, clause 3 (interaction): the two framings disagree ---\n");
-fprintf("  ABSOLUTE   achieved gain, severe %.3f %% vs supplemented %.3f %%\n", ...
-        dBMD(iSev,jRes), dBMD(iSupp,jRes));
+fprintf("  ABSOLUTE   achieved gain, severe %.3f %% vs supplemented %.3f %% (BMC)\n", ...
+        dBMC(iSev,jVig), dBMC(iSupp,jVig));
 fprintf("             deficiency costs %+6.3f %% points (%.0f %% of the gain)  -> claim HOLDS\n", ...
-        absTrunc, 100 * absTrunc / dBMD(iSupp,jRes));
+        absTrunc, 100 * absTrunc / dBMC(iSupp,jVig));
 fprintf("  DIFFERENCE-IN-DIFFERENCES interaction %+6.3f %% points          -> claim REVERSES\n", ...
         interaction);
 fprintf("             (sedentary arm falls faster under deficiency: %+.3f -> %+.3f %%)\n", ...
-        dBMD(iSupp,jSed), dBMD(iSev,jSed));
+        dBMC(iSupp,jSed), dBMC(iSev,jSed));
 
 pass = struct(caPermissive       = caMarginal      < 1.0, ...
-              loadInstruct_aBMD  = loadMarginal    > 4.0, ...
-              loadInstruct_BMC   = loadMarginalBMC > 4.0, ...
+              loadInstruct       = loadMarginalBMC > 4.0, ...   % clause 2 as restated
+              loadInstruct_aBMD  = loadMarginal    > 4.0, ...   % the old wording
               truncationAbs    = absTrunc     > 0, ...
               truncationDiffDiff = interaction > 0);
-fprintf("\n  P1 verdict: permissive=%d  instructive(aBMD)=%d  instructive(BMC)=%d  truncation(abs)=%d  truncation(diff-in-diff)=%d\n", ...
-        pass.caPermissive, pass.loadInstruct_aBMD, pass.loadInstruct_BMC, pass.truncationAbs, pass.truncationDiffDiff);
+fprintf("\n  P1 verdict (as restated, C23): permissive=%d  instructive=%d  truncation(abs)=%d  truncation(diff-in-diff)=%d\n", ...
+        pass.caPermissive, pass.loadInstruct, pass.truncationAbs, pass.truncationDiffDiff);
+fprintf("  (clause 2 under the OLD aBMD wording would read %d -- see C23)\n", pass.loadInstruct_aBMD);
 
 % --- figure -------------------------------------------------------------
 fig = figure(Position = [100 100 900 360], Color = "w");
 tl  = tiledlayout(fig, 1, 2, TileSpacing = "compact", Padding = "compact");
 
 nexttile(tl);
-b = bar(dBMD, EdgeColor = "none");
-b(1).FaceColor = col.muted; b(2).FaceColor = col.primary;
-xticklabels(caLabels); ylabel("\DeltaaBMD over 24 months [%]");
-legend(["sedentary" "resistance 3x/wk"], Location = "northwest", Box = "off");
-title("Loading moves bone; calcium barely does"); box off; grid on;
+b = bar(dBMC, EdgeColor = "none");
+b(1).FaceColor = col.muted; b(2).FaceColor = col.series(3,:); b(3).FaceColor = col.primary;
+xticklabels(caLabels); xtickangle(20); ylabel("\DeltaBMC over 24 months [%]");
+legend(loadLabels, Location = "northwest", Box = "off");
+yline(4, "--", "P1 clause 2", Color = col.accent);
+title("Loading moves bone mass; calcium barely does"); box off; grid on;
 
 nexttile(tl);
-plot(caLevels, dBMD(:,jSed), "-o", LineWidth = 1.8, Color = col.muted, ...
-     MarkerFaceColor = col.muted); hold on;
-plot(caLevels, dBMD(:,jRes), "-o", LineWidth = 1.8, Color = col.primary, ...
-     MarkerFaceColor = col.primary);
-xlabel("calcium intake [mg/day]"); ylabel("\DeltaaBMD [%]");
-legend(["sedentary" "resistance"], Location = "southeast", Box = "off");
-title("Interaction: loading needs substrate"); box off; grid on;
+plot(caLevels, dBMC(:,jVig), "-o", LineWidth = 1.8, Color = col.primary, ...
+     MarkerFaceColor = col.primary); hold on;
+plot(caLevels, dBMD(:,jVig), "-o", LineWidth = 1.8, Color = col.muted, ...
+     MarkerFaceColor = col.muted);
+xlabel("calcium intake [mg/day]"); ylabel("gain under vigorous loading [%]");
+legend(["BMC (bone mass)" "aBMD (DXA)"], Location = "southeast", Box = "off");
+title("DXA dilutes the loading response"); box off; grid on;
 
 title(tl, "E2 -- calcium is permissive, loading is instructive (P1)", FontWeight = "bold");
 exportFigure(fig, "E2_calciumLoading");
 
 save(fullfile(getResultsDir("E2_calciumLoading"), "E2_calciumLoading.mat"), ...
      "caLevels", "loadLevels", "dBMD", "valid", ...
-     "caMarginal", "loadMarginal", "loadMarginalBMC", "dBMC", ...
+     "caMarginal", "loadMarginal", "loadMarginalBMC", "loadModerateBMC", "dBMC", ...
      "absGain", "absTrunc", "interaction", "pass");

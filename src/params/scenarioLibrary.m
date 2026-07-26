@@ -4,7 +4,9 @@ function s = scenarioLibrary(name, opts)
 %   S = SCENARIOLIBRARY(NAME) returns a scenario struct for one of:
 %
 %     "sedentary"     baseline daily activity only
-%     "resistance"    sedentary + resistance training 3x/week
+%     "resistance"    sedentary + resistance training 3x/week (2236 ue)
+%     "resistanceVigorous"  as above but at P1's "appropriate" intensity
+%                     (~2900 ue); see appendix C23
 %     "bedrest"       mechanical load removed (tau -> ~0)
 %     "spaceflight"   as bedrest, plus an optional in-flight countermeasure
 %     "tennis"        two-site: dominant humerus loaded, contralateral not
@@ -78,6 +80,19 @@ switch name
                              restWithinSec = 10, restAfterSec = 180, ...
                              daysOfWeek = [1 3 5]);
         s.bouts = [adl, training];
+
+    case "resistanceVigorous"
+        % P1's "appropriate loading programme", made explicit (v2.11, C23).
+        % The moderate "resistance" bout peaks at 2236 ue; this one reaches
+        % ~2900 ue, comparable to an elite tennis player's humerus and still
+        % inside the physiological band (below the 3000 ue ceiling).  P1
+        % clause 2 is claimed at THIS intensity and in BMC, not at the
+        % moderate one and not in aBMD -- see appendix C23.
+        vigorous = localBout(momentScale = 4.0, axialScale = 3.0, ...
+                             nCycles = 40, freqHz = 0.5, ...
+                             restWithinSec = 10, restAfterSec = 180, ...
+                             daysOfWeek = [1 3 5]);
+        s.bouts = [adl, vigorous];
 
     case {"bedrest", "spaceflight"}
         s.bouts = localBout(momentScale = 0.02, axialScale = 0.02, ...
