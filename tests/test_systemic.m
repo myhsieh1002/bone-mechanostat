@@ -58,9 +58,20 @@ verifyGreaterThan(tc, aI1.Abs, aI0.Abs, "Higher intake must raise absorption.");
 end
 
 function testSerumCalciumIsTightlyRegulated(tc)
-% The headline homeostatic property: serum Ca must stay within a few
-% percent across a near-doubling of intake.  The v1.8 rewrite exists
-% because the first draft let it drift 55%.
+% Serum Ca must not run away under a near-doubling of intake.  The v1.8
+% rewrite exists because the first draft let it drift 55%.
+%
+% *** READ THE TOLERANCE, NOT THE NAME (appendix C24, v2.13) ***  This
+% test's bar is 15%, which is NOT tight regulation.  Measured at 400 vs
+% 1500 mg/day the model gives 1.107 -> 1.291 mmol/L, a 15% spread, where
+% real serum ionised calcium is defended within about 2%.  The test passes
+% because it was written as a runaway guard and then read ever after as a
+% homeostasis check -- exactly the false assurance it looks like.  The
+% cause is in the model, not here: passive intestinal absorption is linear
+% and unsaturating in intake, so it swamps the saturating active term, and
+% the saturable tubular reabsorption that renal_k and renal_Ca_th were
+% declared for is never implemented.  Tightening this bar is a model fix
+% (P5k), not a test fix, so the threshold is deliberately left at 15%.
 p = tc.TestData.p;
 
 Ca = zeros(1, 2);
@@ -73,7 +84,8 @@ end
 for k = 1:2
     dev = abs(Ca(k) / p.Ca_s_0 - 1);
     verifyLessThan(tc, dev, 0.15, ...
-        "Serum Ca excursion must stay modest (< 15%) under intake change.");
+        "Serum Ca must not run away (< 15%) under intake change. " + ...
+        "This is a runaway guard, NOT a homeostasis check -- see C24.");
 end
 % Direction: more intake -> higher serum Ca.
 verifyGreaterThan(tc, Ca(2), Ca(1), "More calcium intake must raise serum Ca.");
