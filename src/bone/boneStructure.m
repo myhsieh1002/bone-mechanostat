@@ -67,8 +67,20 @@ sensing  = (st.n_ot / p.n_ot_0) ^ p.zeta;
 excess   = max(0, mech.eps_p - p.eps_model_star);
 modeling = p.k_model * excess / (1 + excess / p.eps_model_sat) * sensing;
 
+% --- MODELLING DRIFT (v2.11, P5i, appendix C22) --------------------------
+% A Frost modelling drift MOVES a cortex; it does not simply inflate it.
+% Periosteal apposition is accompanied by endocortical resorption, so the
+% whole wall translates outward.  Until v2.10 only the periosteal half was
+% implemented, and the consequence was visible: the loaded arm's marrow
+% cavity CONTRACTED (-2.9 %) where Haapasalo measured it enlarging (+19 %,
+% V6e).  CHI_DRIFT = 1 is a pure translation, which conserves wall
+% thickness; 0 recovers the v2.10 inflate-only behaviour.
+%
+% Note this rides on MODELING, so it inherits both of that term's gates: it
+% is silent below the strain threshold (no calibration scenario is touched)
+% and it is bounded by the same saturation (P5e).
 d.r_p = v_form * eta(1) - v_res * xi(1) + modeling;
-d.r_e = v_res  * xi(2)  - v_form * eta(2);
+d.r_e = v_res  * xi(2)  - v_form * eta(2) + p.chi_drift * modeling;
 
 df = (S_v_hat / p.w_wall) * (v_form * eta(3) - v_res * xi(3));
 

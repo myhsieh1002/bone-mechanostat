@@ -82,6 +82,44 @@ verifyGreaterThan(tc, dImax, dTot, ...
     "V6: second moment of area must gain more than area (periosteal expansion).");
 end
 
+function testV6e_marrowCavityAlsoEnlarges(tc)
+% V6e (hold-out): Haapasalo found the playing arm's MEDULLARY CAVITY also
+% enlarged, +19 %.  That is the signature of a modelling DRIFT -- the cortex
+% translating outward -- rather than the cortex simply inflating.
+%
+% Up to v2.10 the model contracted the cavity (-2.9 %), because only the
+% periosteal half of the drift existed.  P5i added the endocortical half
+% (CHI_DRIFT in BONESTRUCTURE).  chi_drift = 1 is pure translation, chosen
+% on principle rather than fitted, so V6e stays a hold-out.
+p = tc.TestData.p;
+o = simulate(scenarioLibrary("tennis"), p = p);
+dCav = 100 * (o.dens.MCav_Ar_A(end) / o.dens.MCav_Ar_B(end) - 1);
+
+verifyGreaterThan(tc, dCav, 9, sprintf( ...
+    "V6e: marrow cavity must enlarge on the loaded side (got %+.2f %%, target 19 +/-10).", dCav));
+verifyLessThan(tc, dCav, 29, sprintf( ...
+    "V6e: cavity enlargement %+.2f %% exceeds the tolerance band.", dCav));
+
+% A drift must not eat the cortex: with chi_drift = 1 the wall translates,
+% so thickness is conserved rather than consumed.
+ct = o.get.r_p_A - o.get.r_e_A;
+verifyGreaterThanOrEqual(tc, min(ct), 0.95 * ct(1), ...
+    "The drift must translate the cortex, not thin it away.");
+end
+
+function testDriftIsWhatOpensTheCavity(tc)
+% Attribution, and an audit switch: chi_drift = 0 must recover the v2.10
+% behaviour (a contracting cavity), so the new term is demonstrably the
+% cause rather than a coincidence.
+p = tc.TestData.p;
+q = p; q.chi_drift = 0;
+o = simulate(scenarioLibrary("tennis"), p = q);
+dCav = 100 * (o.dens.MCav_Ar_A(end) / o.dens.MCav_Ar_B(end) - 1);
+
+verifyLessThan(tc, dCav, 0, ...
+    "With the drift off, the v2.10 cavity contraction must return.");
+end
+
 function testSharedSystemicPool(tc)
 % Both sites must see the SAME systemic PTH / calcium (one shared M8).
 info = stateVector("two");

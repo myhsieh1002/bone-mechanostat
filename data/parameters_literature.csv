@@ -92,6 +92,7 @@ w_wall,w,1.0e-3,m,1.0e-4,5.0e-3,M7,assumed,low,"皮質壁有效厚度尺度，�
 eps_model_star,eps_star,1.5e-3,-,1.0e-3,2.0e-3,M7,Frost1987,medium,"骨膜 modeling 之最小有效應變閾值 (Frost MES_m ~1000-1500 ue)。低於此(正常活動 762ue)無 modeling→校正情境不受影響; 高於此(劇烈負荷)驅動骨膜外擴。**v2.3 新增**(Frost modeling vs remodeling)"
 k_model,k_model,3.5e-4,m/day,1.0e-5,5.0e-3,M7,assumed,low,"骨膜 modeling 沉積率(每單位應變超額)。**v2.3 新增**: 直接應變驅動骨膜外擴, 產生 Haapasalo 幾何增益(V6a-e), 且自限(r_p↑→I_g↑→應變↓)。V6 為 hold-out, 此值物理設定非擬合"
 eps_model_sat,eps_sat,5.5e-3,-,2.0e-3,1.5e-2,M7,derived,medium,"骨膜 modeling 之應變超額半飽和常數 (P5e, v2.6)。modeling = k_model*excess/(1+excess/eps_sat)，excess = max(0, eps_p - eps_model_star)。兩個獨立論證收斂於同值: (1) 半飽和處總應變 = eps_model_star + eps_sat = 1500+5500 = 7000 ue = 皮質骨降伏應變，超過降伏後組織進入損傷而非適應，Frost 線性關係不可外推; (2) 隱含速率上限 v_max = k_model*eps_sat = 1.93 um/day，落在快速 modeling/編織骨礦化沉積率 (MAR ~1-5 um/day) 文獻區間。修正 C15.4 之 r_p 吹爆假影 (病理態曾給 1513 mm/yr)"
+chi_drift,chi,1.0,-,0.0,1.0,M7,derived,medium,"骨膜 modeling 沉積所伴隨的骨內膜吸收比例 (P5i, v2.11)。dr_e += chi_drift*modeling。Frost 的 modeling drift 會使皮質整體外移而非單純膨脹；chi_drift=1 為純平移（保持皮質壁厚），0 回到 v2.10 的只加不移。**取 1.0 是原理選擇（純平移）而非對 V6e 擬合 —— V6e 因此仍為 hold-out**。此項掛在 modeling 上，故繼承其應變閾值（校正情境全部不觸發）與 P5e 的飽和界"
 m_prim,m_prim,0.6,-,0.4,0.8,M7,assumed,low,"初級礦化即時達成之比例"
 kappa_m,kappa_m,5.0e-4,1/day,1.0e-4,4.0e-3,M7,assumed,low,"次級礦化速率（成熟）。v2.3：intensive rho_min ODE 之成熟項；t½≈3.8yr（次級礦化本為數年）。慢速使 V10 停藥後回落不被成熟掩蓋"
 mu_turn_0,mu_turn_0,1.0e-4,1/day,5.0e-5,1.0e-3,M7,assumed,low,"基線礦化周轉率（新生骨稀釋 rho_min）。**v2.3 新增**：使 rho_min 隨形成下降（新生骨低礦化）→ V6f。量級對應 V1 骨轉換 ~7%/yr"

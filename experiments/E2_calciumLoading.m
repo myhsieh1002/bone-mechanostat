@@ -26,6 +26,7 @@ loadLevels = ["sedentary" "resistance"];
 nDays      = 730;
 
 dBMD  = nan(numel(caLevels), numel(loadLevels));   % % change over 24 months
+dBMC  = nan(size(dBMD));                           % bone MASS, not projected
 valid = true(size(dBMD));
 
 fprintf("\n=== E2: calcium x loading factorial (24 months) ===\n");
@@ -33,10 +34,11 @@ for i = 1:numel(caLevels)
     for j = 1:numel(loadLevels)
         s   = scenarioLibrary(loadLevels(j), durationDays = nDays, I_Ca = caLevels(i));
         o   = simulate(s, p = p);
-        dBMD(i,j)  = 100 * (o.dens.aBMD(end) / o.dens.aBMD(1) - 1);
+        dBMD(i,j)  = 100 * (o.dens.aBMD(end)  / o.dens.aBMD(1)  - 1);
+        dBMC(i,j)  = 100 * (o.dens.BMC_L(end) / o.dens.BMC_L(1) - 1);
         valid(i,j) = o.validity.ok;
-        fprintf("  Ca %4d mg/day, %-10s : daBMD %+6.3f %%   valid=%d\n", ...
-                caLevels(i), loadLevels(j), dBMD(i,j), valid(i,j));
+        fprintf("  Ca %4d mg/day, %-10s : daBMD %+6.3f %%   dBMC %+6.3f %%   valid=%d\n", ...
+                caLevels(i), loadLevels(j), dBMD(i,j), dBMC(i,j), valid(i,j));
     end
 end
 
@@ -50,6 +52,19 @@ fprintf("\n  --- P1, clauses 1 and 2 ---\n");
 fprintf("  calcium marginal (800->1500, sedentary)     %+6.3f %%   [P1 predicts < 1]\n", caMarginal);
 fprintf("  loading marginal (sed->resist, Ca adequate) %+6.3f %%   [P1 predicts > 4]\n", loadMarginal);
 fprintf("  loading / calcium effect ratio              %6.1f x\n", loadMarginal / max(caMarginal, eps));
+
+% *** WHICH DENSITOMETRIC MEASURE (v2.11, P5i, appendix C22) ***
+% Since the modelling drift exists, loading moves r_p outward, and aBMD
+% divides bone mass by the projected width 2*r_p.  DXA therefore DILUTES the
+% loading response -- the same size artefact DENSITOMETRY deliberately keeps
+% so the model can be read against both the DXA and pQCT literatures.  P1's
+% ">4 %" was written in aBMD; in BMC it is a different number, and the gap
+% between them is itself the result.
+loadMarginalBMC = dBMC(iAdeq,jRes) - dBMC(iAdeq,jSed);
+fprintf("  same contrast measured as BMC (bone MASS)  %+6.3f %%\n", loadMarginalBMC);
+fprintf("     -> DXA dilutes the loading response by %.0f %%.  P1 clause 2 must state\n", ...
+        100 * (1 - loadMarginal / loadMarginalBMC));
+fprintf("        which measure it is claimed in; see appendix C22.3.\n");
 
 % --- P1 clause 3: the two framings of "truncation" DISAGREE IN SIGN ------
 % P1 as pre-registered says loading's effect is truncated when calcium is
@@ -77,12 +92,13 @@ fprintf("  DIFFERENCE-IN-DIFFERENCES interaction %+6.3f %% points          -> cl
 fprintf("             (sedentary arm falls faster under deficiency: %+.3f -> %+.3f %%)\n", ...
         dBMD(iSupp,jSed), dBMD(iSev,jSed));
 
-pass = struct(caPermissive     = caMarginal   < 1.0, ...
-              loadInstruct     = loadMarginal > 4.0, ...
+pass = struct(caPermissive       = caMarginal      < 1.0, ...
+              loadInstruct_aBMD  = loadMarginal    > 4.0, ...
+              loadInstruct_BMC   = loadMarginalBMC > 4.0, ...
               truncationAbs    = absTrunc     > 0, ...
               truncationDiffDiff = interaction > 0);
-fprintf("\n  P1 verdict: permissive=%d  instructive=%d  truncation(absolute)=%d  truncation(diff-in-diff)=%d\n", ...
-        pass.caPermissive, pass.loadInstruct, pass.truncationAbs, pass.truncationDiffDiff);
+fprintf("\n  P1 verdict: permissive=%d  instructive(aBMD)=%d  instructive(BMC)=%d  truncation(abs)=%d  truncation(diff-in-diff)=%d\n", ...
+        pass.caPermissive, pass.loadInstruct_aBMD, pass.loadInstruct_BMC, pass.truncationAbs, pass.truncationDiffDiff);
 
 % --- figure -------------------------------------------------------------
 fig = figure(Position = [100 100 900 360], Color = "w");
@@ -109,4 +125,5 @@ exportFigure(fig, "E2_calciumLoading");
 
 save(fullfile(getResultsDir("E2_calciumLoading"), "E2_calciumLoading.mat"), ...
      "caLevels", "loadLevels", "dBMD", "valid", ...
-     "caMarginal", "loadMarginal", "absGain", "absTrunc", "interaction", "pass");
+     "caMarginal", "loadMarginal", "loadMarginalBMC", "dBMC", ...
+     "absGain", "absTrunc", "interaction", "pass");

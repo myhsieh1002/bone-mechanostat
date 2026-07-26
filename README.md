@@ -6,7 +6,7 @@
 
 > 鈣決定「能不能蓋」，負荷決定「要不要蓋」。
 
-MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.10）
+MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bone_mechanostat.md)（v2.11）
 
 ---
 
@@ -25,9 +25,10 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 | **P5d** | 小樑腔室 | ⚠️ **部分完成**（附錄 C19）：3.6× 放大確認，V8 未達；診斷缺口為 `delta_ab` 而非 BV/TV |
 | **P5g** | 重擬 `delta_ab` | ✅ **完成**（附錄 C20）：修掉目標函數的腔室範疇錯誤，**V8=12.51% 首次真正達標**；V10 診斷為時間尺度問題 |
 | **P5h** | 停藥反彈機制 | ✅ **完成**（79 測試，附錄 C21）：**V10 = −12.42%，以 hold-out 身分達標**（校正到 CTX 標記 V16 而非 BMD）；**V9 強形式一併解決** |
+| **P5i** | modeling drift（V6e） | ✅ **完成**（81 測試，附錄 C22）：**V6e 髓腔 +13.44%，V6 六項全過**。⚠️ **代價：P1 第二句在 aBMD 上失守** —— 度量張力待裁決（C22.5） |
 | P7 | 論文 | 🔄 敘事已定調（v2.5，附錄 C16）：P1✅／P2✅／**P3❌ 如實入主論文** |
 
-**M1–M8 全模型可跑並已校正，含雙腔室、小樑腔室與分歧分析；79/79 測試通過。** `rhsFull` 串起完整訊號鏈：
+**M1–M8 全模型可跑並已校正，含雙腔室、小樑腔室與分歧分析；81/81 測試通過。** `rhsFull` 串起完整訊號鏈：
 力學 → 剪應力 → MSIC 劑量 → 骨細胞訊號 → 細胞族群 → 三表面結構 + 礦化 → aBMD，
 外加全身鈣恆定雙向耦合。
 
@@ -53,7 +54,7 @@ run(fullfile(projectRoot(), "experiments", "E6_bifurcation.m"))      % P3
 cd('/path/to/骨骼鈣質吸收數學模型')
 addpath('src'); setupPath();
 
-runtests("tests")     % 79 tests
+runtests("tests")     % 81 tests
 
 s   = scenarioLibrary("sedentary", durationDays = 730);
 out = simulate(s);
@@ -210,7 +211,8 @@ $K_S, h_S, K_Y, n_Y$（全部 `assumed`/`low`）承擔雙重解釋責任。
 - [x] ✅ 重製分歧圖為 `E6_bifurcation.png`，已標註 f_bm < 0.391 為線性彈性域外（C18.6）
 - [x] ✅ **E0–E6 實驗腳本 + 七張論文圖**（附錄 C18）
 - [ ] **Fu 2025 到手後首要複驗 V5b 骨層級符號**（模型與 Hsieh & Turner 方向相反，C18.3）
-- [ ] **M7 的 `r_e` 對負荷反應**（V6e 髓腔方向相反）—— 可與 P5d 併案
+- [x] ✅ **P5i 完成**：M7 加 modeling drift（`chi_drift`），**V6e 由 −2.88% → +13.44%，V6 六項全過**（附錄 C22）
+- [ ] **⚠️ 待裁決（C22.5）**：`chi_drift=1` 使 **P1 第二句在 aBMD 上失守**（+1.57% < 4%）。三個互斥選項：改以 **BMC** 陳述（+4.50% ✅，需定義「適當負重」≳2900 με）／保留 aBMD 但下修門檻（文獻阻力訓練本就 1–3%）／`chi_drift` 降至 0.7 並接受 V6e 差一點
 - [ ] **P5f 候選**：bedrest 超過 ~7.5 個月塌到孔隙率地板（缺不依賴力學的基礎形成率）
 - [ ] Sobol / LHS 全域靈敏度（`sensitivityLHS`、`sobolIndices` 仍為骨架）
 - [ ] E1–E5 實驗（含 E2 的 2×2 補鈣×負重因子分析）
