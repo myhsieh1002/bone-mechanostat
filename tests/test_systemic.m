@@ -58,20 +58,15 @@ verifyGreaterThan(tc, aI1.Abs, aI0.Abs, "Higher intake must raise absorption.");
 end
 
 function testSerumCalciumIsTightlyRegulated(tc)
-% Serum Ca must not run away under a near-doubling of intake.  The v1.8
-% rewrite exists because the first draft let it drift 55%.
+% Serum Ca must stay within a few percent across a near-doubling of intake.
 %
-% *** READ THE TOLERANCE, NOT THE NAME (appendix C24, v2.13) ***  This
-% test's bar is 15%, which is NOT tight regulation.  Measured at 400 vs
-% 1500 mg/day the model gives 1.107 -> 1.291 mmol/L, a 15% spread, where
-% real serum ionised calcium is defended within about 2%.  The test passes
-% because it was written as a runaway guard and then read ever after as a
-% homeostasis check -- exactly the false assurance it looks like.  The
-% cause is in the model, not here: passive intestinal absorption is linear
-% and unsaturating in intake, so it swamps the saturating active term, and
-% the saturable tubular reabsorption that renal_k and renal_Ca_th were
-% declared for is never implemented.  Tightening this bar is a model fix
-% (P5k), not a test fix, so the threshold is deliberately left at 15%.
+% *** THE BAR IS NOW 3%, AND IT MEANS IT (P5k, v2.14) ***  From v1.8 to
+% v2.13 this test's bar was 15% while its name and comment claimed "a few
+% percent" -- it had been written as a runaway guard and was read ever
+% after as a homeostasis check, and the model duly drifted 15% without
+% anyone noticing (appendix C24.5).  P5k rebuilt M8 so the claim and the
+% assertion agree: measured across 400 to 1500 mg/day the spread is now
+% 1.6%.  Do NOT loosen this bar again to make a change pass.
 p = tc.TestData.p;
 
 Ca = zeros(1, 2);
@@ -83,9 +78,8 @@ end
 
 for k = 1:2
     dev = abs(Ca(k) / p.Ca_s_0 - 1);
-    verifyLessThan(tc, dev, 0.15, ...
-        "Serum Ca must not run away (< 15%) under intake change. " + ...
-        "This is a runaway guard, NOT a homeostasis check -- see C24.");
+    verifyLessThan(tc, dev, 0.03, ...
+        "Serum Ca must stay within 3% of baseline under intake change.");
 end
 % Direction: more intake -> higher serum Ca.
 verifyGreaterThan(tc, Ca(2), Ca(1), "More calcium intake must raise serum Ca.");
@@ -111,4 +105,61 @@ function testFullModelStillRuns(tc)
 o = simulate(scenarioLibrary("sedentary", durationDays = 730), p = tc.TestData.p);
 verifyTrue(tc, all(isfinite(o.y), "all"), "Non-finite state.");
 verifyTrue(tc, all(o.y(:) >= -1e-9), "Negative state.");
+end
+
+function testAbsorptionIsMostlyTheRegulatedArm(tc)
+% The calcitriol-gated transcellular arm must carry a substantial share of
+% baseline absorption.  It is the only part of intake handling that PTH can
+% act on, so if the unregulated paracellular term dominates, dietary
+% calcium has no negative feedback and serum calcium drifts with intake --
+% which is exactly how the v1.8 module failed (appendix C24.5).
+p = tc.TestData.p;
+
+[~, alg] = calciumPTHvitD(p.Ca_s_0, 1, p.V_D_0, p.I_Ca_0, 1, 1, p);
+passive  = p.a_p_abs * p.I_Ca_0;
+active   = alg.Abs - passive;
+
+verifyGreaterThan(tc, active / alg.Abs, 0.35, ...
+    "The regulated (transcellular) arm must carry over a third of baseline absorption.");
+end
+
+function testRenalGainClosesTheBaselineBalance(tc)
+% renal_k is derived, not free: it must be exactly what closes the balance
+% at baseline, so the steepness of the renal defence follows from where the
+% threshold sits rather than from a fitted exponent.
+p = tc.TestData.p;
+
+[~, alg] = calciumPTHvitD(p.Ca_s_0, 1, p.V_D_0, p.I_Ca_0, 1, 1, p);
+expected = (alg.Abs_0 + p.phi_res - p.phi_form) / (p.Ca_s_0 - p.renal_Ca_th);
+
+verifyEqual(tc, alg.renal_k, expected, ...
+    "renal_k must close the baseline calcium balance.", RelTol = 1e-12);
+verifyGreaterThan(tc, p.Ca_s_0, p.renal_Ca_th, ...
+    "The tubular threshold must sit below baseline serum calcium.");
+end
+
+function testUnloadingSuppressesPTH(tc)
+% Immobilisation releases skeletal calcium, which suppresses the
+% parathyroid: bed-rest subjects show PTH down 17% at day 28 and 24% at day
+% 60, with urinary calcium elevated throughout (Spatz 2012, PMID 22767636).
+% Until P5k the model produced -0.01% here, because phi_res and phi_form
+% were three orders of magnitude below the flux they were normalised
+% against -- the bone-to-blood arm existed in the equations and did nothing
+% (appendix C26.5).  This is the test that would have caught it.
+p = tc.TestData.p;
+
+o = simulate(scenarioLibrary("bedrest", durationDays = 180), p = p);
+verifyTrue(tc, o.validity.ok, "Disuse reference run left the elastic domain.");
+
+[~, k60] = min(abs(o.t - 60));
+dP = 100 * (o.get.P(k60) / o.get.P(1) - 1);
+
+verifyLessThan(tc, dP, -10, ...
+    "Unloading must suppress PTH by at least 10% by day 60.");
+verifyGreaterThan(tc, dP, -35, ...
+    "PTH suppression under unloading must stay physiological (> -35%).");
+
+% ... and it must come from calcium released by bone, not from nowhere.
+verifyGreaterThan(tc, o.get.Ca_s(k60), o.get.Ca_s(1), ...
+    "Serum calcium must rise when unloaded bone releases calcium.");
 end

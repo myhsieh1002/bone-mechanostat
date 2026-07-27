@@ -1,9 +1,6 @@
-# Model equations
+# S1 Text. Model equations
 
-Specification of modules M1–M8 **as implemented**. This is the reference for
-anyone reading the source: it documents the model that the code actually runs,
-not an earlier design. It also serves as S1 Text of the accompanying paper.
- Symbols and values are tabulated in **S1 Table**; every parameter used below is read from that table at run time, and hard-coded numerical constants in the source are treated as defects and rejected by an automated check.
+Specification of modules M1–M8 as implemented. Symbols and values are tabulated in **S1 Table**; every parameter used below is read from that table at run time, and hard-coded numerical constants in the source are treated as defects and rejected by an automated check.
 
 ---
 
@@ -213,10 +210,28 @@ $$\mathrm{BMC}/L = A_g f_{bm} \bar\rho_{\min}, \qquad
 
 Serum calcium, PTH and 1,25-dihydroxyvitamin D with intestinal absorption, renal handling and bone flux, coupled bidirectionally: bone-cell activity draws on and releases to the serum pool, and PTH feeds back into M4 through both sclerostin and RANKL. In the two-compartment model the systemic pool is driven by the mean of the two sites' bone-cell activity, since a single humerus is a negligible fraction of whole-body calcium turnover — the sites are probes of the shared pool, not drivers of it.
 
-$$\frac{d\mathrm{Ca}_s}{dt} = \mathrm{Abs}(I_{\mathrm{Ca}}, V_D) - \mathrm{Renal}(\mathrm{Ca}_s, P) + \phi_{\mathrm{res}} v_{\mathrm{res}} - \phi_{\mathrm{form}} v_{\mathrm{form}}$$
+Every term below is a calcium flux in mg/day.
+
+$$\frac{d\mathrm{Ca}_s}{dt} = \frac{\kappa_{\mathrm{Ca}}}{k_{\mathrm{ren}}}\left[\mathrm{Abs}(I_{\mathrm{Ca}}, V_D) + \phi_{\mathrm{res}} v_{\mathrm{res}} - \phi_{\mathrm{form}} v_{\mathrm{form}} - \mathrm{Renal}(\mathrm{Ca}_s, P)\right]$$
 
 $$\frac{dP}{dt} = \delta_P\left(P_{\mathrm{set}}(\mathrm{Ca}_s) - P\right), \qquad
 \frac{dV_D}{dt} = \delta_{VD}\left(V_{D,\mathrm{set}}(P) - V_D\right)$$
+
+**Absorption** has an unregulated paracellular arm linear in intake and a transcellular arm that saturates in intake and is gated by calcitriol. The second arm carries most of the baseline flux, and it is what buffers a change in dietary calcium: more intake raises serum calcium, which lowers PTH, which lowers $V_D$, which closes the transcellular arm.
+
+$$\mathrm{Abs} = a_p I_{\mathrm{Ca}} + a_a I_{\mathrm{Ca},0}\,\frac{I_{\mathrm{Ca}}}{K_I + I_{\mathrm{Ca}}}\,\frac{V_D}{K_{VD} + V_D}$$
+
+**Renal excretion** is what the tubule fails to reclaim: the excess of serum calcium over a threshold that PTH raises. Its steepness is not a free parameter but a consequence of where the threshold sits — placing it about 2 % below $\mathrm{Ca}_{s,0}$ makes excretion a small difference of two large numbers, which is the same statement as "about 98 % of filtered calcium is reabsorbed". The gain then follows from closing the baseline balance, so the module has one free physiological choice rather than a fitted exponent.
+
+$$\mathrm{Renal} = k_{\mathrm{ren}}\max\left(\mathrm{Ca}_s - \mathrm{Ca}_{\mathrm{th}}, 0\right), \qquad
+\mathrm{Ca}_{\mathrm{th}} = \mathrm{Ca}_{\mathrm{th},0} + \lambda_{P}^{\mathrm{ren}}\,\Delta\,(P - 1)$$
+
+$$\Delta = \mathrm{Ca}_{s,0} - \mathrm{Ca}_{\mathrm{th},0}, \qquad
+k_{\mathrm{ren}} = \frac{\mathrm{Abs}_0 + \phi_{\mathrm{res}} - \phi_{\mathrm{form}}}{\Delta}$$
+
+**Skeletal exchange** uses $\phi_{\mathrm{res}} = \phi_{\mathrm{form}}$, so it vanishes at baseline and carries the true skeletal calcium flux under perturbation. Their magnitude is the order of adult skeletal calcium turnover, which is what allows unloading to suppress PTH.
+
+*This module was rebuilt at v2.14.* The earlier form failed in both directions at once: the transcellular arm had been written as a fraction rather than a flux and so contributed under 0.1 % of absorption, leaving serum calcium to swing 15 % across the dietary range, while $\phi_{\mathrm{res}}$ and $\phi_{\mathrm{form}}$ were three orders of magnitude below the flux they were normalised against, so bone could not move serum calcium at all. Both are reported in the main text.
 
 ---
 

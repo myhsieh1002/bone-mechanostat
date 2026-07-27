@@ -7,12 +7,13 @@ function out = calibrate(opts)
 %   targets (V6, V10, V14) are evaluated blindly AFTER the fit and never
 %   enter the objective (PROJECT_PLAN §9).
 %
-%   Free parameters (5, within §9's 4-6 budget):
+%   Free parameters (6, at the top of §9's 4-6 budget):
 %     k_res      turnover magnitude              -> V1 (k_form derived)
 %     K_S        SOST mechanical sensitivity     -> V2 disuse violence
 %     K_P_sost   PTH -> SOST strength            -> V7 sign/magnitude
 %     lambda_P   PTH -> RANKL strength           -> V7 (works with K_P_sost)
 %     delta_ab   romosozumab clearance           -> V8
+%     sost_reb   SOST rebound plateau            -> V16 (pairs with delta_ab)
 %
 %   Optimiser: SURROGATEOPT (Global Optimization Toolbox) -- derivative-
 %   free, robust to the flat-bottomed banded objective, and it tolerates
@@ -43,12 +44,14 @@ rng(20260722, "twister");
 
 p0 = getDefaultParams();
 
-freeNames = ["k_res" "K_S" "K_P_sost" "lambda_P" "delta_ab"];
-lb = [1e-8, 0.1,  1.0,  0.5,  0.02];
-ub = [1e-6, 5.0,  100,  10,   2.0];
-% Start from the hand-found point that already clears every band, so the
-% surrogate begins inside the feasible region and only polishes.
-x0 = [4e-7, 2.0, 40, 4.0, 0.1];
+freeNames = ["k_res" "K_S" "K_P_sost" "lambda_P" "delta_ab" "sost_reb"];
+lb = [1e-8, 0.1,  1.0,  0.5,  0.02, 0.0];
+ub = [1e-6, 5.0,  100,  10,   2.0,  3.0];
+% Start from the incumbent parameter set, which is inside the feasible
+% region for most bands, so the surrogate only polishes.  sost_reb joined
+% the free list at v2.14: it was fitted by hand in P5h, but V16 sits in
+% the objective, so leaving it fixed made delta_ab carry two targets.
+x0 = [p0.k_res, p0.K_S, p0.K_P_sost, p0.lambda_P, p0.delta_ab, p0.sost_reb];
 
 objfun = @(x) localObjective(x, freeNames, p0);
 
