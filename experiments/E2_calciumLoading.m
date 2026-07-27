@@ -93,8 +93,16 @@ fprintf("  ABSOLUTE   achieved gain, severe %.3f %% vs supplemented %.3f %% (BMC
         dBMC(iSev,jVig), dBMC(iSupp,jVig));
 fprintf("             deficiency costs %+6.3f %% points (%.0f %% of the gain)  -> claim HOLDS\n", ...
         absTrunc, 100 * absTrunc / dBMC(iSupp,jVig));
-fprintf("  DIFFERENCE-IN-DIFFERENCES interaction %+6.3f %% points          -> claim REVERSES\n", ...
-        interaction);
+% The verdict must be READ OFF THE SIGN, not hard-coded.  Until v2.14 this
+% line printed "claim REVERSES" unconditionally, which was true when the
+% interaction was -0.536 and silently wrong once P5k flipped it to +0.333.
+if interaction > 0
+    didVerdict = "claim HOLDS on this framing too";
+else
+    didVerdict = "claim REVERSES";
+end
+fprintf("  DIFFERENCE-IN-DIFFERENCES interaction %+6.3f %% points          -> %s\n", ...
+        interaction, didVerdict);
 fprintf("             (sedentary arm falls faster under deficiency: %+.3f -> %+.3f %%)\n", ...
         dBMC(iSupp,jSed), dBMC(iSev,jSed));
 

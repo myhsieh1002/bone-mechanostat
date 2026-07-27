@@ -51,14 +51,20 @@ res.V7b_dBMD     = 100 * (bmdEnd(end) / bmdEnd(1) - 1);
 fprintf("\n  V7b serum calcium and dietary intake\n");
 fprintf("      intake %4d -> %4d mg/day moves Ca_s %.4f to %.4f mmol/L\n", ...
         intakes(1), intakes(end), CaEnd(1), CaEnd(end));
-fprintf("      = %.2f %% spread.  *** DEFECT: physiological serum calcium is\n", ...
-        res.V7b_CaSpread);
-fprintf("      defended within about 2 %%, and this parameter set does not do\n");
-fprintf("      that.  Passive intestinal absorption (a_p_abs) is linear and\n");
-fprintf("      unsaturating in intake, so it dominates the saturating active\n");
-fprintf("      term, and the only defence left is the renal power law.  The\n");
-fprintf("      saturable tubular reabsorption that renal_k and renal_Ca_th\n");
-fprintf("      were declared for is not implemented. ***\n");
+% Read the verdict off the number.  Until v2.14 these lines printed a
+% hard-coded DEFECT paragraph, which was true at 15 % and would have gone
+% on being printed after P5k fixed it -- the same stale-label bug as E2's
+% "claim REVERSES".
+if res.V7b_CaSpread <= 3
+    fprintf("      = %.2f %% spread, within the ~2-3 %% physiology allows.\n", ...
+            res.V7b_CaSpread);
+    fprintf("      (P5k, v2.14: was 15.15 %% before M8 was rebuilt.)\n");
+else
+    fprintf("      = %.2f %% spread.  *** DEFECT: physiological serum calcium is\n", ...
+            res.V7b_CaSpread);
+    fprintf("      defended within about 2 %%, and this parameter set does not\n");
+    fprintf("      do that -- check the absorption and renal arms of M8. ***\n");
+end
 fprintf("      the same contrast moves aBMD by %+.3f %%\n", res.V7b_dBMD);
 
 % What a serum-calcium-raising variant would do, holding intake fixed: the
