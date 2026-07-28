@@ -1,6 +1,6 @@
 # HANDOFF — bone-mechanostat
 
-**接手者請先讀這份，再讀 `PROJECT_PLAN_bone_mechanostat.md`（v2.14，含附錄 C1–C27）與 `README.zh-TW.md`（中文工作版；`README.md` 為對外英文版）。**
+**接手者請先讀這份，再讀 `PROJECT_PLAN_bone_mechanostat.md`（v2.18，含附錄 C1–C29）與 `README.zh-TW.md`（中文工作版；`README.md` 為對外英文版）。**
 
 主持人：謝明諭 (Ming-Yu Hsieh)｜MATLAB R2026a｜語言：程式碼英文、討論與計畫書中文。
 
@@ -93,7 +93,7 @@
 
 ---
 
-### 🟡 稿件：彈性律那組已改完，其餘正在對帳中（不再等 Fu）
+### ✅ 稿件已與 v2.18 完全對帳（2026-07-28）
 
 **已改完（2026-07-28）**：彈性律那組數字與那句錯誤陳述，三個格式 + 兩份 docx 皆已更新。**未重出 TIFF**（刻意）。
 
@@ -103,41 +103,25 @@
 
 > 若日後取得 Fu 的 supplementary 或 Mao 2022，再回頭複驗 V4／V5／V5b。
 
-### 仍待對帳（等 Fu 之後一次做完）
+**全部完成**：三個語言版本 + 兩份 docx + **七張 TIFF 皆已重出**。引註完整性複驗通過（25/25 有引用、無孤兒 bibitem、LaTeX 環境平衡）。
 
-| | 稿件現值 | **v2.17** |
-|---|---|---|
-| V14（盲測） | 761.8 με | **786.8** |
-| V2 / V7 / V8 / V10 | 1.196 / +0.705 / +12.160 / −11.471 | **1.185 / +0.716 / +12.042 / −11.380** |
-| V6a–f | 12.48/11.78/10.54/24.02/13.03/1.76 | **12.88/12.45/10.82/25.22/14.09/1.86** |
+**這一輪值得記住的兩件事**：
 
-✅ 那句錯誤陳述已改寫（主稿 + S1 Text + `docs/model_equations.md`）。新的寫法比舊的更強：**皮質與小樑各有一個量測依據，而非一個被劈成兩半的折衷值**。
+1. **V5 由「過衝 2.4 倍」變成「吻合至 4 % 以內」**。`kappa_E`/`nu_E` 改採 Currey 之後，休息插入增益由 13.99 倍降到 **6.02 倍**，而 Srinivasan 實測是 **5.8 倍**。稿件已改寫為「方向與幅度都相符」，**並註明這個吻合是最近才出現、不是刻意湊的** —— 先前那個 2–5 倍的區間本來就是我們自己編的。
+2. **V12 次相加由 10.2 % 變 13.1 %**，V10 由 −11.471 變 **−12.751**，V14 由 761.8 變 **786.8**（仍在 lazy zone）。
 
-⚠️ 七張 TIFF 仍需重出 —— **等 Fu 之後與其餘對帳一起做**，現在重出會白做一次。
+> ⚠️ **改稿時的陷阱**：重寫段落容易把引註一起刪掉。這次 `[16]`（Currey）就是這樣掉的，靠雙向對照抓回來。**每次重寫段落後都要跑 §5 的引註對照。**
 
----
+### 📚 文獻：**12 篇全數到手**（v2.18, 2026-07-28）
 
-### 📚 文獻取得狀態（v2.15 更新）
+`Reference/` 現有：`02`(Pivonka) `03`(Peterson&Riggs) `10`(Lemaire) `a01`(Fu) `a02`(Wijenayaka) `a03`(Haapasalo) `a04`(Li) `a05`(Weinbaum) `a06a`(Lerebours) `a06b`(Martin) `a07`(Srinivasan) `a08`(Currey) `a09`(Cosman) `a10`(Marques) `a11`(Schulte)。**PDF 永不進版控**（`.gitignore` 涵蓋 `Reference/`）。
 
-**手上有全文**：Pivonka 2008（`Reference/02.pdf`）、Peterson & Riggs 2010（`03.pdf`）、**Lemaire 2004（`10.pdf`，2026-07-28 新到）**。三者皆已逐字轉錄於 `data/reference_parameters.md`。**PDF 本身永不進版控**（`.gitignore` 第 19 行涵蓋 `Reference/`）。
+**已榨乾**：Pivonka、Peterson&Riggs、Lemaire、Wijenayaka(a02)、Srinivasan(a07)、Currey(a08)、Marques(a10)、Fu(a01)。
+**尚未榨乾**：`a03` Haapasalo（六項 V6 百分比已核對相符，但絕對 Tot.Ar／M.Cav.Ar 在長條圖裡，文字層抽不出，`r_p_0`／`r_e_0` 仍為推算）、`a04` Li、`a05` Weinbaum、`a06a` Lerebours、`a06b` Martin、`a09` Cosman、`a11` Schulte。
 
-**仍缺 12 篇，依價值排序**（`references_verified.md` E 段的舊排序已標註過期，且漏了 Haapasalo 與 Srinivasan）：
+> **a01 Fu 的結論很重要**：它只有**方程式**（三態 ODE，六個 k₁–k₆，兩個是 τ 的函數），**沒有數值**（在館際掃描不含的 Appendix），且動力學原始出處是 **Mao F, Yang Y, Jiang H. Biophys J 2022;121:4740–4747**（手指觸覺模型）。四個 MSIC 常數**仍是佔位值**。要追的是 Fu 的 supplementary 或 Mao 2022。
 
-| | 文獻 | 解鎖 |
-|---|---|---|
-| **1** | **Fu R, Wang C, Shahneela N, Ud Din R, Yang H.** Int J Mech Sci. 2025;286:109931 | `k_co_max, k_oc, k_oi, k_ic` 四個佔位速率常數；**V5b 首要複驗對象**，連動 V4／V5 |
-| **2** | **Wijenayaka AR, Kogawa M, Lim HP, Bonewald LF, Findlay DM, Atkins GJ.** PLoS One. 2011;6(10):e25900 | **V13 的結構性天花板**：`K_L`=0.5 而基線 S=1，最大恆為 1.33 倍。要定 `K_L` 非讀原文不可。v2.13 稽核才浮現的需求 |
-| **3** | **Haapasalo H, Kontulainen S, Sievanen H, Kannus P, Jarvinen M, Vuori I.** Bone. 2000;27(3):351–357 | `r_p_0`、`r_e_0` 的說明明寫「awaits full-text confirmation」（現值由 Tot.Ar／M.Cav.Ar 量級**推算**）。**這是六個 V6 盲測的來源**，卻一直不在清單上 |
-| **4** | **Li X, Han L, Nookaew I, Mannen E, Silva MJ, Almeida M, et al.** eLife. 2019;8:e49631 | `tau_50`、`k_tau_sig`（後者是 v1.5 為讓 V2 成立而下修的擬合值，等於扛著一個沒出處的數） |
-| **5** | **Weinbaum S, Cowin SC, Zeng Y.** J Biomech. 1994;27(3):339–360 | `k_perm, S_stor, a_canal, Gamma_PCM`；可把集總的 `K_tau` 由標定值改成推導值 |
-| **6** | **Lerebours C, Thomas CDL, Clement JG, Buenzli PR, Pivonka P.** Bone. 2015;72:109–117 ＋ **Martin RB.** Crit Rev Biomed Eng. 1984;10(3):179–222 | `S_v(f_bm)` 真形式。**Lerebours 更關鍵** —— 它指出皮質與小樑不可共用一條曲線，而我們兩個腔室正是共用的 |
-| **7** | **Srinivasan S, Weimer DA, Agans SC, Bain SD, Gross TS.** J Bone Miner Res. 2002;17(9):1613–1620 | V5 的「2–5 倍」是**我們自己設的帶**，而模型給 13.99 倍（超出上界 2.8 倍）。要判斷是模型錯還是帶設錯，得看原始實驗數字。**這一篇原本也不在清單上** |
-| **8** | **Currey JD.** J Biomech. 1988;21(2):131–139（＋ Gibson & Ashby, *Cellular Solids*，教科書） | `kappa_E`、`nu_E`。⚠️ **已引用（文獻 16）但未取全文** —— 引用過 ≠ 拿到數。`kappa_E` 決定力學回饋增益，是 E6 關鍵參數 |
-| **9** | **Cosman F, Crittenden DB, Adachi JD, Binkley N, Czerwinski E, Ferrari S, et al.** N Engl J Med. 2016;375(16):1532–1543 | romosozumab 逐月 BMD 與骨標記軌跡 → V8/V9/V16 由端點升級為軌跡。**對現在未達的 V16 特別有用** |
-| **10** | **Marques FC, Boaretti D, Walle M, Scheuren AC, Schulte FA, Muller R.** Front Bioeng Biotechnol. 2023;11:1140673 | V5b 的定量頻率–反應曲線（現在只用了它的對數形式定性宣稱） |
-| **11** | **Schulte FA, Marques FC, Griesbach JK, Weigt C, von Salis-Soglio M, Lambers FM, et al.** Nat Commun. 2026;17:3759 | V12 定量交互作用項 → 檢驗我們的次相加 10.2 % |
-
-**不需再取得就能結清的帳**：`K_L3`、`kappa_OPG` 的說明寫著「Must be taken from the source full text」，但那個 source 是 Pivonka 2008，全文我們有。
+> **下一輪的第一件事**：`a06a` Lerebours 優先 —— 它指出皮質與小樑不可共用一條 `S_v(f_bm)` 曲線，與 P5m 剛處理完的 `kappa_E` 是同一個病灶（單一函數硬跨兩種材料）。
 
 ### ⚠️ 22 個參數宣告了卻從未被程式讀取
 
