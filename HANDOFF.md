@@ -93,18 +93,21 @@ P5k 動了校正，**稿件（三個語言版本 + 兩份 docx + 七張 TIFF）�
 
 **手上有全文**：Pivonka 2008（`Reference/02.pdf`）、Peterson & Riggs 2010（`03.pdf`）、**Lemaire 2004（`10.pdf`，2026-07-28 新到）**。三者皆已逐字轉錄於 `data/reference_parameters.md`。**PDF 本身永不進版控**（`.gitignore` 第 19 行涵蓋 `Reference/`）。
 
-**仍缺，依價值排序**（`references_verified.md` E 段的舊排序已標註過期）：
+**仍缺 12 篇，依價值排序**（`references_verified.md` E 段的舊排序已標註過期，且漏了 Haapasalo 與 Srinivasan）：
 
 | | 文獻 | 解鎖 |
 |---|---|---|
-| 1 | **Fu 2025**, Int J Mech Sci 286:109931 | MSIC 四個速率常數；**V5b 首要複驗對象** |
-| 2 | **Wijenayaka 2011**, PLoS One 6(10):e25900 | **V13 的結構性天花板**（K_L=0.5 而基線 S=1，最大恆為 1.33 倍）—— 這是 v2.13 稽核才冒出來的需求 |
-| 3 | **Li 2019**, eLife 8:e49631 | `tau_50`、`k_tau_sig`（後者是 v1.5 為讓 V2 成立而下修的擬合值） |
-| 4 | **Weinbaum 1994**, J Biomech 27(3):339–360 | M2 微結構四參數；可把 `K_tau` 由標定改為推導 |
-| 5 | **Lerebours 2015**, Bone 72:109–117 ＋ **Martin 1984** | `S_v(f_bm)` 真形式；Lerebours 指出皮質與小樑不可共用一條曲線 |
-| 6 | **Currey 1988**, J Biomech 21(2):131–139 | `kappa_E`、`nu_E`。**注意：已引用（文獻 16）但未取全文** —— 引用過 ≠ 拿到數 |
-| 7 | **Cosman 2016**, NEJM 375(16):1532–1543 | romosozumab 逐月軌跡；對現在未達的 V16 特別有用 |
-| 8 | **Marques 2023** / **Schulte 2026** | V5b 定量曲線 / V12 定量交互作用 |
+| **1** | **Fu R, Wang C, Shahneela N, Ud Din R, Yang H.** Int J Mech Sci. 2025;286:109931 | `k_co_max, k_oc, k_oi, k_ic` 四個佔位速率常數；**V5b 首要複驗對象**，連動 V4／V5 |
+| **2** | **Wijenayaka AR, Kogawa M, Lim HP, Bonewald LF, Findlay DM, Atkins GJ.** PLoS One. 2011;6(10):e25900 | **V13 的結構性天花板**：`K_L`=0.5 而基線 S=1，最大恆為 1.33 倍。要定 `K_L` 非讀原文不可。v2.13 稽核才浮現的需求 |
+| **3** | **Haapasalo H, Kontulainen S, Sievanen H, Kannus P, Jarvinen M, Vuori I.** Bone. 2000;27(3):351–357 | `r_p_0`、`r_e_0` 的說明明寫「awaits full-text confirmation」（現值由 Tot.Ar／M.Cav.Ar 量級**推算**）。**這是六個 V6 盲測的來源**，卻一直不在清單上 |
+| **4** | **Li X, Han L, Nookaew I, Mannen E, Silva MJ, Almeida M, et al.** eLife. 2019;8:e49631 | `tau_50`、`k_tau_sig`（後者是 v1.5 為讓 V2 成立而下修的擬合值，等於扛著一個沒出處的數） |
+| **5** | **Weinbaum S, Cowin SC, Zeng Y.** J Biomech. 1994;27(3):339–360 | `k_perm, S_stor, a_canal, Gamma_PCM`；可把集總的 `K_tau` 由標定值改成推導值 |
+| **6** | **Lerebours C, Thomas CDL, Clement JG, Buenzli PR, Pivonka P.** Bone. 2015;72:109–117 ＋ **Martin RB.** Crit Rev Biomed Eng. 1984;10(3):179–222 | `S_v(f_bm)` 真形式。**Lerebours 更關鍵** —— 它指出皮質與小樑不可共用一條曲線，而我們兩個腔室正是共用的 |
+| **7** | **Srinivasan S, Weimer DA, Agans SC, Bain SD, Gross TS.** J Bone Miner Res. 2002;17(9):1613–1620 | V5 的「2–5 倍」是**我們自己設的帶**，而模型給 13.99 倍（超出上界 2.8 倍）。要判斷是模型錯還是帶設錯，得看原始實驗數字。**這一篇原本也不在清單上** |
+| **8** | **Currey JD.** J Biomech. 1988;21(2):131–139（＋ Gibson & Ashby, *Cellular Solids*，教科書） | `kappa_E`、`nu_E`。⚠️ **已引用（文獻 16）但未取全文** —— 引用過 ≠ 拿到數。`kappa_E` 決定力學回饋增益，是 E6 關鍵參數 |
+| **9** | **Cosman F, Crittenden DB, Adachi JD, Binkley N, Czerwinski E, Ferrari S, et al.** N Engl J Med. 2016;375(16):1532–1543 | romosozumab 逐月 BMD 與骨標記軌跡 → V8/V9/V16 由端點升級為軌跡。**對現在未達的 V16 特別有用** |
+| **10** | **Marques FC, Boaretti D, Walle M, Scheuren AC, Schulte FA, Muller R.** Front Bioeng Biotechnol. 2023;11:1140673 | V5b 的定量頻率–反應曲線（現在只用了它的對數形式定性宣稱） |
+| **11** | **Schulte FA, Marques FC, Griesbach JK, Weigt C, von Salis-Soglio M, Lambers FM, et al.** Nat Commun. 2026;17:3759 | V12 定量交互作用項 → 檢驗我們的次相加 10.2 % |
 
 **不需再取得就能結清的帳**：`K_L3`、`kappa_OPG` 的說明寫著「Must be taken from the source full text」，但那個 source 是 Pivonka 2008，全文我們有。
 
