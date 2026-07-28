@@ -160,4 +160,58 @@ Pivonka 2008 是 Lemaire 的擴充版，改用不同的無因次化與 TGF-β �
 
 ---
 
+## 附記：v2.15 從既有全文結清的五個參數
+
+以下五個參數的說明原本寫著「Awaits …」或「Must be taken from the source full text」，暗示只是還沒去查。實際查完之後，**只有一個真的是查得到的數，另外四個都是問錯了問題**。
+
+| 參數 | 原本狀態 | 結清後 |
+|---|---|---|
+| `K_VD` | Awaits Peterson & Riggs 2010 | ✅ **確認 = 1.0**。P&R Table 1 的「Calcitriol-dependent Ca absorption」基線為 **0.5 (unitless)**；本模型的吸收閘為 `V_D/(K_VD + V_D)`，在 `V_D_0 = 1`、`K_VD = 1` 時恰為 0.5。**原值由假設升格為文獻確認** |
+| `P_max` | Awaits Peterson & Riggs 2010 | ❌ **問題本身無效**。`Pset` 已正規化為基線 = 1，整體分泌尺度是規範自由度（gauge），無可觀測後果；而且**程式從未讀取它** |
+| `k_VD` | Awaits Peterson & Riggs 2010 | ❌ 同上。`VDset` 正規化、趨近速率由 `delta_VD` 承擔，此尺度亦為 gauge，**程式從未讀取** |
+| `K_L3` | Must be taken from the source full text | ⚠️ **收斂到「只剩一個未知數」，但未解**（見下） |
+| `kappa_OPG` | 同上 | ⚠️ 同上 |
+
+### K_L3 與 kappa_OPG：為何全文在手仍解不出來
+
+本模型 M4 用集總 Hill 式：
+
+```
+pi_L = L / (K_L3 + L + kappa_OPG · O)      （L、O 皆基線正規化為 1）
+```
+
+Pivonka 與 Lemaire 都用**顯式競爭結合**，其佔有率為
+
+```
+[L] / (1/K_A2 + [L] + (K_A1/K_A2)·[O])
+```
+
+兩篇的結合常數**互相吻合**（Pivonka 的 K_A1、K_A2 就是 Lemaire 的 k₁/k₂ 與 k₃/k₄）：
+
+| | 值 | 來源 |
+|---|---|---|
+| K_A2（RANKL–RANK 結合） | **3.412 × 10⁻² pM⁻¹** | Pivonka Table 3；Lemaire k₃/k₄ = 5.8e-4 / 1.7e-2 |
+| K_A1（RANKL–OPG 結合） | **1.0 × 10⁻³ pM⁻¹** | Pivonka Table 3；Lemaire k₁/k₂ = 1e-2 / 10 |
+
+故以 pM 計，`1/K_A2 = 29.31 pM`。但我們的 L、O 是**基線正規化**的，換算為
+
+```
+K_L3      = 1 / (K_A2 · L₀)
+kappa_OPG = K_L3 · K_A1 · O₀
+```
+
+**兩篇的表都沒有給出可相容單位的基線 RANKL 濃度 L₀ 與 OPG 濃度 O₀**（P&R Table 1 給 RANKL = 0.4、OPG = 4，但標為 unitless；Pivonka Table 3 不列穩態值）。
+
+**因此這不是「還沒去查」，而是「剩一個未知數」。** 文獻真正約束住的是**比值**：
+
+```
+kappa_OPG / K_L3 = K_A1 · O₀
+```
+
+現行值 `K_L3 = kappa_OPG = 1` 等於在主張 **O₀ ≈ 1000 pM**。這是一個具體、可被未來文獻檢驗的宣稱 —— 日後若取得任何給出基線 OPG 絕對濃度的來源，直接對照這個數即可。
+
+> **教訓**：「Awaits <文獻>」這種註記本身要定期複查。五筆裡只有一筆是真的在等文獻；兩筆問的是規範自由度（不可能有答案），兩筆需要的是原文沒提供的量。**寫下待辦時要寫清楚缺的到底是什麼。**
+
+---
+
 *抽取者：Claude（Opus 4.8）｜2026-07-25｜原文 PDF 存於 `Reference/`*
