@@ -89,6 +89,40 @@ P5k 動了校正，**稿件（三個語言版本 + 兩份 docx + 七張 TIFF）�
 
 ---
 
+### 📚 文獻取得狀態（v2.15 更新）
+
+**手上有全文**：Pivonka 2008（`Reference/02.pdf`）、Peterson & Riggs 2010（`03.pdf`）、**Lemaire 2004（`10.pdf`，2026-07-28 新到）**。三者皆已逐字轉錄於 `data/reference_parameters.md`。**PDF 本身永不進版控**（`.gitignore` 第 19 行涵蓋 `Reference/`）。
+
+**仍缺，依價值排序**（`references_verified.md` E 段的舊排序已標註過期）：
+
+| | 文獻 | 解鎖 |
+|---|---|---|
+| 1 | **Fu 2025**, Int J Mech Sci 286:109931 | MSIC 四個速率常數；**V5b 首要複驗對象** |
+| 2 | **Wijenayaka 2011**, PLoS One 6(10):e25900 | **V13 的結構性天花板**（K_L=0.5 而基線 S=1，最大恆為 1.33 倍）—— 這是 v2.13 稽核才冒出來的需求 |
+| 3 | **Li 2019**, eLife 8:e49631 | `tau_50`、`k_tau_sig`（後者是 v1.5 為讓 V2 成立而下修的擬合值） |
+| 4 | **Weinbaum 1994**, J Biomech 27(3):339–360 | M2 微結構四參數；可把 `K_tau` 由標定改為推導 |
+| 5 | **Lerebours 2015**, Bone 72:109–117 ＋ **Martin 1984** | `S_v(f_bm)` 真形式；Lerebours 指出皮質與小樑不可共用一條曲線 |
+| 6 | **Currey 1988**, J Biomech 21(2):131–139 | `kappa_E`、`nu_E`。**注意：已引用（文獻 16）但未取全文** —— 引用過 ≠ 拿到數 |
+| 7 | **Cosman 2016**, NEJM 375(16):1532–1543 | romosozumab 逐月軌跡；對現在未達的 V16 特別有用 |
+| 8 | **Marques 2023** / **Schulte 2026** | V5b 定量曲線 / V12 定量交互作用 |
+
+**不需再取得就能結清的帳**：`K_L3`、`kappa_OPG` 的說明寫著「Must be taken from the source full text」，但那個 source 是 Pivonka 2008，全文我們有。
+
+### ⚠️ 22 個參數宣告了卻從未被程式讀取
+
+這是 `renal_k`／`renal_Ca_th` 藏了好幾個月沒被發現的同一個破口（P5k 前），現在確認至少有 22 個：
+
+```
+alpha_f f_c tau_target_lo tau_target_hi J_max delta_Y beta_S k_T gamma_ot
+L_0 O_0 W_0 delta_beta D_A k_B R_0 B_0 C_0 P_max k_VD renal_k n_renal
+```
+
+其中有些是刻意的（`alpha_f`/`f_c`/`n_renal` 已標 superseded；`tau_target_*` 是驗證用非模型參數；`R_0`/`B_0`/`C_0`/`D_A`/`k_B` 因 M6 改為基線相對式而只作出處紀錄）。但**這份名單從來沒有人列過**，所以無法區分「刻意」與「忘了接線」。
+
+**建議做法**：在 `test_units` 加一個檢查 —— 每個參數要嘛被 `src/` 讀取，要嘛在說明中明確標記為 superseded／provenance-only／非模型參數。這樣 P5k 那種「宣告了卻沒實作」就不可能再躲過。
+
+---
+
 ### 檢查方法（逐節問三道題）
 
 1. **主張說清楚了嗎？** 讀者不必翻回前言就知道這節在測什麼。

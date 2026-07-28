@@ -103,13 +103,60 @@
 
 ---
 
-## 待補：Lemaire et al. 2004（#1，館際服務中）
+## Lemaire et al. 2004, *J Theor Biol* 229(3):293–309（`Reference/10.pdf`）
 
-Pivonka 2008 為 Lemaire 2004 的擴充版，多數 M6 速率常數已可由 Pivonka Table 3 取得（見上）。Lemaire 原文尚需用於：
-- 確認 R/B/C 的**基線穩態濃度**（本模型基線相對式已繞過，但接回絕對式時需要）；
-- π 反應函數的原始解離常數與 f₀（Pivonka 用 TGF-β 顯式式取代）。
+全文於 2026-07-28 取得（館際借閱，RapidILL #-27166587）。以下逐字抄自附錄 A.2 與 A.3 之參數表。
 
-**取得後補**：Lemaire Table 1 之 $C^s$、$k_1..k_6$、RANK 固定濃度、以及 R/B/C 穩態值。
+### A.2 模型變數與參考值（穩態）
+
+| 符號 | 單位 | 參考值 | 說明 |
+|---|---|---|---|
+| R | pM | **0.0007734** | Responding osteoblasts |
+| B | pM | **0.0007282** | Active osteoblasts |
+| C | pM | **0.0009127** | Active osteoclasts |
+
+### A.3 參數表（節錄與本模型相關者）
+
+| 符號 | 單位 | 值 | 說明 |
+|---|---|---|---|
+| C^s | pM | 5 × 10⁻³ | Value of C to get half differentiation flux |
+| D_A | day⁻¹ | **0.7** | Rate of osteoclast apoptosis caused by TGF-β |
+| d_B | day⁻¹ | 0.7 | Differentiation rate of responding osteoblasts |
+| D_C | pM·day⁻¹ | **2.1 × 10⁻³** | Differentiation rate of osteoclast precursors |
+| D_R | pM·day⁻¹ | **7 × 10⁻⁴** | Differentiation rate of osteoblast progenitors |
+| f₀ | 無因次 | 0.05 | Fixed proportion |
+| K | pM | 10 | Fixed concentration of RANK |
+| k₁ | pM⁻¹day⁻¹ | 10⁻² | OPG–RANKL binding |
+| k₂ | day⁻¹ | 10 | OPG–RANKL unbinding |
+| k₃ | pM⁻¹day⁻¹ | 5.8 × 10⁻⁴ | RANK–RANKL binding |
+| k₄ | day⁻¹ | 1.7 × 10⁻² | RANK–RANKL unbinding |
+| k₅ | pM⁻¹day⁻¹ | 0.02 | PTH binding with its receptor |
+| k₆ | day⁻¹ | 3 | PTH unbinding |
+| k_B | day⁻¹ | **0.189** | Rate of elimination of active osteoblasts |
+| k_O | day⁻¹ | 0.35 | Rate of elimination of OPG |
+| k_P | day⁻¹ | 86 | Rate of elimination of PTH |
+
+其中 `D_B = f₀ · d_B = 0.05 × 0.7 = 0.035`（A.3 定義 `DB = f0·dB`）。
+
+### 對本模型的三項結論
+
+**1. `R_0` 是抄錯的（已於 v2.15 更正）。** CSV 原寫 7.0 × 10⁻⁴，原文是 **7.734 × 10⁻⁴**，差 10.5 %。7 × 10⁻⁴ 正好是同表 `D_R` 的值 —— 幾乎可以確定是抄成隔壁那一列。`B_0` 與 `C_0` 原為四捨五入值（7.3e-4、9.1e-4），現改為原文精確值。
+
+> ⚠️ **但這三個參數在程式碼中從未被任何地方讀取**（`grep -rn "p\.R_0\|p\.B_0\|p\.C_0" src/` 無結果）。M6 的 R/B/C 是基線相對式（基線恆為 1），故絕對濃度只作為出處紀錄。**因此這個更正不改變任何數值結果**，但它與 `renal_k`/`renal_Ca_th`（P5k 前）同屬「宣告了卻沒被讀」的一類，值得一併記住。
+
+**2. `D_A = 0.7` 與 `k_B = 0.189` 由「佔位值與原文相符」升級為對照原文查證無誤。**
+
+**3. `D_B`、`D_C`、`C_s_TGF` 的 Lemaire 值與我們採用的 Pivonka 值不同，這是預期的，不要「修正」。**
+
+| | Lemaire 2004 | Pivonka 2008（本模型採用） |
+|---|---|---|
+| D_B | 0.035（= f₀·d_B） | 5.348 |
+| D_C | 2.1 × 10⁻³ | 0.210 |
+| C_s | 5 × 10⁻³ | 4.545 × 10⁻³ |
+
+Pivonka 2008 是 Lemaire 的擴充版，改用不同的無因次化與 TGF-β 顯式式，故速率常數不可逐項對應。**v1.9 曾把 D_B 由 7e-4 改為 5.348、D_C 由 2.1e-3 改為 0.210，兩者都是刻意改用 Pivonka 的參數化，不是修正筆誤。** 若日後有人拿 Lemaire 原文來「訂正」這兩個值，會把模型改壞。
+
+**4. π 反應函數的原始形式已取得**：`p_C = (C + f₀·C^s)/(C + C^s)`、`p_L = K_dL/K`，其中 `K_dL/K = (k₃/k₄)·…`。本模型的 `pi_L = L/(K_L3 + L + κ_OPG·O)` 是 Pivonka 的形式，非 Lemaire 的，故 `K_L3` 與 `κ_OPG` 仍須取自 Pivonka 原文（全文已有，見上）。
 
 ---
 
