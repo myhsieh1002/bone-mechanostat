@@ -251,4 +251,58 @@ kappa_OPG / K_L3 = K_A1 · O₀
 
 ---
 
+## a08 = Currey 1988 —— 榨乾（v2.15）
+
+> Currey JD. *J Biomech.* 1988;21(2):131–139. PMID 3350827.
+
+**Table（第 453–470 行）逐字抄錄的關鍵式子**，皆為 log–log 迴歸：
+
+| 式 | 迴歸式 | R² |
+|---|---|---|
+| (5) 彎曲、單變數 | log E = −8.83 + **4.15** log(calcium) | 0.70 |
+| (6) 彎曲、單變數 | log E = 1.39 + **5.34** log(V_f) | 0.70 |
+| (8) 拉伸、單變數 | log E = 1.37 + **5.74** log(V_f) | 0.56 |
+| **(10) 彎曲、雙變數** | **log E = −4.84 + 2.55 log(calcium) + 3.13 log(V_f)** | **0.83** |
+
+摘要原文：「Young's modulus has a roughly **cubic** relationship with both calcium content and volume fraction.」樣本為 18 個物種、80 件彎曲試件 + 23 件拉伸試件。
+
+### 對本模型：兩個指數都太低，而且都超出我們自己宣告的界
+
+本模型分開建模孔隙度與礦化度，故應採**雙變數**式 (10)：
+
+| | 本模型現值 | 上下界 | **Currey (10)** |
+|---|---|---|---|
+| `kappa_E`（對 f_bm） | 2.5 | 2.0–3.0 | **3.13** ← 超出上界 |
+| `nu_E`（對礦化度） | 1.0 | 0.5–2.0 | **2.55** ← 超出上界 |
+
+**兩者皆未更動。** `kappa_E` 是力學回饋增益，改它等於重跑整個校正：閉環的 d ln ε/d ln f_bm 會由 −2.50 變成 −3.13（稿件中那個「與解析預期 −κ_E 吻合至 4.7×10⁻¹²」的驗證數也會跟著變）。
+
+> **方向值得注意**：回饋**更強**意味著 mechanostat 把低骨量拉回來的力道**更大**，所以 **P3 的單穩態結論只會被強化，不會被威脅**。這不是壞消息，但仍是一次會動到校正的改動。
+
+**待辦**：先放寬 `kappa_E`／`nu_E` 的上下界，再重擬。
+
+---
+
+## a10 = Marques 2023 —— 引用查核通過（v2.15）
+
+摘要原文：「several (re)modeling parameters determined from these curves followed a **logarithmic** relationship with loading frequency」，以及「a logarithmic relationship between loading frequency and net change in bone volume fraction over 4 weeks」。
+
+**本模型引用此文獻的方式是正確的**：稿件用它支持頻率依賴的**對數形式**存續到骨層級，而把**符號**的分歧歸給 Hsieh & Turner [11]。兩者分工無誤，未發現誤述。
+
+---
+
+## 尚未榨乾（全文已在手）
+
+| 檔案 | 文獻 | 待抽取 |
+|---|---|---|
+| `a04.pdf` | Li 2019（22 頁） | `tau_50`、`k_tau_sig` |
+| `a05.pdf` | Weinbaum 1994（22 頁） | `k_perm`、`S_stor`、`a_canal`、`Gamma_PCM` |
+| `a06a.pdf` | Lerebours 2015 | `S_v(f_bm)` 真形式（**皮質 vs 小樑不可共用一條曲線**） |
+| `a09.pdf` | Cosman 2016 | romosozumab 逐月軌跡（對未達的 V16 有用） |
+| `a11.pdf` | Schulte 2026 | V12 定量交互作用 |
+
+**五篇的文字皆已抽出**（存於本次 session 的暫存區），但**尚未逐項核對數值**。依前述教訓，下一輪的第一件事仍是**先核對我們宣稱這些文獻說了什麼**，再抽參數。
+
+---
+
 *抽取者：Claude（Opus 4.8）｜2026-07-25｜原文 PDF 存於 `Reference/`*
