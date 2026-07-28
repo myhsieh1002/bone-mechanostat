@@ -68,6 +68,17 @@ q.F_L_0 = 180;         % [N]
 % forever.  Set above the trabecular baseline instead.
 q.eps_model_star = 3.0e-3;
 
+% --- kappa_E: trabecular bone is an open-cell solid, not compact bone ---
+% ONE exponent cannot serve both compartments (P5m, appendix C29).  Currey
+% 1988 measured COMPACT bone and gives 3.13 on volume fraction; applied at
+% f_bm = 0.12 that scales the apparent modulus by 0.12^0.63 = 0.26 and puts
+% the vertebra at 26 MPa, below the measured 50-300 MPa and outside the
+% linear-elastic domain within months.  Trabecular bone is a cellular solid,
+% for which Gibson-Ashby open-cell scaling gives E proportional to the square
+% of relative density.  The compromise value of 2.5 that served both until
+% v2.15 was, on this reading, correct for neither.
+q.kappa_E = 2.0;
+
 % --- K_tau: match the baseline osteocyte shear (see header) -------------
 ref = scenarioLibrary("sedentary");
 [~, iRef] = max([ref.bouts.momentScale]);
