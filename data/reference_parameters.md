@@ -305,4 +305,41 @@ kappa_OPG / K_L3 = K_A1 · O₀
 
 ---
 
+## a01 = Fu 2025 —— 到手了，但**沒有解鎖那四個常數**（v2.18, 2026-07-28）
+
+> Fu R, Wang C, Shahneela N, Ud Din R, Yang H. *Int J Mech Sci.* 2025;286:109931.
+
+### 好消息：模型結構完全對得上
+
+Fu 確實用**三態 MSIC**（open / closed / inactivated），以骨細胞突起上的**流體剪應力 τ** 為刺激因子，與本模型 M3 的結構一致。摘要也逐字支持我們的兩個機制敘述：
+
+- 「With an increase in the cycle number, MSIC transformed gradually from an open state into an inactivated state, resulting in **saturation** in response to continuous FSS.」→ 我們對 **V4** 的機制解釋（飽和來自 I 態累積）**得到原文支持**。
+- 「a **short-term recovery time** restored the MSIC to a closed state which could turn into an open state following subsequent loading」→ 我們對 **V5**（休息插入）的機制解釋**得到原文支持**。
+
+### 壞消息：值不在這份 PDF 裡，而且數量也對不上
+
+主文式 (2)–(4) 給出三態 ODE，但用的是 **六個** 轉換率 k₁–k₆：
+
+```
+dC/dt = −k₁(τ)C − k₄C + k₆O + k₃(τ)I
+dO/dt =  k₁(τ)C + k₅I − k₂O − k₆O
+dI/dt = −k₅I − k₃(τ)I + k₄C + k₂O
+```
+
+本模型只有**四個**（`k_co_max, k_oc, k_oi, k_ic`），且其中兩個是 τ 的函數（k₁、k₃），對應關係並非一對一。
+
+**更關鍵：數值在 Appendix，而這份館際掃描不含 Appendix**（PDF 12 頁，第 11 頁即參考文獻結束）。文中多次指向 `Appendix Fig. S3` 等，屬 ScienceDirect 上的補充材料。
+
+### 因此仍缺，且要的東西變了
+
+1. **Fu 2025 的 Supplementary / Appendix**（ScienceDirect 線上補充材料，非正文 PDF）—— 這才是四個常數的所在。
+2. 或直接追 Fu 的參考 [85]，即這組動力學方程的原始出處：
+   > **Mao F, Yang Y, Jiang H.** Electromechanical model for object roughness perception during finger sliding. *Biophys J.* 2022;121:4740–4747. doi:10.1016/j.bpj.2022.09.014
+
+   ⚠️ 注意這是**手指觸覺**的力學電生理模型，不是骨骼研究。Fu 是把該處的通道動力學借過來用的。若要引用速率常數，出處應該記成 Mao 2022（經 Fu 2025 轉用），不是 Fu 2025 自己測的。
+
+> **第四次同一種教訓**：`k_co_max` 等四筆的說明寫著「Awaits Fu 2025」，暗示 Fu 有這些數。Fu 有的是**方程式**，不是**數值**；而且方程式的參數個數與我們的不同，原始出處還是另一篇。**「Awaits ⟨文獻⟩」要寫清楚等的是「方程式」「數值」還是「量測」。**
+
+---
+
 *抽取者：Claude（Opus 4.8）｜2026-07-25｜原文 PDF 存於 `Reference/`*
