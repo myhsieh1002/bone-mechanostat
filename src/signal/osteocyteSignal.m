@@ -1,8 +1,8 @@
-function [d, alg] = osteocyteSignal(s, D_eff_hat, P_pth, E2, u_romo, A_reb, p)
+function [d, alg] = osteocyteSignal(s, D_eff_hat, P_pth, E2, n_ot, u_romo, A_reb, p)
 %OSTEOCYTESIGNAL M4-M5 -- Piezo1/Ca -> YAP/TAZ -> SOST -> Wnt, plus RANKL/OPG.
 %
-%   [D, ALG] = OSTEOCYTESIGNAL(S, D_EFF_HAT, P_PTH, E2, U_ROMO, P) returns
-%   the signalling derivatives and the algebraic outputs consumed by M6.
+%   [D, ALG] = OSTEOCYTESIGNAL(S, D_EFF_HAT, P_PTH, E2, N_OT, U_ROMO, A_REB, P)
+%   returns the signalling derivatives and the algebraic outputs consumed by M6.
 %
 %   Written in BASELINE-RELATIVE form: every variable is 1 at the reference
 %   state, and each equation carries a single rate constant.  The shape
@@ -34,11 +34,21 @@ function [d, alg] = osteocyteSignal(s, D_eff_hat, P_pth, E2, u_romo, A_reb, p)
 %   Sclerostin's dual action -- blocking Wnt AND raising RANKL through
 %   lambda_S -- is innovation N2 and the mechanism behind V13.
 %
+%   *** THE APOPTOTIC ARM, AND WHY IT BYPASSES SCLEROSTIN (P5n', C32) ***
+%   Dying osteocytes release RANKL directly, and that targeted resorption is
+%   the one disuse route that does NOT pass through S.  It has to bypass S,
+%   because the mechanical arm of sclerostin is already saturated: fMech
+%   runs 0.6216 -> 0.9997 of its absolute ceiling of 1 over 180 days of
+%   bed rest (appendix C31.4), so nothing routed through sensing can supply
+%   further loss.  LAMBDA_APOP therefore multiplies RANKL by the osteocyte
+%   DEFICIT, 1 - n_ot/n_ot_0, which is identically zero at baseline.
+%
 %   Inputs
 %     s          (1,1) struct  fields Ca_i, Y, S, T, beta               [-]
 %     D_eff_hat  (1,1) double  daily dose / baseline dose              [-]
 %     P_pth      (1,1) double  PTH, baseline 1                          [-]
 %     E2         (1,1) double  oestrogen, baseline 1                    [-]
+%     n_ot       (1,1) double  osteocyte density, baseline n_ot_0        [-]
 %     u_romo     (1,1) double  romosozumab on/off                       [-]
 %     A_reb      (1,1) double  compensatory SOST up-regulation built up
 %                              under sustained antibody exposure; 0 in any
@@ -58,6 +68,7 @@ arguments
     D_eff_hat (1,1) double {mustBeNonnegative}
     P_pth (1,1) double {mustBeNonnegative}
     E2 (1,1) double {mustBeNonnegative}
+    n_ot (1,1) double {mustBeNonnegative}
     u_romo (1,1) double {mustBeNonnegative}
     A_reb (1,1) double {mustBeNonnegative}
     p (1,1) struct
@@ -111,7 +122,16 @@ gP = @(x) 1 + p.lambda_P * x / (p.K_PL + x);
 gE = @(x) 1 - p.lambda_E * x;
 gB = @(x) 1 + p.lambda_beta * x / (p.K_beta + x);
 
-alg.L_RANKL = (gS(S) * gP(P_pth) * gE(E2)) / (gS(1) * gP(1) * gE(p.E2_0));
+% Apoptotic osteocytes release RANKL directly (P5n', appendix C32).  Written
+% on the DEFICIT so that gA(n_ot_0) = 1 exactly: the term is silent at
+% baseline and in every scenario that does not lose osteocytes, which is what
+% keeps V1/V7/V8/V14 untouched -- the same construction as delta_ab and A_reb.
+% max(0, .) means osteocyte GAIN does not suppress RANKL; there is no
+% literature for a protective arm and inventing one would be a free fit.
+gA = @(n) 1 + p.lambda_apop * max(0, 1 - n / p.n_ot_0);
+
+alg.L_RANKL = (gS(S) * gP(P_pth) * gE(E2) * gA(n_ot)) / ...
+              (gS(1) * gP(1) * gE(p.E2_0) * gA(p.n_ot_0));
 alg.O_OPG   = gB(b) / gB(1);
 alg.W_eff   = Weff;
 

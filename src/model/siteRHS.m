@@ -49,7 +49,7 @@ D_hat   = D_eff / siteCtx.D_eff_0;
 
 % --- M4/M5: osteocyte signalling ----------------------------------------
 sig = struct(Ca_i = s.Ca_i, Y = s.Y, S = s.S, T = s.T, beta = s.beta);
-[dSig, alg] = osteocyteSignal(sig, D_hat, P_pth, E2, u_romo, A_reb, p);
+[dSig, alg] = osteocyteSignal(sig, D_hat, P_pth, E2, s.n_ot, u_romo, A_reb, p);
 alg.beta = s.beta;
 
 dT = estrogenTNF(s.T, E2, p);
@@ -67,7 +67,7 @@ doseFcn = @(e) siteCtx.doseSurrogate.F( ...
 
 dStruct = boneStructure(st, eta, xi, p.k_form * vForm, p.k_res * vRes, p, mech);
 dMin    = mineralization(s.rho_min, vForm, vRes, p);
-dn_ot   = osteocyteDensity(s.n_ot, vForm, vRes, E2, p);
+dn_ot   = osteocyteDensity(s.n_ot, vForm, vRes, E2, D_hat, p);
 
 % --- pack ----------------------------------------------------------------
 dLoc = struct( ...

@@ -79,6 +79,14 @@ q.eps_model_star = 3.0e-3;
 % v2.15 was, on this reading, correct for neither.
 q.kappa_E = 2.0;
 
+% --- s2_Sv: the same split, for the same reason (P5n', appendix C33) -----
+% Lerebours 2015 measure BS/TV = a(1 - BV/TV)^b with b = 0.5, and they
+% measure it at HIGH bone volume fraction -- the cortical regime, where our
+% cortex sits at f_bm = 0.95.  Martin's fifth-order polynomial, whose dome
+% peaks at f_bm = 0.25, is the trabecular description and implies b = 3 in
+% our functional form.  So the cortical value moves to the measured 0.5 and
+% the trabecular compartment keeps 3, exactly as kappa_E was split at P5m.
+q.s2_Sv = 3.0;
 
 % --- K_tau: match the baseline osteocyte shear (see header) -------------
 ref = scenarioLibrary("sedentary");

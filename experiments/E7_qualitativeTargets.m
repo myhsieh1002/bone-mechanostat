@@ -129,7 +129,9 @@ Lv = nan(size(Ssweep));  Ov = nan(size(Ssweep));  piv = nan(size(Ssweep));
 for k = 1:numel(Ssweep)
     sk = sBase;  sk.S = Ssweep(k);
     for it = 1:200                                  % beta -> its fixed point
-        [dk, alg] = osteocyteSignal(sk, 1, 1, 1, 0, 0, p);
+        % n_ot is held at baseline: this sweep isolates the SCLEROSTIN arm,
+        % so the apoptotic RANKL term (C32) must be silent here by design.
+        [dk, alg] = osteocyteSignal(sk, 1, 1, 1, p.n_ot_0, 0, 0, p);
         if abs(dk.beta) < 1e-12, break, end
         sk.beta = max(sk.beta + dk.beta / p.delta_beta, 1e-12);
     end
