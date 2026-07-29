@@ -79,6 +79,7 @@ q.eps_model_star = 3.0e-3;
 % v2.15 was, on this reading, correct for neither.
 q.kappa_E = 2.0;
 
+
 % --- K_tau: match the baseline osteocyte shear (see header) -------------
 ref = scenarioLibrary("sedentary");
 [~, iRef] = max([ref.bouts.momentScale]);
