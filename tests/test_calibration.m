@@ -58,7 +58,7 @@ function testRomosozumab_V8(tc)
 % now evaluates V8 on the trabecular compartment and delta_ab was refitted
 % there, so the band can be asserted rather than just the direction.
 verifyTrue(tc, tc.TestData.r.pass.V8, sprintf( ...
-    "V8 (trabecular) %.2f %% outside 11-14.", tc.TestData.r.V8));
+    "V8 (trabecular) %.2f %% outside 11.9-14.7.", tc.TestData.r.V8));
 
 % delta_ab is SHARED, so the cortical arm must not have gone somewhere
 % absurd while the spine was being fitted.
