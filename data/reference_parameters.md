@@ -342,4 +342,40 @@ dI/dt = −k₅I − k₃(τ)I + k₄C + k₂O
 
 ---
 
+## a05 = Weinbaum 1994 —— K_tau **仍無法導出**，但把檢核收緊了（v2.20）
+
+> Weinbaum S, Cowin SC, Zeng Y. *J Biomech.* 1994;27(3):339–360.
+
+### 為何導不出來
+
+`K_tau` 集總了 `(a/2)·Γ_PCM/S_stor`。Weinbaum **不是**用一個集總放大倍率在算 —— 他從 Tsay & Weinbaum 的**纖維基質流動理論**直接算骨細胞突起上的剪應力，論文裡沒有可以直接代入我們這個位置的 Γ。**因此 `K_tau` 目前仍是標定值，不是推導值。**
+
+### 但它給了一個更緊的檢核
+
+原文（Fig. 11 附近）：
+
+> 「The fluid shear stresses predicted are remarkably close to the range of shear stresses, **10 to 20 dyn cm⁻²**, where an adaptive remodelling [response occurs]」
+
+**10–20 dyn/cm² = 1–2 Pa。**
+
+| | 範圍 |
+|---|---|
+| 我們標定 `K_tau` 所用的帶 | 0.8–3.0 Pa |
+| **Weinbaum 自己的預測** | **1–2 Pa** |
+| **本模型基線（久坐）剪應力** | **1.57 Pa** ✅ |
+
+**我們的基線落在原文那個更窄的窗口正中間。** 也就是說 `K_tau` 其實比 0.8–3.0 這個帶所暗示的**更被約束**；`confidence` 因此由 low 提升為 **medium**。
+
+> **可選改進**：把 `tau_target_lo/hi` 由 0.8–3.0 收緊為 **1–2 Pa**。我們的 1.57 Pa 仍會通過，而 `K_tau` 會被釘得更死。這是 V14 收緊（100–1500 → 300–1500）的同一種做法 —— **依原文收緊自訂的帶**。
+
+### 順帶取得的量
+
+| | 值 | 用途 |
+|---|---|---|
+| GAG 纖維間距 Δ | **7 nm**（可接受 6–11 nm），以 streaming potential 資料驗證 | 我們的集總 `K_tau` 吸收掉的長度尺度 |
+| 孔壓鬆弛時間 | **1–2 s** | 與我們的 `L_poro`／`c_p` 轉角一致性可複驗 |
+| 骨細胞突起半徑 a | 量級 **0.1 μm** | 與 `a_canal` = 150 nm（管腔半徑 b）階層一致 |
+
+---
+
 *抽取者：Claude（Opus 4.8）｜2026-07-25｜原文 PDF 存於 `Reference/`*
