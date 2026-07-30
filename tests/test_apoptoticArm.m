@@ -111,14 +111,49 @@ function testApoptosisIsAOnePercentArmOfOsteocyteTurnover(tc)
 % The scale that decided appendix C33: basal apoptosis is 1 % of osteocyte
 % removal, burial and resorption the other 99 %.  That is why a literature-
 % scale fold-induction of apoptosis moves n_ot almost not at all, and why
-% lambda_ot_mech had to reach ~100 to matter.  Both numbers rest on ASSUMED
-% parameters (delta_ot_0, k_ot), so if either is ever sourced, C33's
-% conclusion has to be re-derived rather than inherited.
+% lambda_ot_mech had to reach ~100 to matter.
+%
+% v2.23 UPDATE (appendix C34): the split turned out not to be the thing that
+% matters.  Sweeping it over 1 %, 10 % and 25 % moves V7 by 0.012 and V2 not
+% at all, because k_ot -- which sets the whole rate, not the split -- is
+% about 500-fold too fast.  See the next test.
 p = tc.TestData.p;
 lossBase = p.k_ot * (p.n_ot_max - p.n_ot_0) / p.n_ot_0;
 verifyLessThan(tc, p.delta_ot_0 / lossBase, 0.05, ...
     "Basal apoptosis is no longer a small arm of osteocyte turnover; " + ...
     "appendix C33's arithmetic assumed it was, and must be redone.");
+end
+
+function testOsteocyteRemovalIsInconsistentWithBoneTurnoverByKnownFactor(tc)
+% *** THIS TEST PINS A DEFECT WE ARE SHIPPING, NOT A PROPERTY WE WANT ***
+%
+% Osteocytes leave the tissue when the bone they sit in is resorbed, so the
+% fractional removal rate of the osteocyte population MUST equal the
+% fractional turnover rate of the bone.  It does not:
+%
+%     bone resorbed per day, from V1 = 7.034 %/yr   1.93e-4 /day
+%     gamma_eff, osteocytes removed by resorption   9.90e-2 /day
+%
+% a factor of 514.  No literature is needed to see this -- the model
+% contradicts itself.  Buenzli and Sims 2015 independently give 2.167e-4
+% /day (42 billion osteocytes, 9.1 million replenished daily), agreeing with
+% the bone-turnover side and putting k_ot 462-fold too fast.
+%
+% Not corrected at v2.23: the literature-derived k_ot = 1.083e-3 /day drops
+% V7 to 0.6255 and V8 to 10.57, both out of band, and needs a recalibration
+% (appendix C34.5).  It is pinned here so that it stays a DECISION.  This
+% test is expected to fail the day someone fixes it -- when it does, correct
+% the ratio here and update C34, do not delete the test.
+p = tc.TestData.p;
+boneRate = turnoverRate(p) / 100 / 365;                        % [1/day]
+gammaEff = p.k_ot * (p.n_ot_max - p.n_ot_0) / p.n_ot_0 - p.delta_ot_0;
+
+verifyEqual(tc, gammaEff / boneRate, 514, ...
+    "The osteocyte-removal / bone-turnover ratio has moved.  It should be " + ...
+    "1 and is shipped at 514 (appendix C34).  If you have just corrected " + ...
+    "k_ot, that is the intended fix: re-run the targets, expect V7 and V8 " + ...
+    "to need recalibrating, and update this test and C34 together.", ...
+    RelTol = 0.01);
 end
 
 function testBothArmsAreShippedInert(tc)
