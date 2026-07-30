@@ -108,5 +108,6 @@ q.K_tau = q.K_tau * tauC / tauT;      % shearSurrogate is linear in K_tau
 % not a fitting loop -- and it does NOT call EVALTARGETS, which now
 % evaluates V8/V10 on this very compartment and would otherwise recurse.
 q.k_res  = q.k_res * opts.turnover / turnoverRate(q);
+q.k_ot   = osteocyteBurialRate(q);
 q.k_form = balanceBoneFormation(q);
 end

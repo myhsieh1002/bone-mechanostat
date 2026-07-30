@@ -107,53 +107,66 @@ verifyEqual(tc, dOver, 0, ...
     AbsTol = 1e-14);
 end
 
-function testApoptosisIsAOnePercentArmOfOsteocyteTurnover(tc)
-% The scale that decided appendix C33: basal apoptosis is 1 % of osteocyte
-% removal, burial and resorption the other 99 %.  That is why a literature-
-% scale fold-induction of apoptosis moves n_ot almost not at all, and why
-% lambda_ot_mech had to reach ~100 to matter.
+function testApoptosisIsAMinorityArmOfOsteocyteTurnover(tc)
+% Appendix C33 turned on this split being small: basal apoptosis was 1 % of
+% osteocyte removal, which is why a literature-scale fold-induction moved
+% n_ot almost not at all and lambda_ot_mech had to reach ~100 to matter.
 %
-% v2.23 UPDATE (appendix C34): the split turned out not to be the thing that
-% matters.  Sweeping it over 1 %, 10 % and 25 % moves V7 by 0.012 and V2 not
-% at all, because k_ot -- which sets the whole rate, not the split -- is
-% about 500-fold too fast.  See the next test.
+% At v2.24 the split is 10 % BY CHOICE rather than 1 % by accident.  It
+% corresponds to a steady-state lacunar occupancy of 90 % under
+% occupancy = gamma/(gamma+delta), which is inside the 12.4-99.2 % Power
+% et al. 2001 measured in elderly femoral neck cortex.  C33's conclusion
+% survives the change, and appendix C34.4 shows why: sweeping the split
+% across 1 %, 10 % and 25 % moves V7 by 0.012 and V2 not at all, because
+% n_ot is now a slow variable that barely leaves baseline in any scenario.
+%
+% The bound here is loose on purpose.  What C33 needs is that resorption,
+% not apoptosis, dominates osteocyte removal; it does not need a precise
+% split, and no source pins one.
 p = tc.TestData.p;
 lossBase = p.k_ot * (p.n_ot_max - p.n_ot_0) / p.n_ot_0;
-verifyLessThan(tc, p.delta_ot_0 / lossBase, 0.05, ...
-    "Basal apoptosis is no longer a small arm of osteocyte turnover; " + ...
-    "appendix C33's arithmetic assumed it was, and must be redone.");
+verifyLessThan(tc, p.delta_ot_0 / lossBase, 0.3, ...
+    "Apoptosis is no longer a minority arm of osteocyte removal.  " + ...
+    "Appendix C33 assumed resorption dominates; if that has changed, " + ...
+    "C33's exclusion of the apoptotic RANKL route must be re-derived.");
 end
 
-function testOsteocyteRemovalIsInconsistentWithBoneTurnoverByKnownFactor(tc)
-% *** THIS TEST PINS A DEFECT WE ARE SHIPPING, NOT A PROPERTY WE WANT ***
-%
+function testOsteocyteRemovalMatchesBoneTurnover(tc)
 % Osteocytes leave the tissue when the bone they sit in is resorbed, so the
 % fractional removal rate of the osteocyte population MUST equal the
-% fractional turnover rate of the bone.  It does not:
+% fractional turnover rate of the bone.
 %
-%     bone resorbed per day, from V1 = 7.034 %/yr   1.93e-4 /day
-%     gamma_eff, osteocytes removed by resorption   9.90e-2 /day
+% Until v2.23 it did not, by a factor of 514: the model resorbed bone at
+% 1.93e-4 /day (V1 = 7.03 %/yr) and removed osteocytes at 9.90e-2 /day, a
+% mean osteocyte residence of 10 days.  P5o fixed it by DERIVING k_ot from
+% the turnover instead of fitting it (OSTEOCYTEBURIALRATE, appendix C34),
+% which makes the contradiction impossible rather than merely absent -- so
+% this test now guards the derivation, not a recorded defect.
 %
-% a factor of 514.  No literature is needed to see this -- the model
-% contradicts itself.  Buenzli and Sims 2015 independently give 2.167e-4
-% /day (42 billion osteocytes, 9.1 million replenished daily), agreeing with
-% the bone-turnover side and putting k_ot 462-fold too fast.
-%
-% Not corrected at v2.23: the literature-derived k_ot = 1.083e-3 /day drops
-% V7 to 0.6255 and V8 to 10.57, both out of band, and needs a recalibration
-% (appendix C34.5).  It is pinned here so that it stays a DECISION.  This
-% test is expected to fail the day someone fixes it -- when it does, correct
-% the ratio here and update C34, do not delete the test.
+% Between v2.23 and v2.24 this test asserted the ratio was 514 and said in
+% its own message that it was expected to fail the day someone corrected
+% k_ot.  It did.  Kept, inverted, as the standing invariant.
 p = tc.TestData.p;
 boneRate = turnoverRate(p) / 100 / 365;                        % [1/day]
 gammaEff = p.k_ot * (p.n_ot_max - p.n_ot_0) / p.n_ot_0 - p.delta_ot_0;
 
-verifyEqual(tc, gammaEff / boneRate, 514, ...
-    "The osteocyte-removal / bone-turnover ratio has moved.  It should be " + ...
-    "1 and is shipped at 514 (appendix C34).  If you have just corrected " + ...
-    "k_ot, that is the intended fix: re-run the targets, expect V7 and V8 " + ...
-    "to need recalibrating, and update this test and C34 together.", ...
-    RelTol = 0.01);
+verifyEqual(tc, gammaEff / boneRate, 1, ...
+    "Osteocyte removal no longer tracks bone turnover.  The usual cause is " + ...
+    "a changed k_res with a stale k_ot in the CSV: k_ot is DERIVED " + ...
+    "(osteocyteBurialRate) and must be rewritten alongside k_form, exactly " + ...
+    "as pitfall C27.7 describes for k_form.", RelTol = 1e-5);
+
+% And the derived value must still agree with the independent measurement.
+% Buenzli & Sims 2015: 42e9 osteocytes, 9.1e6 replenished daily = 2.167e-4
+% /day.  Ours comes from our own turnover and shares no inputs with theirs,
+% so this is a real check; theirs is a whole-skeleton average including
+% fast trabecular bone, hence the loose tolerance and the one-sided reading
+% that ours should if anything be lower.
+verifyEqual(tc, gammaEff + p.delta_ot_0, 2.167e-4, ...
+    "Derived osteocyte turnover has drifted away from the Buenzli & Sims " + ...
+    "estimate of 2.167e-4 /day.  Check V1 first: this quantity now follows " + ...
+    "bone turnover by construction, so a drift here means turnover moved.", ...
+    RelTol = 0.25);
 end
 
 function testBothArmsAreShippedInert(tc)

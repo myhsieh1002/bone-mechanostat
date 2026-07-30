@@ -15,6 +15,7 @@ arguments
 end
 p = getDefaultParams();
 p.k_res = kr; p.K_S = ks; p.K_P_sost = kp; p.lambda_P = lp; p.delta_ab = da;
+p.k_ot   = osteocyteBurialRate(p);
 p.k_form = balanceBoneFormation(p);
 r = evalTargets(p, holdout = holdout);
 end

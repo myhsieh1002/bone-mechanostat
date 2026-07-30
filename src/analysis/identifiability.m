@@ -176,6 +176,7 @@ end
 % -------------------------------------------------------------------------
 function c = localChi2(p, yrs)
 try
+    p.k_ot   = osteocyteBurialRate(p);
     p.k_form = balanceBoneFormation(p);
     r = evalTargets(p, years = yrs);
     c = r.chi2;
