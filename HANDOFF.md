@@ -115,11 +115,16 @@ cd "投稿PLOS Comp Biol" && python3 ../tools/reconcile_manuscript_numbers.py
 
 **同時修正一個舊陳述**：C30.5 的「V2 在實測指數下無法達成」是把 `K_S` 當唯一旋鈕量的。**放開 `k_res` 之後 V2 達得到**（1.011），只是要付 V1。正確的說法是**每條已知路徑都用另一個標的付帳**。
 
-### ▶ 第一件事：把 C36 的三方模式寫進稿件
+### ▶ 稿件已補上兩件事（v2.25, 2026-07-31）
 
-稿件目前只寫了 C33 的第一個機制。**三個機制、三種失敗方式**比單一負面結果強得多，而且 C36.7 修正了稿件現在還在講的「V2 無法達成」。改完記得依序跑：**E0–E7 → `tools/reconcile_manuscript_numbers.py` → 重建 docx**。
+1. **一句錯的話已更正。** Limitations 原寫採用實測指數「makes the disuse target unreachable」；C36.7 證明那是把 `K_S` 當唯一旋鈕量的。已改為：固定骨轉換常數時確實達不到，**放開它則達得到 1.01 %/月，代價是 V1 = 10.2 %/年出帶** —— 正確的主張是「每條路徑都用另一個標的付帳」。
+2. **三個機制、三種失敗方式已寫進 Results。** 專一性／權威／生理各敗一項，並指向模型完全沒表徵的「模板喪失」，與 P3 否證同一方向。新增 Rolvien 2020 為第 29 筆文獻。
 
-（出貨數值未變，所以圖表不必重跑。）
+出貨數值未變，故**圖表未重跑**；三份已同步、對帳工具已跑、兩份 docx 已重建。
+
+### ▶ 第一件事：Overleaf 編譯 `.tex`，然後投稿
+
+模型端沒有待辦。
 
 ### ▶ 這個專案最重要的一條工作紀律
 
@@ -129,11 +134,26 @@ cd "投稿PLOS Comp Biol" && python3 ../tools/reconcile_manuscript_numbers.py
 
 同源的第二條：**「Awaits ⟨文獻⟩」必須寫明等的是方程式、數值，還是量測。** Fu 2025 到手後才發現它只有方程式。
 
+### ▶ ⚠️ 作者已改為單一作者（v2.25, 2026-07-31，主持人指示）
+
+稿件由三位作者改為 **Ming-Yu Hsieh 單一作者**，CRediT 已填（11 項角色），Funding 為「未獲任何經費」，Competing interests 改為單數。三份格式已同步、兩份 docx 已重建。
+
+**但版本庫這一側還是三位作者**，而稿件引用了這個 repo 的 Zenodo DOI：
+
+| 檔案 | 狀態 |
+|---|---|
+| `CITATION.cff` | ⚠️ 仍列三位作者 |
+| `README.md` / `README.zh-TW.md` | ⚠️ 仍列三位作者 |
+| **Zenodo `10.5281/zenodo.21592303`** | ⚠️ **已封存，無法從這裡更改** |
+
+**這是投稿前必須自行決定的一件事**：軟體著作與論文著作可以不同（軟體是三人、論文是一人是可以成立的），但若要一致，`CITATION.cff` 與 README 可以改，**Zenodo 紀錄需要你到 Zenodo 上處理**。編輯或審稿人有可能注意到這個落差。
+
 ### ▶ 送出前你自己要處理的
 
-1. **CRediT 貢獻**（稿件 Declarations 已留空位）
+1. ~~CRediT 貢獻~~ ✅ 已填（單一作者）
 2. **`manuscript.tex` 從未編譯** —— 本機無工具鏈，僅過靜態檢查。走 LaTeX 路線請先在 Overleaf 跑一次
-3. Funding 欄：`The authors received no specific funding for this work.`
+3. ~~Funding 欄~~ ✅ 已填：`The author received no specific funding for this work.`
+4. **全文人稱仍是 "we"** —— 單一作者論文用 editorial "we" 是可接受的，多數期刊不會要求改。若要改成 "I"，那是全文約 200 處的改寫，風險高於收益，我沒有動。這一項由你決定。
 
 ---
 
