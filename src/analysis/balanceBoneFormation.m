@@ -42,7 +42,9 @@ mech = organMechanics(b, st, p);
 % enough to fail the drift test).
 sg = buildDoseSurrogate(scenarioLibrary("sedentary").bouts, p, tauGrid = 0:0.25:15);
 doseFcn = @(e) sg.F(shearSurrogate(e, b.freqHz, p));
-[eta, xi] = surfaceAllocation(mech, 1, doseFcn, p);
+% D_eff_hat = 1: this is the reference state by definition, so the
+% unloading bias is inert here whatever lambda_xi_mech is.
+[eta, xi] = surfaceAllocation(mech, 1, 1, doseFcn, p);
 
 [~, S_v_hat] = specificSurface(p.f_bm_0, p);
 A_g = pi * (p.r_p_0^2 - p.r_e_0^2);

@@ -1,7 +1,7 @@
-function [eta, xi] = surfaceAllocation(mech, T, doseFcn, p)
+function [eta, xi] = surfaceAllocation(mech, T, D_eff_hat, doseFcn, p)
 %SURFACEALLOCATION M7(a) -- split formation and resorption across surfaces.
 %
-%   [ETA, XI] = SURFACEALLOCATION(MECH, T, DOSEFCN, P) returns the
+%   [ETA, XI] = SURFACEALLOCATION(MECH, T, D_EFF_HAT, DOSEFCN, P) returns the
 %   formation split ETA and resorption split XI over
 %   [periosteal, endocortical, intracortical], each summing to 1.
 %
@@ -25,9 +25,29 @@ function [eta, xi] = surfaceAllocation(mech, T, doseFcn, p)
 %   so oestrogen withdrawal shifts resorption endocortically -- the
 %   wider-but-thinner postmenopausal cortex (V15).
 %
+%   *** AND UNLOADING SHIFTS IT INTRACORTICALLY (P5p, appendix C36) ***
+%
+%       xi_i ~ xi_i_0 (1 + lambda_xi_mech max(0, 1 - D_eff_hat))
+%
+%   Immobilisation raises cortical POROSITY, which is intracortical
+%   resorption: Rolvien et al. 2020 find significantly higher cortical
+%   porosity in the femoral cortex of long-term immobilised individuals,
+%   with a pattern distinguishable from postmenopausal osteoporosis.  The two
+%   biases are therefore separate terms on separate surfaces with separate
+%   drivers, not one term with two causes.
+%
+%   Written on the DOSE deficit, which is what makes it disuse-specific in a
+%   way the TNF-alpha bias is not.  Measured over the scenario set, the
+%   deficit is 0.886 in bed rest against 0.0016 in the low-calcium arm and
+%   0.000 under loading -- a specificity of about 550 to 1.  That check was
+%   run BEFORE this term was written, because the previous two attempts at
+%   a disuse mechanism (appendices C32, C33) both failed on exactly this
+%   point after being built.
+%
 %   Inputs
 %     mech    (1,1) struct    ORGANMECHANICS output (eps_p, eps_e, eps_bar)
 %     T       (1,1) double    TNF-alpha, baseline 1                     [-]
+%     D_eff_hat (1,1) double  daily channel dose / baseline dose        [-]
 %     doseFcn (1,1) function_handle  strain -> osteogenic dose; supplied
 %                             by the caller so this function stays free of
 %                             surrogate plumbing.  Must be monotonic.
@@ -44,6 +64,7 @@ function [eta, xi] = surfaceAllocation(mech, T, doseFcn, p)
 arguments
     mech (1,1) struct
     T (1,1) double
+    D_eff_hat (1,1) double {mustBeNonnegative}
     doseFcn (1,1) function_handle
     p (1,1) struct
 end
@@ -68,8 +89,12 @@ else
     eta = w / tot;
 end
 
-% Resorption: baseline surface weighting, TNF-alpha biased endocortically.
-bias = 1 + p.lambda_xi * (T - 1) / (p.K_T + T);
-xi   = [p.xi_p_0, p.xi_e_0 * max(bias, 0), p.xi_i_0];
+% Resorption: baseline surface weighting, TNF-alpha biased endocortically
+% and unloading biased intracortically.  Both factors are exactly 1 at the
+% reference state (T = 1, D_eff_hat = 1), so the baseline split is untouched
+% whatever the two coefficients are -- the same construction as delta_ab.
+biasT = 1 + p.lambda_xi * (T - 1) / (p.K_T + T);
+biasM = 1 + p.lambda_xi_mech * max(0, 1 - D_eff_hat);
+xi   = [p.xi_p_0, p.xi_e_0 * max(biasT, 0), p.xi_i_0 * biasM];
 xi   = xi / sum(xi);
 end

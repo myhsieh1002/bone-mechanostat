@@ -63,7 +63,7 @@ vRes  = s.C;
 
 doseFcn = @(e) siteCtx.doseSurrogate.F( ...
               shearSurrogate(e, siteCtx.peakBout.freqHz, p));
-[eta, xi] = surfaceAllocation(mech, s.T, doseFcn, p);
+[eta, xi] = surfaceAllocation(mech, s.T, D_hat, doseFcn, p);
 
 dStruct = boneStructure(st, eta, xi, p.k_form * vForm, p.k_res * vRes, p, mech);
 dMin    = mineralization(s.rho_min, vForm, vRes, p);

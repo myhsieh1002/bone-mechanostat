@@ -65,6 +65,11 @@ ub = [1e-6, 5.0,  100,  10,   2.0];
 % parameters on one target is the unidentifiable degree of freedom that
 % section 9 risk 1 exists to prevent, so sost_reb stays at its P5h value
 % and delta_ab carries V8 alone.
+%
+% lambda_xi_mech was on this list briefly at v2.25 (P5p, appendix C36) and
+% came off for a different reason: it is identifiable and it works, but the
+% surface split it needs to work is not physiological.  Kept out, and
+% shipped at zero.
 x0 = [p0.k_res, p0.K_S, p0.K_P_sost, p0.lambda_P, p0.delta_ab];
 
 objfun = @(x) localObjective(x, freeNames, p0);
