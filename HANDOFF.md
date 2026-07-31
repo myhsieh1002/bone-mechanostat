@@ -122,9 +122,22 @@ cd "投稿PLOS Comp Biol" && python3 ../tools/reconcile_manuscript_numbers.py
 
 出貨數值未變，故**圖表未重跑**；三份已同步、對帳工具已跑、兩份 docx 已重建。
 
+### ▶ 投稿包已補完（v2.25, 2026-07-31）
+
+盤點時發現四份檔案從未進入前一輪的對帳，其中兩份有實質缺口：
+
+| 檔案 | 發現 | 處置 |
+|---|---|---|
+| **`cover_letter.md`** | 從未對帳。762 με、99.7 %、81 assertions、六參數、+4.6/+1.9 全部過期；**還有一句已不成立** —— 說「兩個主張在不同度量下反轉」，但子句 3 在 P5k 之後兩種表述都成立了 | ✅ 全部更正，並新增一段講兩個自己找到的錯誤（514 倍、三機制） |
+| **`S1_Text_model_equations.md`** | **模型方程式與程式碼不符**：`k_ot` 仍寫成自由參數、三個新項（`g_A`、`λ_ot,mech`、`λ_ξ,mech`）全部缺席、59 % 稀釋率過期 | ✅ 四處方程式改寫，含 `k_ot` 的導出式與 514 倍的說明。來源在 `docs/model_equations.md`，SI 是複本 |
+| **`references.bib`** | 缺 Basso、Plotkin、Rolvien 三筆（25 → 29） | ✅ 補齊，`bib key ↔ .tex bibitem` 雙向對照無缺 |
+| **`references_verified.md`** | 只到第 25 筆 | ✅ 新增 D 節（第 26–29 筆），逐筆記錄「我們用它主張什麼」與核實結果 |
+
+> **教訓**：前一輪的對帳只做了三份 manuscript，把 cover letter 與 SI 漏在外面。**投稿包的對帳範圍是整個資料夾，不只是稿件。**
+
 ### ▶ 第一件事：Overleaf 編譯 `.tex`，然後投稿
 
-模型端沒有待辦。
+模型端沒有待辦。剩下的都在你手上：Lee 與 Wang 的 CRediT 角色、`.tex` 首次編譯、投稿系統的 Financial Disclosure 填「The authors received no funding for this work.」
 
 ### ▶ 這個專案最重要的一條工作紀律
 
@@ -134,19 +147,13 @@ cd "投稿PLOS Comp Biol" && python3 ../tools/reconcile_manuscript_numbers.py
 
 同源的第二條：**「Awaits ⟨文獻⟩」必須寫明等的是方程式、數值，還是量測。** Fu 2025 到手後才發現它只有方程式。
 
-### ▶ ⚠️ 作者已改為單一作者（v2.25, 2026-07-31，主持人指示）
+### ▶ 作者：維持三位（v2.25, 2026-07-31 主持人確認）
 
-稿件由三位作者改為 **Ming-Yu Hsieh 單一作者**，CRediT 已填（11 項角色），Funding 為「未獲任何經費」，Competing interests 改為單數。三份格式已同步、兩份 docx 已重建。
+一度改為單一作者又改回。**三位作者已完整復原**（署名、六個隸屬、三個 ORCID、複數宣告），三份格式一致。
 
-**但版本庫這一側還是三位作者**，而稿件引用了這個 repo 的 Zenodo DOI：
+**CRediT 只填了 Ming-Yu Hsieh 的十一項角色**；Lee 與 Wang 兩位留 `[roles]` / `[待填]` —— **我不會替真實個人杜撰貢獻角色**，這兩格必須由主持人填。三份格式都留了同樣的空位，別漏掉 `.tex`（在 `\section*{Author contributions}`）。
 
-| 檔案 | 狀態 |
-|---|---|
-| `CITATION.cff` | ⚠️ 仍列三位作者 |
-| `README.md` / `README.zh-TW.md` | ⚠️ 仍列三位作者 |
-| **Zenodo `10.5281/zenodo.21592303`** | ⚠️ **已封存，無法從這裡更改** |
-
-**這是投稿前必須自行決定的一件事**：軟體著作與論文著作可以不同（軟體是三人、論文是一人是可以成立的），但若要一致，`CITATION.cff` 與 README 可以改，**Zenodo 紀錄需要你到 Zenodo 上處理**。編輯或審稿人有可能注意到這個落差。
+`CITATION.cff` 本來就把兩件事分開：`authors:`（軟體）是 Hsieh 一人、`preferred-citation:`（論文）是三人 —— **與現況一致，不需改動**，Zenodo 也不需要動。
 
 ### ▶ 送出前你自己要處理的
 

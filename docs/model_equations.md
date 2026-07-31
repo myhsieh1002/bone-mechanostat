@@ -130,9 +130,20 @@ $A_{reb} = 0$ in any run that never sees the drug, so this term cannot perturb a
 
 **Osteocyte density** (positive feedback: bone loss → fewer sensors → weaker signal → more loss):
 
-$$\frac{dn_{ot}}{dt} = k_{ot}\, \hat{v}_{\mathrm{form}}\left(n_{ot,\max} - n_{ot}\right) - \left[\gamma_{\mathrm{eff}}\, \hat{v}_{\mathrm{res}} + \delta_{ot}(E_2)\right] n_{ot}$$
+$$\frac{dn_{ot}}{dt} = k_{ot}\, \hat{v}_{\mathrm{form}}\left(n_{ot,\max} - n_{ot}\right) - \left[\gamma_{\mathrm{eff}}\, \hat{v}_{\mathrm{res}} + \delta_{ot}(E_2, \hat D)\right] n_{ot}$$
 
-with $\hat v$ normalised to baseline and $\delta_{ot}(E_2) = \delta_{ot,0}\, E_{2,0}/E_2$. The loss coefficient $\gamma_{\mathrm{eff}}$ is *derived*, not read from the table, so that $n_{ot} = n_{ot,0}$ is a fixed point by construction.
+with $\hat v$ normalised to baseline and
+
+$$\delta_{ot}(E_2, \hat D) = \delta_{ot,0}\, \frac{E_{2,0}}{E_2}\left[1 + \lambda_{ot,\mathrm{mech}} \max\!\left(0,\, 1 - \hat D\right)\right]$$
+
+**$k_{ot}$ is *derived*, not fitted.** The baseline balance fixes $\gamma_{\mathrm{eff}}$ from it, so what $k_{ot}$ actually sets is the turnover of the whole osteocyte population — and that is not free, because osteocytes leave the tissue when the bone they occupy is resorbed. Inverting the balance,
+
+$$\gamma_{\mathrm{eff}} \equiv \frac{\text{turnover}}{100 \times 365}, \qquad
+k_{ot} = \frac{\left(\gamma_{\mathrm{eff}} + \delta_{ot,0}\right) n_{ot,0}}{n_{ot,\max} - n_{ot,0}}$$
+
+makes $n_{ot} = n_{ot,0}$ a fixed point by construction *and* forces osteocyte turnover to equal bone turnover. Left free it did not: the model resorbed bone at $1.93\times10^{-4}$/day while removing osteocytes at $9.9\times10^{-2}$/day, a factor of 514, which is discussed in the main text.
+
+The mechanical apoptosis coefficient $\lambda_{ot,\mathrm{mech}}$ is one of three disuse mechanisms built, measured and shipped **inert** (all three set to zero); see the Limitations.
 
 **Oestrogen and TNF-α:** $E_2$ withdrawal raises $T$, which biases resorption endocortically (M7) and raises sclerostin.
 
@@ -154,8 +165,12 @@ g_P(P) = 1 + \frac{\lambda_P P}{K_{PL} + P}, \quad
 g_E(E_2) = 1 - \lambda_E E_2, \quad
 g_B(\beta) = 1 + \frac{\lambda_\beta \beta}{K_\beta + \beta}$$
 
-$$L_{\mathrm{RANKL}} = \frac{g_S(S) g_P(P) g_E(E_2)}{g_S(1) g_P(1) g_E(E_{2,0})}, \qquad
+$$L_{\mathrm{RANKL}} = \frac{g_S(S) g_P(P) g_E(E_2) g_A(n_{ot})}{g_S(1) g_P(1) g_E(E_{2,0}) g_A(n_{ot,0})}, \qquad
 O_{\mathrm{OPG}} = \frac{g_B(\beta)}{g_B(1)}$$
+
+$$g_A(n) = 1 + \lambda_{\mathrm{apop}} \max\!\left(0,\, 1 - \frac{n}{n_{ot,0}}\right)$$
+
+$g_A$ is the direct RANKL release from dying osteocytes. It is written on the *deficit*, so $g_A(n_{ot,0}) = 1$ exactly and no baseline or non-disuse result can be perturbed whatever $\lambda_{\mathrm{apop}}$ is. Shipped at zero; see the Limitations.
 
 $$\pi_L = \frac{L_{\mathrm{RANKL}}}{K_{L3} + L_{\mathrm{RANKL}} + \kappa_{\mathrm{OPG}} O_{\mathrm{OPG}}} \Big/ \left.\phantom{x}\right|_{\text{baseline}}$$
 
@@ -168,9 +183,11 @@ $$\pi_L = \frac{L_{\mathrm{RANKL}}}{K_{L3} + L_{\mathrm{RANKL}} + \kappa_{\mathr
 $$\eta \propto A \odot \left[D(\varepsilon_p),\, D(\varepsilon_e),\, D(\bar\varepsilon)\right], \qquad
 A = \left[\xi_{p,0},\, \xi_{e,0},\, \xi_{i,0}\right]$$
 
-normalised to sum to 1. Area weighting is essential: dose alone hands the periosteum ~35 % of all formation despite ~5 % of the surface. Resorption follows area with a TNF-α endocortical bias:
+normalised to sum to 1. Area weighting is essential: dose alone hands the periosteum ~35 % of all formation despite ~5 % of the surface. Resorption follows area with two biases on two different surfaces, driven by two different signals — TNF-α endocortically, and the mechanical dose deficit intracortically:
 
-$$\xi \propto A \odot \left[1,\, 1 + \frac{\lambda_\xi (T-1)}{K_T + T},\, 1\right]$$
+$$\xi \propto A \odot \left[1,\; 1 + \frac{\lambda_\xi (T-1)}{K_T + T},\; 1 + \lambda_{\xi,\mathrm{mech}} \max\!\left(0,\, 1 - \hat D\right)\right]$$
+
+Oestrogen withdrawal shifts resorption endocortically, the wider-but-thinner postmenopausal cortex; unloading shifts it intracortically, which is the raised cortical porosity measured in long-term immobilisation. Both factors are exactly 1 at the reference state ($T = 1$, $\hat D = 1$), so the baseline split is untouched whatever the coefficients are. $\lambda_{\xi,\mathrm{mech}}$ is shipped at zero; see the Limitations.
 
 **Surface evolution.** $r_e$ increasing means endocortical resorption, i.e. a thinning cortex; tracking $r_p$ and $r_e$ separately is what allows the marrow cavity to enlarge while the bone grows.
 
@@ -200,9 +217,9 @@ $$\mathrm{BMC}/L = A_g f_{bm} \bar\rho_{\min}, \qquad
 \mathrm{aBMD} = \frac{A_g f_{bm} \bar\rho_{\min}}{2 r_p}, \qquad
 \mathrm{vBMD} = f_{bm} \bar\rho_{\min}$$
 
-**Both are reported, and the areal size artefact is intentional.** Dividing by projected width reproduces the well-known confounding of bone size with bone density in dual-energy X-ray absorptiometry: periosteal expansion raises areal density even when volumetric density is unchanged. Retaining it is what allows one model to be compared against both the densitometry literature (calcium, romosozumab) and the peripheral quantitative computed tomography literature (racquet-sport asymmetry), and it is the origin of the 59 % dilution of the loading response reported in the main text.
+**Both are reported, and the areal size artefact is intentional.** Dividing by projected width reproduces the well-known confounding of bone size with bone density in dual-energy X-ray absorptiometry: periosteal expansion raises areal density even when volumetric density is unchanged. Retaining it is what allows one model to be compared against both the densitometry literature (calcium, romosozumab) and the peripheral quantitative computed tomography literature (racquet-sport asymmetry), and it is the origin of the 61 % dilution of the loading response reported in the main text.
 
-**Bone-mass balance.** Because $\eta_p > \xi_p$ always, there is no stationary geometric fixed point; the only defensible baseline condition is conservation of bone *mass*. $k_{\mathrm{form}}$ is therefore derived at every parameter set from $d(A_g f_{bm})/dt = 0$ rather than fitted, which keeps the baseline balanced by construction when any parameter affecting $\eta$ or $\xi$ changes. Turnover magnitude is then carried by $k_{\mathrm{res}}$ alone.
+**Bone-mass balance.** Because $\eta_p > \xi_p$ always, there is no stationary geometric fixed point; the only defensible baseline condition is conservation of bone *mass*. $k_{\mathrm{form}}$ is therefore derived at every parameter set from $d(A_g f_{bm})/dt = 0$ rather than fitted, which keeps the baseline balanced by construction when any parameter affecting $\eta$ or $\xi$ changes. Turnover magnitude is then carried by $k_{\mathrm{res}}$ alone. $k_{ot}$ (M4) is derived in the same spirit and for the same reason, from the turnover $k_{\mathrm{res}}$ sets: two constants the baseline state already determines, and therefore two that must not also be fitted.
 
 ---
 
