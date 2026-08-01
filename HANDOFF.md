@@ -169,7 +169,7 @@ v2.25 另補：**short title**（正標題 121 字元太長，PLOS 要短標題�
 
 ### ▶ 送出前你自己要處理的
 
-1. ~~CRediT 貢獻~~ ✅ 已填（單一作者）
+1. **CRediT 貢獻** ⚠️ 三位都已填，但 **Lee 與 Wang 的角色是我草擬的，必須由三位作者確認**（見上）
 2. **`manuscript.tex` 從未編譯** —— 本機無工具鏈，僅過靜態檢查。走 LaTeX 路線請先在 Overleaf 跑一次
 3. ~~Funding 欄~~ ✅ 已填：`The author received no specific funding for this work.`
 4. **全文人稱仍是 "we"** —— 單一作者論文用 editorial "we" 是可接受的，多數期刊不會要求改。若要改成 "I"，那是全文約 200 處的改寫，風險高於收益，我沒有動。這一項由你決定。
