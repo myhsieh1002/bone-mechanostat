@@ -359,7 +359,7 @@ runtests("tests")     % 91 tests, 14 files
 | `manuscript_zh-TW.{md,docx}` | 中文校稿版，非投稿檔 |
 | `figures_tiff/Fig1–7.tif` | 2250 px × 7.50 in、300 dpi、LZW、≥8 pt，符合 PLOS |
 | `figures/` | 同樣七張的 PNG/PDF（尺寸超出 PLOS 上限，**勿直接投稿**） |
-| `cover_letter.md`、`references.bib`、`references_verified.md`、`supporting_information/` | |
+| `cover_letter.{md,docx}`、`cover_letter_zh-TW.{md,docx}`（中文校稿版，非投稿檔）、`references.bib`、`references_verified.md`、`supporting_information/` | |
 | `build_docx.js` | `node build_docx.js <in.md> <out.docx> [字型]` |
 
 **⚠️ 這個資料夾不在版控、也不在 git 歷史中**（v2.12 以 filter-branch 移除）。換機器或重新 clone 不會帶過去，請自行備份。資料夾內兩份屬於程式碼的文件已搬到 `docs/model_equations.md` 與 `docs/parameter_provenance.md`。
