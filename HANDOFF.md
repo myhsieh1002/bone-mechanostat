@@ -135,6 +135,12 @@ cd "投稿PLOS Comp Biol" && python3 ../tools/reconcile_manuscript_numbers.py
 
 > **教訓**：前一輪的對帳只做了三份 manuscript，把 cover letter 與 SI 漏在外面。**投稿包的對帳範圍是整個資料夾，不只是稿件。**
 
+### ▶ 投稿檢查清單：`docs/submission_checklist.md`
+
+六節：檔案清單、稿件內容（PLOS 特有）、投稿系統欄位、**CRediT 草稿與必須確認的兩點**、送出前的執行順序、以及**七個審稿人會問的地方與稿件現在的答法**。已進版控，不會隨 session 消失。
+
+v2.25 另補：**short title**（正標題 121 字元太長，PLOS 要短標題）、S1 Text 圖說更新為兩個導出常數。
+
 ### ▶ 第一件事：Overleaf 編譯 `.tex`，然後投稿
 
 模型端沒有待辦。剩下的都在你手上：Lee 與 Wang 的 CRediT 角色、`.tex` 首次編譯、投稿系統的 Financial Disclosure 填「The authors received no funding for this work.」
@@ -151,7 +157,13 @@ cd "投稿PLOS Comp Biol" && python3 ../tools/reconcile_manuscript_numbers.py
 
 一度改為單一作者又改回。**三位作者已完整復原**（署名、六個隸屬、三個 ORCID、複數宣告），三份格式一致。
 
-**CRediT 只填了 Ming-Yu Hsieh 的十一項角色**；Lee 與 Wang 兩位留 `[roles]` / `[待填]` —— **我不會替真實個人杜撰貢獻角色**，這兩格必須由主持人填。三份格式都留了同樣的空位，別漏掉 `.tex`（在 `\section*{Author contributions}`）。
+**CRediT 三位都已填，但 Lee 與 Wang 兩位是草擬的**（主持人要求先擬）：
+
+| Lee | Conceptualization; Investigation; Supervision; Validation; Writing – review & editing |
+|---|---|
+| **Wang** | Data curation; Investigation; Resources; Writing – review & editing |
+
+**依據只有職稱與版本庫顯示的分工，不是事實陳述 —— 送出前必須由三位作者自行確認。** 版本庫顯示程式碼全部由 Hsieh 撰寫（`CITATION.cff` 的 `authors:` 只有 Hsieh），所以草稿中第一作者不含 Software / Formal analysis / Writing – original draft；這與作者順序的關係由主持人衡量。詳見 `docs/submission_checklist.md` D 節。
 
 `CITATION.cff` 本來就把兩件事分開：`authors:`（軟體）是 Hsieh 一人、`preferred-citation:`（論文）是三人 —— **與現況一致，不需改動**，Zenodo 也不需要動。
 
