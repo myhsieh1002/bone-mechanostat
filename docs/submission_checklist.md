@@ -17,8 +17,10 @@
 | ✅ | `figures_tiff/Fig1–7.tif` | 2250 px 寬 × 7.50 in、300 dpi、LZW、字級 ≥ 8 pt。由 `exportFiguresPLOS.m` 產生並自檢 |
 | ✅ | `supporting_information/S1_Text_model_equations.{md,docx}` | 模型方程式（v2.25 已與程式碼同步；另修掉四個過期數值，見下） |
 | ✅ | `supporting_information/S1_Text_model_equations_zh-TW.{md,docx}` | 中文校稿版，**非投稿檔案**。35 條方程式逐式相同、12 章節對齊 |
-| ✅ | `supporting_information/S1_Table_parameters.csv` | 參數表（`data/` 的複本） |
-| ✅ | `supporting_information/S2_Table_validation_targets.csv` | 標的表（`data/` 的複本） |
+| ✅ | `supporting_information/S1_Table_parameters.csv` | 參數表（`data/` 的複本）。**v2.25 修掉 7 處過期的模型值** |
+| ✅ | `supporting_information/S1_Table_parameters_zh-TW.{md,docx}` | 中文校稿版，**非投稿檔案**。126 項全譯；數值由 CSV **自動帶出**，未經人手轉錄 |
+| ✅ | `supporting_information/S2_Table_validation_targets.csv` | 標的表（`data/` 的複本）。**v2.25 修掉 24 處過期的模型值** |
+| ✅ | `supporting_information/S2_Table_validation_targets_zh-TW.{md,docx}` | 中文校稿版，**非投稿檔案**。23 個標的全譯 |
 | ✅ | `supporting_information/S1_Fig_identifiability.png` | 由 `exportS1FigIdentifiability.m` 產生 |
 | ✅ | `cover_letter.md` / `cover_letter.docx` | v2.25 已全面對帳。**投稿用英文版** |
 | ✅ | `cover_letter_zh-TW.md` / `.docx` | 中文校稿版，**非投稿檔案**。數值與英文版逐項對過 |
