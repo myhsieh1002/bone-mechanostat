@@ -41,7 +41,7 @@ $$\varepsilon_p = \frac{M_L\, r_p}{E_{\mathrm{app}} I_g} + \frac{F_L}{E_{\mathrm
 
 with $\bar\varepsilon = \tfrac12(\varepsilon_p + \varepsilon_e)$.
 
-*Loop gain.* Differentiating gives $\partial \ln \varepsilon_p / \partial \ln f_{bm} = -\kappa_E$, verified numerically to $4.7\times10^{-12}$. In the thin-wall limit $I_g \approx \pi r^3 t_c$, so $\varepsilon \propto M_L / (E r^2 t_c)$: periosteal expansion is mechanically far more efficient than cortical thickening ($r^2$ against $t_c$). Numerically $\partial\ln\varepsilon/\partial\ln r_p = -4.27$ against $-2.50$ for $f_{bm}$. This is why loading enlarges rather than densifies cortical bone, and it emerges from parameter values rather than being imposed.
+*Loop gain.* Differentiating gives $\partial \ln \varepsilon_p / \partial \ln f_{bm} = -\kappa_E$, verified numerically to machine precision ($4\times10^{-16}$, evaluated as a ratio over a finite interval, which is exact for a power law). In the thin-wall limit $I_g \approx \pi r^3 t_c$, so $\varepsilon \propto M_L / (E r^2 t_c)$: periosteal expansion is mechanically far more efficient than cortical thickening ($r^2$ against $t_c$). Numerically $\partial\ln\varepsilon/\partial\ln r_p = -4.27$ against $-3.13$ for $f_{bm}$. This is why loading enlarges rather than densifies cortical bone, and it emerges from parameter values rather than being imposed.
 
 *Numerical guard.* $E_{\mathrm{app}} \propto f_{bm}^{\kappa_E}$ diverges as $f_{bm}\to 0$; a floor $f_{bm,\min}$ is applied inside the constitutive law only.
 
@@ -258,7 +258,7 @@ A vertebral trabecular compartment is derived from the cortical parameter set by
 
 Two overrides are forced rather than chosen, and both are worth stating because they generalise to any multi-compartment extension.
 
-1. **The shared signalling chain forces both compartments onto the same emergent shear set point.** A vertebra at realistic load and bone volume fraction carries ~2773 με of tissue strain against the cortex's 762 με, so the poroelastic transfer coefficient $K_\tau$ must differ. This is defensible — $K_\tau$ is a microstructural property and trabecular packets are not osteonal cortex — and it is set by *matching baseline shear*, not by fitting any outcome.
+1. **The shared signalling chain forces both compartments onto the same emergent shear set point.** A vertebra at realistic load and bone volume fraction carries ~961 με of tissue strain against the cortex's 787 με, so the poroelastic transfer coefficient $K_\tau$ must differ. This is defensible — $K_\tau$ is a microstructural property and trabecular packets are not osteonal cortex — and it is set by *matching baseline shear*, not by fitting any outcome.
 2. **Frost's minimum effective strain for modelling is a strain threshold and must scale likewise**, or modelling remains permanently active in the trabecular compartment and the vertebra expands without limit.
 
 $k_{\mathrm{res}}$ is calibrated against the *trabecular* turnover target (literature 15–30 %/yr against 5–10 for cortex), exactly as it is calibrated against cortical turnover for cortex; left alone it would be 438 %/yr, because the same absolute surface velocity acting on eight-fold less bone behind a 7.7-fold thinner wall turns over ~60-fold faster. The romosozumab targets remain hold-outs.
@@ -271,7 +271,7 @@ $k_{\mathrm{res}}$ is calibrated against the *trabecular* turnover target (liter
 
 Every mechanical layer — the power-law modulus, the Euler–Bernoulli section, the Biot solution — assumes linear elasticity. Cortical bone yields near 7000 με; beyond that, tissue damages rather than adapts, and a trajectory that goes there is not a slowly remodelling bone. Each simulation therefore reports peak strain against this limit, and results from runs that exceed it are not interpreted.
 
-This check identified two scope limits reported in the main text: unloading beyond ~7.5 months drives the model to its porosity floor and out of the elastic domain, and the deep branch of the oestrogen continuation below $f_{bm} \approx 0.391$ is extrapolation.
+This check identified two scope limits reported in the main text: unloading beyond ~7.5 months drives the model to its porosity floor and out of the elastic domain, and the deep branch of the oestrogen continuation below $f_{bm} \approx 0.47$ is extrapolation.
 
 ---
 

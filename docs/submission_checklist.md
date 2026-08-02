@@ -15,14 +15,15 @@
 | ✅ | `manuscript.md` | Word 的來源。**改內容改這份** |
 | ⬜ | `manuscript.tex` | LaTeX 版，**從未編譯過**。走 LaTeX 路線必須先在 Overleaf 跑一次 |
 | ✅ | `figures_tiff/Fig1–7.tif` | 2250 px 寬 × 7.50 in、300 dpi、LZW、字級 ≥ 8 pt。由 `exportFiguresPLOS.m` 產生並自檢 |
-| ✅ | `supporting_information/S1_Text_model_equations.md` | 模型方程式（v2.25 已與程式碼同步） |
+| ✅ | `supporting_information/S1_Text_model_equations.{md,docx}` | 模型方程式（v2.25 已與程式碼同步；另修掉四個過期數值，見下） |
+| ✅ | `supporting_information/S1_Text_model_equations_zh-TW.{md,docx}` | 中文校稿版，**非投稿檔案**。35 條方程式逐式相同、12 章節對齊 |
 | ✅ | `supporting_information/S1_Table_parameters.csv` | 參數表（`data/` 的複本） |
 | ✅ | `supporting_information/S2_Table_validation_targets.csv` | 標的表（`data/` 的複本） |
 | ✅ | `supporting_information/S1_Fig_identifiability.png` | 由 `exportS1FigIdentifiability.m` 產生 |
 | ✅ | `cover_letter.md` / `cover_letter.docx` | v2.25 已全面對帳。**投稿用英文版** |
 | ✅ | `cover_letter_zh-TW.md` / `.docx` | 中文校稿版，**非投稿檔案**。數值與英文版逐項對過 |
 | ✅ | `references.bib` / `references_verified.md` | 29 筆，逐筆查證紀錄齊 |
-| ❓ | SI 檔案格式 | PLOS 對 SI 可接受的格式與命名有規定。`.md` 的 S1 Text **可能需要轉成 PDF 或 DOCX** —— 依當前規範確認 |
+| ❓ | SI 檔案格式 | PLOS 對 SI 可接受的格式與命名有規定。S1 Text 已備 `.docx`；`.md` 內的 LaTeX 數學式在 Word 中是**原始碼文字**，若要排版好看需另行處理 —— 依當前規範確認 |
 
 ---
 
