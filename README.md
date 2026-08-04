@@ -196,7 +196,7 @@ falsifies.* Submitted to PLOS Computational Biology, 2026.
 
 **Software** — concept DOI, always resolves to the newest version:
 [`10.5281/zenodo.21592303`](https://doi.org/10.5281/zenodo.21592303)
-To cite the exact version reported in the manuscript, v2.25: version DOI to be added on release.
+To cite the exact version reported in the manuscript, v2.25: [`10.5281/zenodo.21784609`](https://doi.org/10.5281/zenodo.21784609)
 
 ## Licence
 
