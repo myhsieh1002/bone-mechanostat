@@ -70,7 +70,7 @@ Two findings we would flag to anyone using the model:
 cd /path/to/bone-mechanostat
 addpath('src'); setupPath();
 
-runtests("tests")          % 81 assertions
+runtests("tests")          % 91 assertions
 
 s   = scenarioLibrary("sedentary", durationDays = 730);
 out = simulate(s);
@@ -116,7 +116,7 @@ src/model/      assembly, solver, state vector
 src/analysis/   calibration, identifiability, continuation
 src/viz/        figure house style
 experiments/    E0–E6, one figure each
-tests/          81 assertions across 13 files
+tests/          91 assertions across 14 files
 data/           parameter and validation-target tables
 docs/           model equations, parameter provenance
 ```
@@ -196,7 +196,7 @@ falsifies.* Submitted to PLOS Computational Biology, 2026.
 
 **Software** — concept DOI, always resolves to the newest version:
 [`10.5281/zenodo.21592303`](https://doi.org/10.5281/zenodo.21592303)
-To cite the exact version used here, v2.12: [`10.5281/zenodo.21592304`](https://doi.org/10.5281/zenodo.21592304)
+To cite the exact version reported in the manuscript, v2.25: version DOI to be added on release.
 
 ## Licence
 

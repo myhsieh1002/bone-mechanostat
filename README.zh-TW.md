@@ -58,7 +58,7 @@ run(fullfile(projectRoot(), "experiments", "E6_bifurcation.m"))      % P3
 cd('/path/to/骨骼鈣質吸收數學模型')
 addpath('src'); setupPath();
 
-runtests("tests")     % 81 tests
+runtests("tests")     % 91 tests
 
 s   = scenarioLibrary("sedentary", durationDays = 730);
 out = simulate(s);

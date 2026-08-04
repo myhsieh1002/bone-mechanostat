@@ -25,8 +25,8 @@ authors:
       University Hospital, Taichung, Taiwan
 repository-code: "https://github.com/myhsieh1002/bone-mechanostat"
 license: MIT
-version: "2.12"
-date-released: "2026-07-26"
+version: "2.25"
+date-released: "2026-08-02"
 keywords:
   - bone remodelling
   - mechanotransduction
@@ -38,6 +38,10 @@ keywords:
   - osteoporosis
 # Concept DOI: always resolves to the newest version, so this citation stays
 # valid as the model advances. The v2.12 version DOI is 10.5281/zenodo.21592304.
+# TODO ON RELEASE: add the v2.25 version DOI here once Zenodo assigns it.
+# The manuscript reports v2.25 results, so v2.25 must be archived before or at
+# submission -- the concept DOI resolves to the newest ARCHIVED version, which
+# is still v2.12 until a new release is cut.
 doi: "10.5281/zenodo.21592303"
 
 preferred-citation:
