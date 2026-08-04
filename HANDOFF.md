@@ -46,10 +46,21 @@ V10 -8.6991（盲測）  V14 786.7704（盲測）  chi2 4.8113
 
 **收到審查意見後從哪裡開始**：`docs/submission_checklist.md` F 節列了七個「這篇會被問到的地方」以及稿件現在的回答，那是撰寫 response letter 的起點。最強的三項是：八項盲測全過、Frost 設定點 787 με 湧現且從未擬合、P3 自我否證寫在正文。
 
-**⚠️ 兩件未解的事**，回覆審稿人時不要忘記：
+**✅ 投稿後補跑確認（2026-08-04，headless R2026a `-batch`，485 秒）**
 
-1. **v2.25 的 91 測試沒有在投稿當下重跑成功**（MATLAB 逾時中斷）。當時是以 git 逐欄驗證替代：最後一次 91/0 驗證之後，兩個資料檔只動過 `description` / `notes` 文字欄，數值欄一個都沒變。**這是間接推論，不是重跑。** 有空時補跑一次並把結果記在這裡。
-2. **`manuscript.tex` 從未編譯過**，且投稿前才補進 `\section*{Data availability}`。走 LaTeX 路線（例如修稿階段改投或編輯要求）之前，必須先在 Overleaf 完整編譯一次。
+`runtests("tests")` → **94 個 test case：91 passed、0 failed、3 incomplete**。三個 incomplete 是 `test_conservation` / `test_regression` / `test_steadystate` 的 `testPlaceholder`，各自以 assumption 主動過濾（P4 / P5 / P3 階段的預留檔，尚未實作），**不是失敗**。稿件所稱的「91-assertion test suite」即這 91 項。
+
+`evalTargets(getDefaultParams(reload=true), holdout=true)` 的輸出與第 19 行的基準值**逐字相同**：
+
+```
+V1 7.3306  V2 1.2202  V7 0.6630  V7slope -0.1307
+V8 12.4593  V8cort 2.3294  V16 1.1238
+V10 -8.6991（盲測）  V14 786.7704（盲測）  chi2 4.8113
+```
+
+投稿當時因 MATLAB 逾時未能重跑，改以 git 逐欄比對推論「資料檔只動過文字欄」。**這次重跑證實了那個推論**：審稿人從 Zenodo v2.25 下載後跑出來的，就是稿件裡的數字。
+
+**⚠️ 仍未解的一件事**：**`manuscript.tex` 從未編譯過**，且投稿前才補進 `\section*{Data availability}`。走 LaTeX 路線（例如修稿階段改投或編輯要求）之前，必須先在 Overleaf 完整編譯一次。
 
 **這個階段你最可能被要求做的三件事，以及做法：**
 
