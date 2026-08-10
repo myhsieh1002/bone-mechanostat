@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![MATLAB R2026a](https://img.shields.io/badge/MATLAB-R2026a-orange.svg)](https://www.mathworks.com)
-[![tests 81/81](https://img.shields.io/badge/tests-81%2F81-brightgreen.svg)](tests/)
+[![tests 91/91](https://img.shields.io/badge/tests-91%2F91-brightgreen.svg)](tests/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21592303.svg)](https://doi.org/10.5281/zenodo.21592303)
 
 Ming-Yu Hsieh, MD, PhD · [ORCID 0000-0002-5797-3474](https://orcid.org/0000-0002-5797-3474)
@@ -39,27 +39,33 @@ automated test enforces it.
 
 ## Headline results
 
-Six parameters were fitted to six targets. **Eight observations were held out
-and never entered the objective**; all eight are recovered.
+Five parameters were fitted to five targets. **Eight observations were held out
+and never entered the objective**; all eight are recovered. Two further
+constants that look like free parameters -- `k_form` and `k_ot` -- are derived
+from the baseline state at every evaluation rather than fitted.
 
 | | Result | |
 |---|---|---|
-| **Frost's set point emerges** | **762 µε**, inside the lazy zone between his remodelling (100–300 µε) and modelling (1500–3000 µε) thresholds — computed from channel kinetics, never fitted | hold-out |
-| **Loading ≫ calcium** | bone mineral content **+4.59 %** under appropriate loading (≈2900 µε) vs **+0.47 %** for calcium — a **9.8-fold** ratio | |
+| **Frost's set point emerges** | **787 µε**, inside the lazy zone between his remodelling (100–300 µε) and modelling (1500–3000 µε) thresholds — computed from channel kinetics, never fitted | hold-out |
+| **Loading ≫ calcium** | bone mineral content **+4.582 %** under appropriate loading (≈2900 µε) — a **15.1-fold** ratio to calcium | |
 | **Site specificity** | unilateral loading reproduces all six pQCT indices of the tennis-player humerus; systemic calcium and systemic romosozumab give **0.0000 %** side-to-side difference | hold-out |
-| **Romosozumab** | **+12.5 %** spine BMD at 12 months, **−14.0 %** over withdrawal | withdrawal held out |
-| **Our own hypothesis, falsified** | osteoporosis is **not** an alternative stable state here — the model is monostable and recovers to **99.7 %** of baseline with no hysteresis | |
+| **Romosozumab** | **+12.5 %** spine BMD at 12 months, **−8.7 %** over withdrawal | withdrawal held out |
+| **Our own hypothesis, falsified** | osteoporosis is **not** an alternative stable state here — the model is monostable and recovers to **100.3 %** of baseline with no hysteresis | |
 
 Two findings we would flag to anyone using the model:
 
-- **Measurement choice flips conclusions.** The loading effect is +4.59 % in
-  bone mineral content and +1.87 % in areal density, because loading moves the
+- **Measurement choice flips conclusions.** The loading effect is +4.582 % in
+  bone mineral content and +1.778 % in areal density, because loading moves the
   periosteal surface outward and areal density divides by projected width. Two
   of our three quantitative claims reverse sign under a different but equally
   reasonable measure.
-- **One target is not met.** The frequency response is logarithmic in form but
+- **Two calibration targets are not met, and we ship them that way.** The
+  calcium effect finishes at +0.663 % against a 0.7–1.8 % band, and the
+  post-withdrawal resorption overshoot at 1.124 against a 1.2–1.4 band. Both
+  are reported with `pass` left false rather than widened to fit. A third
+  observation fails outright: the frequency response is logarithmic in form but
   **wrong in sign** at the bone level, traced to saturation in the channel
-  opening rate. The channel rate constants are placeholders; this is the first
+  opening rate. The channel rate constants are placeholders; that is the first
   thing to re-check against better values.
 
 ---
