@@ -24,27 +24,25 @@ V8 12.4593  V8cort 2.3294  V16 1.1238（未達）
 V10 -8.6991（盲測）  V14 786.7704（盲測）  chi2 4.8113
 ```
 
-### ▶ 🚩 已於 2026-08-04 投出，現在是「等審查意見」階段
+### ▶ 🚩 PLOS 已退稿；下一個目標是 BMMB
 
-**PLOS Computational Biology｜稿件編號 `PCOMPBIOL-D-26-01926`**（送出前的草稿編號是 `S-26-02497`；`S`→`D` 即代表已進入編輯審查）。
+**PLOS Computational Biology 於 2026-08-07 編輯台退稿（desk reject）**，稿件編號 `PCOMPBIOL-D-26-01926`。**沒有送外審** —— 信中 Reviewers' Comments 與 Additional Editor Comments 兩欄皆空，**也沒有給任何具體理由**。編輯部提供轉投 PLOS ONE 的選項（期限 2026-10-09），主持人與兩位共同作者討論後**決定不轉投，改投 Biomechanics and Modeling in Mechanobiology（BMMB, Springer）**。
 
-**模型端沒有待辦，且在收到審查意見之前不應該有。** 除非主持人明確要求，**不要開新的 P5 輪次**，也不要「順手」改進模型 —— 下面 P5n′/P5o/P5p 三節是已完成的紀錄，讀它們是為了回答審稿人，不是為了接著做。
+**下一個 session 不要重新診斷退稿原因。** 沒有理由可查，任何說法都是推論。當時的推論記在這裡供參考，不要當成事實：摘要與投稿信都把「我們否證了自己的假設」放在最前面，在只看摘要的影響力篩選階段容易被歸類為陰性結果論文；真正的強項（八項盲測、787 με 湧現）排在後面。BMMB 版的投稿信已據此**重排順序**，但**沒有刪改任何誠實陳述**。
 
-現在動模型的代價和平常不同：任何改動都會讓 HEAD 與已投出的稿件不一致，而 Zenodo v2.25 是審稿人手上那份。**若真的必須改，先開分支，不要動 main。**
-
-投稿包的最終狀態（2026-08-04 送出的內容）：
+**模型端沒有待辦。** 除非主持人明確要求，不要開新的 P5 輪次，也不要「順手」改進模型。任何改動都會讓 HEAD 與投出的稿件不一致，而 Zenodo v2.25 是審稿人手上那份。**若真的必須改，先開分支。**
 
 | 項目 | 值 |
 |---|---|
 | Zenodo concept DOI | `10.5281/zenodo.21592303` |
 | Zenodo v2.25 version DOI | `10.5281/zenodo.21784609`（tag `v2.25` → commit `40b52e4`） |
-| 稿件檔案 | `manuscript.docx`（由 `manuscript.md` 產生） |
-| 圖 | `figures_tiff/Fig1–7.tif`（**不是** PNG，第一次投稿誤傳過 PNG） |
-| Supporting Information | S1 Text (.docx)、S1 Table (.csv)、S2 Table (.csv)、S1 Fig (.png) 共四份 |
-| 建議審稿人 | Pascal R. Buenzli (QUT)、Björn Busse (UKE) |
-| 未申請 | Publication Fee Assistance（$3,165 待接受後才付）、bioRxiv 預印本 |
+| BMMB 投稿包 | `投稿Biomechanics and Modeling in Mechanobiology/`（**已 gitignore**） |
+| PLOS 投稿包 | `投稿PLOS Comp Biol/`（保留為紀錄，**不要再改**） |
+| 未申請 | bioRxiv 預印本（Zenodo v2.25 已封存，條件已齊，只差兩位共同作者同意） |
 
-**收到審查意見後從哪裡開始**：`docs/submission_checklist.md` F 節列了七個「這篇會被問到的地方」以及稿件現在的回答，那是撰寫 response letter 的起點。最強的三項是：八項盲測全過、Frost 設定點 787 με 湧現且從未擬合、P3 自我否證寫在正文。
+**BMMB 版與 PLOS 版的差異很大**，不是換檔名而已：引註改作者—年份制（49 處）、參考文獻改字母排序 Springer 格式、摘要改非結構式 248 字、關鍵詞 8→6、刪 Author summary、章節改十進位編號且 Methods 移到第 2 節、題名頁獨立成檔、補充材料改 Online Resource 1–4、圖寬 190→174 mm。完整對照與檢查清單在 `投稿Biomechanics and Modeling in Mechanobiology/投稿檢查清單.md`。
+
+**收到審查意見後從哪裡開始**：上述檢查清單的 E 節列了七個「這篇會被問到的地方」以及稿件現在的回答。**注意 BMMB 的審稿人是力學生物學專業，孔彈性與通道那一層會被問得比臨床結果更細** —— 最可能被要求補強的是佔位的通道速率常數。最強的三項是：八項盲測全過、Frost 設定點 787 με 湧現且從未擬合、負荷以力進入而應變為輸出（閉環未被剪斷且有自動測試強制）。
 
 **✅ 投稿後補跑確認（2026-08-04，headless R2026a `-batch`，485 秒）**
 
