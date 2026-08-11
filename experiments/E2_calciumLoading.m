@@ -29,7 +29,7 @@ col = houseColors();
 caLevels   = [100 400 800 1500];             % mg/day: severe, deficient, adequate, supplemented
 caLabels   = ["100 (severe)" "400 (deficient)" "800 (adequate)" "1500 (supplemented)"];
 loadLevels = ["sedentary" "resistance" "resistanceVigorous"];
-loadLabels = ["sedentary" "resistance (2236 ue)" "vigorous (2949 ue)"];
+loadLabels = ["sedentary" "resistance" "vigorous"];
 nDays      = 730;
 
 dBMD  = nan(numel(caLevels), numel(loadLevels));   % % change over 24 months
@@ -123,7 +123,9 @@ nexttile(tl);
 b = bar(dBMC, EdgeColor = "none");
 b(1).FaceColor = col.muted; b(2).FaceColor = col.series(3,:); b(3).FaceColor = col.primary;
 xticklabels(caLabels); xtickangle(20); ylabel("\DeltaBMC over 24 months [%]");
-legend(loadLabels, Location = "northwest", Box = "off");
+legend(b, loadLabels, Location = "northoutside", Orientation = "horizontal", ...
+       Box = "off", AutoUpdate = "off");   % AutoUpdate off: the yline below was
+                                           % being appended as a fourth entry, "data1"
 yline(4, "--", "P1 clause 2", Color = col.accent);
 title("Loading moves bone mass; calcium barely does"); box off; grid on;
 

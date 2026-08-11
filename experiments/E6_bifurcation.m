@@ -102,7 +102,7 @@ plot(ax2, 10 + oUp.t / 365, fUp, LineWidth = 1.8, Color = col.primary);
 xline(ax2, 10, "--", "E_2 restored", Color = col.muted);
 yline(ax2, fDown(1), ":", "baseline", Color = col.ink);
 xlabel(ax2, "years"); ylabel(ax2, "f_{bm} [-]");
-title(ax2, sprintf("(b) full model recovers %.1f %% -- no hysteresis", recovery));
+title(ax2, sprintf("(b) recovers %.1f %%, no hysteresis", recovery));
 grid(ax2, "on"); box(ax2, "off");
 
 title(tl, "E6 -- osteoporosis is a steep continuous shift, not a second stable state", ...

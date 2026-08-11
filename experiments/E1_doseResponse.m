@@ -139,7 +139,7 @@ semilogx(freqs, dFrq, "-o", LineWidth = 1.8, Color = col.primary, ...
          MarkerFaceColor = col.primary);
 ylabel("\DeltaaBMD @ 12 mo [%]"); set(gca, YColor = col.primary);
 xlabel("frequency [Hz]");
-title(sprintf("(b) V5b: ln f form survives, sign flips (r=%+.3f)", rLogF));
+title("(b) V5b: ln f survives, sign flips");
 grid on; box off;
 
 nexttile(tl);
@@ -148,7 +148,7 @@ b2(1).FaceColor = col.muted; b2(2).FaceColor = col.primary;
 xticklabels(compose("x%.1f", amps)); xlabel("peak moment scale");
 ylabel("\DeltaaBMD @ 12 mo [%]");
 legend(["no rest" "10 s rest inserted"], Location = "northwest", Box = "off");
-title("(c) V5: rest gain is conditional"); grid on; box off;
+title("(c) V5: rest gain conditional"); grid on; box off;
 
 title(tl, "E1 -- mechanical dose-response", FontWeight = "bold");
 exportFigure(fig, "E1_doseResponse");

@@ -148,7 +148,7 @@ hold on;
 xline(o{2}.t(iPk) / 30, ":", "peak", Color = col.accent);
 xline(stopD / 30, "--", "drug stopped", Color = col.muted);
 xlabel("months"); ylabel("osteoblasts / baseline");
-title("V9: formation peaks, then self-limits"); grid on; box off;
+title("V9: formation peaks, self-limits"); grid on; box off;
 
 nexttile(tl); hold on;
 plot(oTr.t / 30, dTr, LineWidth = 1.8, Color = col.primary);
@@ -157,7 +157,7 @@ fill([0 24 24 0], [11 11 14 14], col.accent, FaceAlpha = 0.15, EdgeColor = "none
 xline(stopD / 30, "--", Color = col.muted);
 xlabel("months"); ylabel("\DeltaaBMD [%]");
 legend(["trabecular" "cortical" "V8 target band"], Location = "northwest", Box = "off");
-title(sprintf("V8 in band, V10 falls: %.1fx amplification", amp));
+title(sprintf("V8/V10: %.1fx amplification", amp));
 grid on; box off;
 
 title(tl, "E4 -- romosozumab, withdrawal and loading", FontWeight = "bold");

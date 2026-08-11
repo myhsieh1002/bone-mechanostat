@@ -56,7 +56,7 @@ yline(300,  "--", "remodelling threshold (100-300)", Color = col.accent, ...
 yline(1500, "--", "modelling threshold (1500-3000)", Color = col.accent, ...
       LabelHorizontalAlignment = "left");
 ylabel("\epsilon^* [\mue]"); xticks(1); xticklabels("model"); xlim([0.4 1.6]);
-title("V14: emergent set point (hold-out)"); ylim([0 1800]); box off;
+title("V14: set point (hold-out)"); ylim([0 1800]); box off;
 
 title(tl, "E0 -- baseline steady state", FontWeight = "bold");
 exportFigure(fig, "E0_baseline");

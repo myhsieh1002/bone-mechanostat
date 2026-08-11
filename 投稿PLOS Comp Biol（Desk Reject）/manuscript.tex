@@ -1,0 +1,1440 @@
+% ---------------------------------------------------------------------------
+% PLOS Computational Biology submission
+% From fluid shear to sclerostin: a mechanotransduction-resolved multiscale
+% model of bone adaptation, and what it falsifies
+%
+% Built on the official PLOS LaTeX template (plos_latex_template.tex).
+% Compiles standalone: the bibliography is a manual thebibliography, so
+% plos2015.bst is NOT required.  A references.bib is shipped alongside for
+% anyone who prefers BibTeX -- to use it, comment out the thebibliography
+% block at the end and uncomment the two \bibliography lines.
+%
+% Figures are NOT embedded, per PLOS policy: captions sit in the text at
+% first citation and the image files are uploaded separately (figures/Fig1
+% ... Fig7).
+% ---------------------------------------------------------------------------
+
+\documentclass[10pt,letterpaper]{article}
+\usepackage[top=0.85in,left=2.75in,footskip=0.75in]{geometry}
+
+\usepackage{amsmath,amssymb}
+\usepackage{changepage}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp,marvosym}
+\usepackage{cite}
+\usepackage{nameref,hyperref}
+\usepackage[right]{lineno}
+\usepackage{microtype}
+\DisableLigatures[f]{encoding = *, family = * }
+
+\usepackage[table]{xcolor}
+\usepackage{array}
+
+\newcolumntype{+}{!{\vrule width 2pt}}
+\newlength\savedwidth
+\newcommand\thickcline[1]{%
+  \noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+  \cline{#1}%
+  \noalign{\vskip\arrayrulewidth}%
+  \noalign{\global\arrayrulewidth\savedwidth}%
+}
+\newcommand\thickhline{\noalign{\global\savedwidth\arrayrulewidth\global\arrayrulewidth 2pt}%
+\hline
+\noalign{\global\arrayrulewidth\savedwidth}}
+
+% Uncomment for double spacing if the editor requests it
+%\usepackage{setspace}
+%\doublespacing
+
+\raggedright
+\setlength{\parindent}{0.5cm}
+\textwidth 5.25in
+\textheight 8.75in
+
+\usepackage[aboveskip=1pt,labelfont=bf,labelsep=period,singlelinecheck=off]{caption}
+\renewcommand{\figurename}{Fig}
+
+% Remove brackets from numbering in List of References
+\makeatletter
+\renewcommand{\@biblabel}[1]{\quad#1.}
+\makeatother
+
+\usepackage{lastpage,fancyhdr,graphicx}
+\usepackage{epstopdf}
+\pagestyle{fancy}
+\fancyhf{}
+\rfoot{\thepage/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrule}{\hrule height 2pt \vspace{2mm}}
+\fancyheadoffset[L]{2.25in}
+\fancyfootoffset[L]{2.25in}
+\lfoot{\today}
+
+% Convenience macro for microstrain
+\newcommand{\ue}{\ensuremath{\mu\varepsilon}}
+
+\begin{document}
+\vspace*{0.2in}
+
+\begin{flushleft}
+{\Large
+\textbf\newline{From fluid shear to sclerostin: a mechanotransduction-resolved multiscale model of bone adaptation, and what it falsifies}
+}
+\newline
+\\
+\textbf{Short title:} A mechanotransduction-resolved multiscale model of bone adaptation
+\newline
+\\
+Hsiang-Lin Lee\textsuperscript{1,2},
+Tzu-Ling Wang\textsuperscript{3},
+Ming-Yu Hsieh\textsuperscript{4,5,6*}
+\\
+\bigskip
+\textbf{1} Institute of Medicine, Chung Shan Medical University, Taichung, Taiwan
+\\
+\textbf{2} Department of Surgery, Chung Shan Medical University Hospital, Taichung, Taiwan
+\\
+\textbf{3} School of Nursing, Chung Shan Medical University, Taichung, Taiwan
+\\
+\textbf{4} School of Medicine, Chung Shan Medical University, Taichung, Taiwan
+\\
+\textbf{5} Division of Pediatric Surgery, Chung Shan Medical University Hospital, Taichung, Taiwan
+\\
+\textbf{6} Center for Evidence-Based Medicine, Chung Shan Medical University Hospital, Taichung, Taiwan
+\\
+\bigskip
+* cshy1392@csh.org.tw
+\end{flushleft}
+
+% ---------------------------------------------------------------------------
+\section*{Abstract}
+
+Mechanical loading and calcium availability are the two levers most often
+invoked in skeletal health, but no model has been able to weigh them against
+each other, because mechanotransduction models terminate at the osteocyte and
+bone-remodelling models contain no mechanics. We built an eight-module
+multiscale model that carries a load continuously from organ-level bending,
+through poroelastic lacunocanalicular shear, through three-state
+mechanosensitive channel gating, through
+Piezo1--Ca\textsuperscript{2+}--YAP/TAZ--sclerostin--Wnt signalling, through
+the RANK/RANKL/OPG cell populations, to three-surface cortical geometry,
+mineralisation and areal bone mineral density, with systemic
+calcium--parathyroid hormone--vitamin D coupled bidirectionally. Loading
+enters strictly as force; strain is a regulated output, preserving the
+mechanostat feedback loop. Six free parameters were fitted to six targets;
+eight further observations were held out and never entered the objective. The
+model reproduces adult turnover (7.33\,\%/yr), disuse loss (1.15\,\%/month),
+the non-progressive plateau of calcium supplementation, and romosozumab's
+spine response ($+12.5\,\%$ at 12 months) and post-withdrawal loss
+($-12.4\,\%$). Frost's mechanostat set point emerges at 787\,\ue, inside the
+lazy zone bracketed by the remodelling (100--300\,\ue) and modelling
+(1500--3000\,\ue) thresholds he inferred from observation, without being
+fitted. Loading raises bone mineral content 15.1-fold more than calcium, but
+only at a specified intensity ($\approx$2900\,\ue) and in bone mass rather
+than areal density, which dilutes the response by 61\,\%. Unilateral loading
+reproduces all six peripheral quantitative computed tomography indices of the
+tennis-player humerus, while systemic interventions produce side-to-side
+differences of 0.0000\,\%. Our starting hypothesis that osteoporosis is
+an alternative stable state is falsified: the model is monostable, and a full
+withdrawal-and-recovery probe returns to 100.3\,\% of baseline with no
+hysteresis. Skeletal irreversibility must therefore arise from structural loss
+outside continuum porosity dynamics. One of the three clauses of our
+loading-versus-calcium prediction reverses sign under a different densitometric
+measure, which we report as a methodological result in its own right.
+
+% ---------------------------------------------------------------------------
+\section*{Author summary}
+
+Bone adapts to the forces placed on it. Two ingredients are usually named:
+calcium, the material bone is built from, and mechanical loading, the signal
+that tells bone where to build. Clinicians and patients often treat these as
+interchangeable levers, but they are not the same kind of thing, and no
+computational model has been able to put them in the same framework and
+compare them --- because the models that describe how a bone cell senses force
+stop before bone density, and the models that predict bone density have no
+real force in them.
+
+We joined the two ends. Our model follows a load all the way from the bending
+of a whole bone, through fluid squeezed past the cells buried inside it,
+through the ion channels those cells open, through the molecular signals they
+release, to the cell populations that add and remove bone, and finally to the
+density a clinical scan would measure. Because the chain is unbroken, we could
+ask questions that neither half could answer alone.
+
+Three results matter. Loading raises bone mass about ten times more than
+calcium does, but only when both the loading intensity and the measurement are
+stated precisely --- the same model gives opposite answers under different
+measures, which is a warning for how such claims are reported. Purely local
+loading produces the side-to-side asymmetry seen in tennis players, and no
+whole-body treatment can imitate it. And our own starting hypothesis --- that
+osteoporosis is a second stable state a skeleton can fall into and cannot
+climb out of --- is wrong in this framework: the model recovers fully.
+Irreversibility must come from structural damage the model does not yet
+represent.
+
+\linenumbers
+
+% ---------------------------------------------------------------------------
+\section*{Introduction}
+
+Bone is a structure that carries its own sensors. Frost's mechanostat
+\cite{frost1987} proposed that bone tissue holds strain near a set point by
+adding material when strain is high and removing it when strain is low, and
+the framework has organised four decades of skeletal physiology. What it has
+never had is a mechanism: the set point is inferred from observation, not
+derived, and the theory is silent on the molecular chain that would produce
+it.
+
+That chain is now largely known. Load deforms the bone matrix, driving
+interstitial fluid through the lacunocanalicular network; the resulting shear
+stress on osteocyte processes gates mechanosensitive ion channels including
+Piezo1 \cite{li2019}; the calcium transient that follows shifts YAP/TAZ to the
+nucleus; sclerostin, the osteocyte-secreted Wnt antagonist encoded by
+\emph{SOST}, falls; Wnt/$\beta$-catenin signalling rises; and osteoblast and
+osteoclast populations respond. Each link is supported, and several are drug
+targets --- romosozumab, an anti-sclerostin antibody, is licensed on exactly
+this axis \cite{cosman2016}.
+
+Computational work has advanced from both ends and met in the middle nowhere.
+On the sensing side, Fu and colleagues \cite{fu2025} built a whole
+bone--lacunocanalicular--osteocyte model that reproduces the effects of
+loading magnitude, frequency, cycle number and recovery time, but stops at the
+osteocyte response. On the tissue side, the Lemaire \cite{lemaire2004} and
+Pivonka \cite{pivonka2008} families of models describe RANK/RANKL/OPG
+population dynamics and drug interventions in quantitative detail, but drive
+them with a phenomenological stimulus rather than mechanics; where mechanics
+appears at all it is as strain energy density imposed from outside
+\cite{scheiner2013}. The consequence is that no existing model can (i)
+distinguish two loading protocols with identical energy but different waveform
+and report a bone mineral density trajectory, (ii) compare mechanical loading
+against an anti-sclerostin antibody in the same currency, or (iii) let calcium
+intake and mechanical loading compete for the same bone.
+
+The third gap is the clinically loudest. Calcium supplementation produces a
+small, non-progressive increment in bone density --- Tai and colleagues'
+meta-analysis \cite{tai2015} found $+0.7$ to $+1.8\,\%$, reached within one
+year and not continuing thereafter --- while exercise interventions and, most
+starkly, the natural experiment of unilateral racquet sports
+\cite{haapasalo2000} produce far larger and site-confined changes. The natural
+reading is that calcium is \emph{permissive} and loading is \emph{instructive}:
+calcium determines whether bone can be built, loading determines whether it
+will be. That reading has never been tested inside a single mechanistic model,
+because no model has contained both.
+
+We report such a model, and three falsifiable predictions. All three were
+written into the project plan before any parameter was fitted, and the dated
+plan and its decision log are in the archived repository, so the ordering can
+be checked; we make no claim of formal pre-registration in a public registry. \textbf{P1}: in the calcium-replete range, the marginal effect
+of calcium on bone density is small, while appropriate loading is large, and
+the two interact non-additively. \textbf{P2}: a two-compartment model sharing
+one systemic calcium pool reproduces the tennis-player asymmetry, and no
+systemic intervention can. \textbf{P3}: with mechanosensitivity, sclerostin
+secretion or oestrogen as bifurcation parameters, the system exhibits a
+saddle-node bifurcation and bistability, so that osteoporosis is an
+alternative stable state --- which would explain why bone is lost quickly and
+regained slowly.
+
+Two of these survive. The third does not, and we report its falsification in
+the main text because it is the strongest available evidence that the model
+predicts rather than fits.
+
+% ---------------------------------------------------------------------------
+\section*{Results}
+
+\subsection*{An unbroken chain from force to bone mineral density}
+
+The model comprises eight modules (M1--M8; \nameref{S1_Text}). M1 computes
+cross-sectional strain from a prescribed peak bending moment and axial force.
+M2 solves Biot poroelasticity for lacunocanalicular fluid shear
+\cite{weinbaum1994}. M3 integrates three-state (open/closed/inactivated)
+mechanosensitive channel gating \cite{fu2025} over a day's loading to produce
+a single daily scalar dose. M4 and M5 carry
+Piezo1--Ca\textsuperscript{2+}--YAP/TAZ--sclerostin--Wnt signalling. M6 is a
+RANK/RANKL/OPG osteoblast--osteoclast population model
+\cite{lemaire2004,pivonka2008}. M7 evolves periosteal, endocortical and
+intracortical surfaces plus mean tissue mineral density. M8 is systemic
+calcium--parathyroid hormone--1,25(OH)\textsubscript{2}D
+\cite{peterson2010}, coupled bidirectionally. The single-compartment state
+vector has 17 elements; the two-compartment version has 30.
+
+One interface decision determines whether the model is a mechanostat at all.
+\textbf{Loading enters only as force} --- peak bending moment and axial force
+--- and strain is computed as an output of current geometry and material
+state. Prescribing strain, as an earlier version of this model did, silently
+severs the negative feedback: bone volume fraction becomes a pure integrator,
+the calcium plateau cannot appear, and there is no set point for bifurcation
+analysis to find. We verified the closed loop numerically:
+$\mathrm{d}\ln\varepsilon_p/\mathrm{d}\ln f_{bm} = -3.1300$ in cortex and
+$-2.0000$ in the vertebral compartment, each matching its own $-\kappa_E$ to
+better than $4\times10^{-16}$, so added bone does reduce strain. The two
+exponents differ because compact and trabecular bone are different materials;
+we return to this in \nameref{S1_Text}.
+
+Two independent cross-validations support the mechanics. A Crank--Nicolson
+finite-difference solution of the poroelastic problem agrees with the
+closed-form Biot solution to a maximum relative error of 0.0029\,\%, and an
+affine per-cycle channel operator agrees with stepwise integration to
+$2.2\times10^{-15}$.
+
+\subsection*{Calibration, and what was withheld}
+
+Five parameters were fitted against five targets: adult turnover, disuse loss,
+calcium effect size, calcium plateau slope, the romosozumab spine response,
+and the post-withdrawal resorption-marker overshoot. The formation rate
+constant is not free --- it is derived at every parameter set from bone-mass
+balance, since the three-surface geometry admits no stationary geometric fixed
+point. All other parameters come from the literature (\nameref{S1_Table}).
+
+Eight observations were \textbf{held out} and never entered the objective: the
+six peripheral quantitative computed tomography indices of the tennis-player
+humerus, the post-withdrawal bone density loss, and the emergent mechanostat
+set point. Their status as blind tests is what the rest of this section rests
+on.
+
+Identifiability analysis (\nameref{S1_Fig}) shows \texttt{k\_res} and
+\texttt{K\_S} are individually identifiable, each pinned by one target with a
+clear single minimum. The antibody clearance constant \texttt{delta\_ab} is
+\textbf{not}: its conditional $\chi^2$ falls monotonically to its upper bound,
+because the objective's midpoint metric pulls the romosozumab response toward the
+centre of its band and the parameter cannot reach that far. The value we report
+satisfies the band; it is not a point estimate, and we do not treat it as one.
+The two PTH-pathway parameters are \textbf{practically non-identifiable}:
+76.9\,\% of the scanned grid lies inside the confidence region and the ridge
+correlation is only $-0.26$, so they are not trading off along a ridge --- both
+are simply weakly constrained. We report the joint region rather than marginal
+intervals, and we do not interpret either parameter's point value.
+\texttt{K\_P\_sost} no longer sits at its upper bound, as it did before the
+osteocyte turnover constant was corrected, but it remains high, and the
+interpretation is unchanged: large values mean PTH inhibition of \emph{SOST} is
+weak and the fit is asking for that pathway to be nearly absent, as Lemaire and
+Pivonka assume by omitting it.
+
+\subsection*{The mechanostat set point is an output, and it lands where Frost put it}
+
+At baseline the model sits at a stable fixed point
+($\max\mathrm{Re}\,\lambda = -2.4\times10^{-4}$), with 24-month areal bone
+mineral density drift of $-0.015\,\%$ and turnover of 7.33\,\%/yr
+(Fig~\ref{fig1}). The bar was 5--10\,\%/yr, the upper part of the
+3--10\,\%/yr range conventionally quoted for cortical bone
+\cite{parfitt2002}; our value sits in the upper half of it, so this is a pass
+against a target we set at the fast end of what is quoted.
+
+\begin{figure}[!h]
+\caption{{\bf Baseline steady state and the emergent mechanostat set point.}
+(A) Areal bone mineral density over 24 months at baseline; drift
+$-0.015\,\%$. (B) Bone volume fraction over the same period. (C) The peak
+strain the closed loop settles at, 786.8\,\ue, against the 300--1500\,\ue
+band Frost inferred from observation. This value is computed, not fitted, and was held
+out of calibration.}
+\label{fig1}
+\end{figure}
+
+The peak strain the closed loop settles at is \textbf{786.8\,\ue}. Frost
+\cite{frost1987} inferred two separate thresholds from observation: strains at
+or above 1500--3000\,\ue{} drive modelling that adds cortical bone, and strains
+below 100--300\,\ue{} release remodelling that removes it. The emergent value
+sits inside the lazy zone those thresholds bracket --- above the remodelling
+threshold, below the modelling threshold --- and it is computed here from
+channel gating kinetics and signalling Hill coefficients, without ever being
+fitted. This is the model's most direct evidence that a phenomenological law
+can be reduced to molecular mechanism, and it costs no free parameter.
+
+The same run also shows why cortical bone gains size rather than density: at a
+bone volume fraction of about 0.95 the cortex is within 5\,\% of its
+densification ceiling, and
+$\mathrm{d}\ln\varepsilon/\mathrm{d}\ln r_p = -4.27$ is substantially stronger
+than $\mathrm{d}\ln\varepsilon/\mathrm{d}\ln f_{bm} = -3.13$. Growing outward
+is simply the cheaper way to reduce strain --- an emergent consequence of
+parameter values, not an imposed rule.
+
+\subsection*{Loading waveform: two targets recovered, one sign disagreement}
+
+Fig~\ref{fig2} shows three orthogonal slices through loading-waveform space.
+
+\begin{figure}[!h]
+\caption{{\bf Mechanical dose--response.}
+(A) Cycle number against 12-month areal density change; marginal return falls
+33-fold from 18 to 1200 cycles. The saturation is a downstream property ---
+at the channel level the dose is linear in cycle number. (B) Frequency at
+both levels: fluid shear (grey, left axis) rises with $\ln f$ as
+poroelasticity requires, while the bone-level response (teal, right axis)
+falls. The logarithmic form survives to bone; the sign does not. (C) Rest
+insertion at three amplitudes. The gain falls with amplitude, matching
+experiment, and reverses the direction seen at the channel level.}
+\label{fig2}
+\end{figure}
+
+\emph{Cycle number.} Increasing cycles from 18 to 1200 raises the 12-month
+response from $+0.503\,\%$ to $+2.286\,\%$, with marginal return falling
+33-fold and monotonically. This reproduces the saturation of the osteogenic
+response beyond a few dozen cycles \cite{yang2017}. Notably, the saturation is
+\textbf{not} in the channel: at the channel level the dose is asymptotically
+linear in cycle number across four orders of magnitude of gating rate
+constants, because periodic driving puts the three-state system on a limit
+cycle where every subsequent cycle contributes identically. The saturation is
+a downstream property of the sclerostin--Wnt--cell cascade, and can only be
+seen at the bone level.
+
+\emph{Rest insertion.} The target here is conditional: a substantial gain at
+low amplitude that fades as amplitude rises. Inserting 10\,s between cycles
+amplifies the response 4.60-fold at low amplitude, 1.66-fold at moderate and
+1.45-fold at high. The \textbf{direction} matches Srinivasan and
+colleagues \cite{srinivasan2002} and the \textbf{magnitude is now short of it}:
+we obtain 4.60-fold against their measured 5.8-fold --- labelled periosteal
+surface of 21.9\,\% with rest insertion against 3.8\,\% without, at a matched
+820--830\,$\mu\varepsilon$ --- a shortfall of 21\,\%. We report the history
+because it is a caution against reading close agreement as validation: this
+quantity read 13.99-fold before the elastic-law exponents were taken from
+Currey \cite{currey1988}, 6.02-fold after that, and 4.60-fold once the
+osteocyte turnover constant was corrected (see Limitations). Three successive
+corrections, none of them aimed at this target, moved it past the measured
+value and out the other side. The conditional \emph{shape} the target is really
+about --- a large gain at low amplitude that fades as amplitude rises --- has
+survived all three. We
+flag that this agreement is recent and was not engineered: until the elastic-law
+exponents were taken from Currey the same quantity was 13.99-fold, and the band
+we had been scoring against, 2--5-fold, was one we invented rather than read off
+the source. This too reverses between
+levels: at the channel level our gain rose with amplitude, contradicting
+experiment. Downstream saturation flips it to the observed direction, which is
+a non-trivial success for the cascade structure.
+
+\emph{Frequency.} Here the model disagrees with experiment, and we state it
+plainly. Fluid shear rises with frequency exactly as poroelasticity requires
+($\tau$ 4.62 to 20.02\,Pa over 1--10\,Hz; $r$ against $\ln f = +0.999$, with
+no fitted parameter). The logarithmic \textbf{form} survives to the bone level
+--- consistent with time-lapsed micro-computed tomography estimates of
+mechanostat parameters \cite{marques2023} --- but the \textbf{sign does not}:
+areal density change falls from $+0.715\,\%$ to $+0.560\,\%$ ($r = -0.997$). A
+duration-matched control, holding bout length fixed while cycle number scales
+with frequency, gives the same sign, so this is not a session-length artefact.
+The mechanism is that the channel opening rate saturates in shear, so the
+shorter loaded interval per cycle at high frequency costs more than the higher
+peak shear gains. Experimentally, higher frequency within this range is more
+osteogenic \cite{hsieh2001}. This is the sharpest falsifiable consequence of
+our placeholder channel rate constants and the first thing to re-examine when
+better values are available.
+
+\subsection*{P1: calcium is permissive, loading is instructive --- under stated measures}
+
+Fig~\ref{fig3} shows a factorial of four calcium intakes against three loading
+levels over 24 months.
+
+\begin{figure}[!h]
+\caption{{\bf Calcium against loading (P1).}
+(A) 24-month bone mineral content change across four calcium intakes and three
+loading levels; dashed line marks P1's 4\,\% threshold. Only the vigorous
+programme (2949\,\ue) clears it. (B) The same vigorous-loading contrast in
+bone mineral content and in areal density: dual-energy X-ray absorptiometry
+dilutes the loading response by 61\,\%, because loading moves the periosteal
+surface outward and areal density divides by projected width.}
+\label{fig3}
+\end{figure}
+
+P1 has three clauses, and we state the bar for each before giving the numbers.
+\textbf{Clause 1}: within the calcium-replete range, the marginal effect of
+calcium on 24-month bone density is under 1\,\%. \textbf{Clause 2}: an
+appropriate loading programme exceeds 4\,\% over the same period.
+\textbf{Clause 3}: the two interact non-additively, calcium deficiency
+truncating what loading can build.
+
+\emph{Clause 1.} Raising calcium from 800 to 1500\,mg/day --- the replete
+range the clause is about --- changes 24-month areal density by
+\textbf{$+0.304\,\%$}, under the 1\,\% bar. Across the wider 400 to
+1500\,mg/day contrast against which calibration target V7 is defined, the
+change is \textbf{$+0.663\,\%$, just below the $+0.7$ to $+1.8\,\%$ band}
+Tai and colleagues report \cite{tai2015} --- a miss of 0.037 against a declared
+tolerance of 0.8, and one we report rather than fit away. It arrived when the
+osteocyte turnover constant was corrected (see Limitations), and its direction is
+the informative part: the calcium arm had been riding on an artefact, and
+removing the artefact made calcium \emph{less} effective. In both contrasts the increment reaches a
+plateau within the first year rather than accumulating. That non-progressive
+\emph{shape} is the discriminating feature rather than the magnitude, and it is
+a fitted target in its own right with its own bar: the slope of the increment
+over the second half of the run must be under 0.3\,\%/yr in absolute value,
+and it is $-0.131\,\%$/yr --- flat, and if anything very slightly
+declining.
+
+\emph{Clause 2.} An appropriate loading programme --- which we define
+explicitly as peak strain $\approx$2900\,\ue, still below the 3000\,\ue{}
+physiological ceiling and comparable to an elite tennis player's humerus ---
+raises bone mineral content by \textbf{$+4.582\,\%$}, over the 4\,\% bar.
+The ratio to calcium is \textbf{15.1-fold}.
+
+Two qualifications are not caveats but results.
+
+\textbf{The measure changes the answer.} The same loading contrast measured as
+areal density is $+1.778\,\%$, not $+4.582\,\%$: areal density divides bone
+mass by projected width, and loading moves the periosteal surface outward, so
+\textbf{dual-energy X-ray absorptiometry dilutes the loading response by
+61\,\%}. Our model retains this size artefact deliberately, because it is what
+allows one model to be read against both the densitometry literature and the
+peripheral quantitative computed tomography literature. Reporting clause P1-2
+in areal density would report a measurement artefact as biology.
+
+\textbf{The intensity changes the answer.} Moderate resistance loading
+(2236\,\ue) gives only $+3.118\,\%$ and does not support the claim.
+``Appropriate loading'', left undefined, makes the prediction unfalsifiable,
+since any shortfall can be attributed to insufficiently appropriate loading.
+
+\emph{Clause 3} is supported on both framings, and we flag that this was not
+true of an earlier version of the model. Calcium deficiency truncates what
+loading can build: under vigorous loading, severe deficiency achieves
+$+3.994$\,\% against $+4.756$\,\% when supplemented, so deficiency costs
+16\,\% of the gain. The \emph{difference-in-differences} interaction --- loaded
+minus sedentary, compared across calcium levels --- is \textbf{$+0.085$}
+percentage points, the same sign, so loading's marginal benefit really is larger
+when calcium is adequate.
+
+We report the history because it bears on how much weight this clause can carry.
+Before the systemic calcium module was rebuilt (see Limitations), the same
+quantity was \textbf{$-0.536$} percentage points --- the opposite sign ---
+because deficiency dragged the sedentary comparator down faster than the loaded
+arm, a floor effect in the comparator rather than synergy. The correction that
+removed a supraphysiological swing in serum calcium also flipped this
+interaction. A conclusion that changes sign when an unrelated module is repaired
+is one to hold loosely.
+
+\textbf{One of P1's three clauses therefore reverses sign under a different but
+equally reasonable measure}, and a second did so until a module elsewhere in the
+model was corrected. We regard this as a substantive finding about how
+such claims must be reported, not a weakness of the model, and we return to it
+in the Discussion.
+
+\subsection*{P2: only local loading can produce a local difference}
+
+Fig~\ref{fig6} shows the two-compartment result: one humerus loaded, one not,
+sharing a single systemic calcium and parathyroid hormone pool, over five
+years.
+
+\begin{figure}[!h]
+\caption{{\bf Site specificity (P2).}
+(A) The six peripheral quantitative computed tomography indices of the loaded
+humerus against Haapasalo's measured ranges (grey bands). All six fall within
+tolerance, and all six were held out of calibration. (B) Side-to-side
+difference by intervention type: only unilateral loading produces one;
+systemic calcium and systemic romosozumab produce 0.0000\,\%.}
+\label{fig6}
+\end{figure}
+
+P2 has two halves, and the second is the one that can fail cleanly.
+\textbf{First}, unilateral loading should reproduce the racquet-sport
+humerus. \textbf{Second}, no systemic intervention should produce a
+side-to-side difference at all --- a single non-zero asymmetry under a
+systemic agent would falsify it.
+
+All six indices reported by Haapasalo and colleagues \cite{haapasalo2000} fall
+within tolerance, model against measured range: bone mineral content
+$+12.38\,\%$ against 14--27\,\%, total area $+12.17\,\%$ against
+16--21\,\%, cortical area $+10.40\,\%$ against 12--32\,\%, maximal second
+moment of area $+24.48\,\%$ against 27--67\,\%, medullary cavity
+$+13.93\,\%$ against 19\,\%, and cortical volumetric density $+1.79\,\%$
+against $-2$ to $0\,\%$. Per-index tolerances are listed in
+\nameref{S2_Table}. These are \textbf{hold-out} values. The discriminating one is the last: the
+playing arm's gain is geometric, with volumetric density essentially
+unchanged, and the model was never fitted to that constraint.
+
+The complementary claim is the sharper one. With both arms loaded identically
+and a systemic intervention applied --- 1500\,mg/day calcium, or romosozumab
+--- the side-to-side difference is \textbf{$+12.38$\,\%} for loading against
+\textbf{$-0.0000$\,\%} and \textbf{$-0.0000$\,\%} respectively. Because both compartments see the
+identical shared parathyroid hormone, no systemic agent can manufacture a
+local difference. The tennis-player asymmetry is not reproducible by any pill,
+in this framework as a matter of structure rather than of parameter values.
+
+\subsection*{Disuse and the minimum effective countermeasure}
+
+Unloading produces 1.220\,\%/month bone loss over the 180-day window
+(Fig~\ref{fig4}). The bar was the 1.0--1.5\,\%/month band, which sits inside
+the 1--2\,\%/month decline reported at weight-bearing sites over 90 days of
+head-down bed rest \cite{spatz2012}. The quantity we compute is bone mineral
+content rather than areal density; in disuse the periosteum barely moves
+($-0.002$\,mm over 180 days) and the two agree to 0.003 percentage points per
+month, unlike the loading contrast above where they differ by 61\,\%.
+
+Sclerostin rises, which is the direction the target requires, but the
+\emph{shape} is wrong and we report this as a partial match. Serum sclerostin
+in the model reaches $+58.0\,\%$ and then stays there, essentially flat from
+day 28 onward. Measured in men over 90 days of bed rest it rises to
+$+29\,\%$ at day 28, peaks at $+42\,\%$ at day 60, and has fallen back to
+$+22\,\%$ by day 90 \cite{spatz2012}. We reproduce the rise and roughly its
+peak magnitude, but not the attenuation: sclerostin here equilibrates within
+days to the new mechanical dose and has no adaptive decline.
+
+The same experiment supplies a second check, on the systemic arm, and it is one
+the model failed until we repaired it. In those subjects parathyroid hormone
+fell 17\,\% by day 28 and 24\,\% by day 60, with urinary calcium
+significantly elevated throughout \cite{spatz2012} --- the classic
+immobilisation picture, in which calcium released from unloaded bone suppresses
+the parathyroid. The model now reproduces it: parathyroid hormone falls
+\textbf{21.2\,\%} by day 28 and \textbf{21.3\,\%} by day 60, on a serum
+calcium rise of 2.8\,\%.
+
+It did not before. In the version of this module we first built, the same run
+moved parathyroid hormone by 0.01\,\% --- the coefficients carrying skeletal
+calcium into the serum pool were three orders of magnitude below the flux they
+were normalised against, so bone could not move serum calcium at all, and the
+coupling we describe as bidirectional was in practice one-way. We report this
+because the failure was invisible to every target we had: nothing in the
+validation set asked the model to move systemic calcium from bone, so nothing
+caught it until we tested a fact the literature had recorded and we had not.
+
+\begin{figure}[!h]
+\caption{{\bf Disuse and the minimum effective countermeasure.}
+(A) Bone mineral content over 180 days of unloading, unprotected and with the
+best in-budget countermeasure. (B) Monthly loss across the countermeasure
+grid; blank cells exceed the 30\,min/day budget. No in-budget regimen holds
+loss below 0.25\,\%/month.}
+\label{fig4}
+\end{figure}
+
+Searching loading prescriptions under a $\le$30\,min/day constraint, the best
+regimen within budget (peak moment $\times$4.5, 80 cycles, 0.5\,Hz, 10\,s
+inter-cycle rest, 16.0\,min/day) reduces loss to 0.771\,\%/month ---
+preventing 37\,\% of it. \textbf{No regimen within the time budget holds loss
+below 0.25\,\%/month.} We report this negative result because it is clinically
+relevant: in this model, time-efficient loading alone does not arrest disuse
+osteopenia.
+
+We also flag a scope limit that our validity check surfaced. Beyond about 7.5
+months, complete unloading drives the model to its porosity floor and out of
+the linear-elastic domain the entire mechanics stack assumes. Real bed rest
+decelerates and plateaus at 30--50\,\% loss. All disuse results here are
+confined to the 180-day window on which the target is defined, and every run
+reports whether it stayed inside the elastic domain.
+
+\subsection*{Pharmacology: self-limitation, withdrawal rebound, and a shared node}
+
+Fig~\ref{fig5} shows four arms over 24 months with romosozumab stopped at
+month 12.
+
+\begin{figure}[!h]
+\caption{{\bf Romosozumab, withdrawal and loading.}
+(A) Four arms over 24 months, drug stopped at month 12. (B) The osteoblast
+population on drug: it peaks early and declines while dosing continues,
+because compensatory \emph{SOST} transcription progressively offsets the
+antibody. (C) Trabecular against cortical response, with the $+11$--$14\,\%$
+spine target band shaded; the 5.3-fold amplification comes from structure
+alone.}
+\label{fig5}
+\end{figure}
+
+Because the $+11$--$14\,\%$ romosozumab target is a \emph{lumbar spine} number
+\cite{cosman2016} and the spine is trabecular, we evaluate it in a trabecular
+vertebral compartment derived from the cortical parameter set by changing only
+structure, geometry and load --- the biology is shared. One consistency check does
+not come free, and saying why is more useful than the check. Until v2.16 a
+single exponent served both compartments; taking the measured value shows that
+agreement was a compromise, not a validation. Currey's power law over compact
+bone \cite{currey1988} gives 3.13, which at a bone volume fraction of 0.12 puts
+the vertebra at 26\,MPa --- below the measured 50--300\,MPa range. Trabecular
+bone is a cellular solid, and Gibson--Ashby open-cell scaling gives 2. Using
+3.13 in cortex and 2.00 here gives an apparent modulus of 288.0\,MPa, inside
+the measured range, on a measurement at each end rather than one value split
+between them.
+
+In that compartment romosozumab gives \textbf{$+12.459\,\%$} at 12 months,
+inside the 11--14\,\% target band, against $+2.334\,\%$ in cortex --- a
+5.3-fold amplification arising from structure alone. This is a
+\textbf{calibration} target, not a prediction: \texttt{delta\_ab} was fitted to
+it. The amplification factor, by contrast, has no direct empirical counterpart
+and we do not present it as validated. The nearest clinical comparison is the
+spine-to-hip contrast, $+15.1\,\%$ against $+5.4\,\%$ at 24 months on the
+210\,mg monthly regimen \cite{mcclung2018}, about threefold --- but the total
+hip is a mixed cortical--trabecular site whereas our cortical compartment is a
+pure diaphysis, so a larger ratio is expected and the two numbers are not like
+for like. Building the compartment also
+forced a general constraint into the open: because the signalling chain is
+shared, both compartments must sit at the same emergent shear set point, which
+a vertebra at realistic load and bone volume fraction does not do at the same
+tissue strain. The poroelastic transfer coefficient must therefore differ
+between trabecular and osteonal bone --- defensible, since it is a
+microstructural property, and set here by matching baseline shear rather than
+by fitting any outcome.
+
+\emph{Self-limitation.} The formation marker rises, peaks, and then declines
+while dosing continues (rise $+0.421$ in the first half of the course against
+$-0.259$ in the second), which is the shape the marker data show. The
+\textbf{timing does not match}: our marker peaks at about month 0.2 and
+reaches 3.169-fold baseline, whereas formation markers clinically peak near
+month 1 and decline towards baseline over 6--12 months. We reproduce the
+self-limitation but compress its onset. The mechanism is explicit: compensatory
+up-regulation of \emph{SOST} transcription accumulates under antibody exposure
+and progressively offsets it, so free sclerostin climbs back toward baseline
+by month 9 while treatment is still running.
+
+\emph{Withdrawal.} That same compensation decays on its own clock rather than
+the antibody's, so when clearance stops the raised production does not,
+sclerostin overshoots, and resorption surges through the RANKL-dependent arm
+of sclerostin action \cite{wijenayaka2011}. We calibrated this mechanism
+against the post-withdrawal \textbf{resorption marker} overshoot (1.124
+$\times$ baseline, \textbf{just outside} the 1.2--1.4 range corresponding to the rise of
+$\beta$-CTX above baseline after transition to placebo \cite{mcclung2018}),
+deliberately not against bone density --- which leaves the density fall a blind
+prediction.
+
+The bar we set for that prediction was \textbf{direction only}: bone density
+must fall over the washout. It does, by \textbf{$-8.70\,\%$} over the 12
+months after the last dose, and we state plainly that a directional bar is a
+weak one. Judged on magnitude rather than sign, this hold-out is now the closest
+it has been. The model gives back \textbf{78.5\,\%} of the treatment gain and
+finishes \textbf{2.68\,\% above} pre-treatment baseline at 24 months, against
+the observation that bone density returned toward pretreatment levels on placebo
+\cite{mcclung2018} --- toward baseline, not through it, which is what the model
+now does. We note that this improved when the osteocyte turnover constant was
+corrected and no drug parameter was touched: before that correction the same run
+overshot, finishing 0.75\,\% \emph{below} baseline. A hold-out moving toward
+the data under a change made for an unrelated reason is the kind of evidence we
+weight most heavily, and we flag equally that the remaining discrepancy runs the
+other way --- real washout is slower than a step function, because the antibody
+has a pharmacokinetic profile the model does not.
+
+The resorption-marker target itself is now \textbf{missed}, at 1.124 against a
+band of 1.2--1.4 --- but we must qualify what that means, because the band is
+ours rather than the literature's. McClung and colleagues report only that
+$\beta$-CTX increased above baseline after transition to placebo
+\cite{mcclung2018}, a direction with no magnitude, and the FRAME trial cannot
+supply one because its patients transitioned to denosumab rather than placebo
+\cite{cosman2016}. The sourced content of this target is therefore ratio $> 1$,
+which the model meets. What follows concerns the band we set ourselves, and the
+reason we still report the shortfall is that the underlying conflict is real
+regardless of where the band sits.
+Rebuilding the systemic calcium module (see Limitations) made skeletal calcium
+flux large enough to move the parathyroid, and that creates a conflict: the same
+PTH$\rightarrow$RANKL gain that lets dietary calcium protect bone --- which
+target V7 requires to be strong --- also lets the calcium flood released after
+withdrawal suppress PTH and damp the very resorption overshoot V16 measures.
+Across the admissible range of that gain, V7 needs it high and V16 needs it low,
+and no value satisfies both. We chose the midpoint, and both targets now sit
+outside their bands --- V7 short by 0.037 against a tolerance of 0.8, V16 short
+by 0.076 against a tolerance of 0.15. That both fall on the same side is worth
+stating: the conflict is not a trade we won on one side, it is a constraint
+neither side satisfies. The
+decoupled module we used previously could not have exposed this conflict,
+because in it bone could not move serum calcium at all.
+
+\emph{Interaction.} Loading combined with the antibody gives $+2.826\,\%$ at
+12 months against $+2.334\,\%$ and $+0.765\,\%$ alone: positive and larger
+than either, but \textbf{8.8\,\% sub-additive}, because both act through the
+same sclerostin--Wnt node and partly compete for it. Schulte and colleagues
+\cite{schulte2026} report loading to be additive and synergistic with anabolic
+agents and not with antiresorptives. Our qualitative direction agrees for the
+anabolic arm; our strict additivity does not. \textbf{The antiresorptive half
+of that contrast is untested here}: the model carries no bisphosphonate
+mechanism, so we make no claim about it.
+
+\subsection*{Four targets we had specified but never run}
+
+Preparing this report we found that four of the twenty targets registered in
+\textbf{S2 Table} --- the Mendelian-randomisation constraint on serum calcium
+(V7b), the loss--recovery asymmetry (V11), the dual action of sclerostin on
+resorption (V13), and the geometry of the postmenopausal cortex (V15) --- had
+mechanisms built for them, and commented in the source as existing for them, but
+had never been evaluated by any experiment. We ran them. One passes and three do
+not, and we report all four, because a validation table listing targets nobody
+checked is worse than a shorter table.
+
+\emph{The loss--recovery asymmetry (V11) passes, and comfortably.} After 180
+days of unloading, half the lost bone mineral content accrues in 140 days but
+takes 2014 days to win back once loading resumes --- a ratio of 14.4 against a
+target of 3 --- and ten years of reambulation recovers all of it and then some, ending 146.5\,\% of the loss recovered. This
+is a \textbf{rate} asymmetry and not bistability: recovery is monotone and still
+proceeding, which is consistent with, not in tension with, the falsification of
+P3 below.
+
+\emph{The Mendelian-randomisation constraint (V7b) fails on sign.} Clamping
+serum calcium 2\,\% above baseline at fixed intake raises 24-month areal density
+by $+0.668$\,\%, where the human genetic evidence requires no increase. The
+magnitude is an order of magnitude below the loading response, so P1's
+permissive-versus-instructive contrast survives; the sign does not. The same run
+exposed a defect no target had been written to catch, and it was serious enough
+that we rebuilt the module rather than report around it. Across 400 to
+1500\,mg/day of intake, serum ionised calcium in the model moved by 15\,\%,
+where physiology defends it within about 2\,\%: the transcellular absorption arm
+had been written as a fraction rather than a flux and so contributed under
+0.1\,\% of absorption, leaving the unregulated paracellular route to dominate,
+and renal excretion was a bare power law rather than the saturable tubular
+reabsorption it had been specified as. Our regression suite missed it because the
+test guarding it was written as a runaway check with a 15\,\% bar and was
+thereafter read as a homeostasis check. After rebuilding both arms the excursion
+is \textbf{1.6\,\%}, and the V7b sign failure above is measured on the repaired
+module. The episode is why we now report V7's effect size as sitting at the low
+edge of the meta-analytic band \cite{tai2015} rather than comfortably inside it:
+the earlier, larger value was riding on a serum-calcium swing that cannot occur.
+
+\emph{The dual action of sclerostin (V13) is right in direction and short in
+magnitude.} Over a twelve-fold sclerostin sweep, RANKL rises (1.00 to 1.29) and
+OPG falls (1.00 to 0.44) as required, but osteoclast activation saturates at
+and the RANKL:OPG ratio therefore rises \textbf{2.9-fold}, which is the quantity
+the source reports rising dose-dependently \cite{wijenayaka2011}.
+
+We had originally scored this target against the roughly 7-fold figure in the
+same paper and recorded it as a failure. Reading the full text shows that was our
+error, not the model's: the 7-fold is osteoclastic \textbf{resorption} --- pit
+area in a 14-day osteocyte--splenocyte co-culture at 100\,ng/ml recombinant
+sclerostin --- and not the instantaneous activation term we were comparing it
+against. It is the same wrong-contrast mistake this section exists to expose,
+committed by us. The activation term does carry a hard ceiling of 1.42-fold,
+because its Hill constant sits below baseline sclerostin, but that ceiling
+answers a question the source never asked. Scoring V13 properly means running the
+co-culture's downstream resorption output, which we have not done.
+
+\emph{The postmenopausal geometry (V15) fails on its second half, and the way it
+fails is instructive.} At severely reduced oestrogen the endocortical radius
+expands ($+0.0752$\,mm) and the cortex thins ($-0.0773$\,mm) as required, but the
+periosteal radius drifts very slightly \textbf{inward} ($-0.0021$\,mm) rather
+than outward, so the model does not reproduce the widening that accompanies
+postmenopausal thinning. A ten-year run appears to pass this target
+spectacularly, with 4.62\,mm of periosteal expansion --- but it leaves the
+linear-elastic domain on day 511, and is the same class of artefact that the
+modelling saturation bound was introduced to remove. Read inside the valid
+domain, the target fails.
+
+\subsection*{P3 is falsified: the model is monostable}
+
+P3 held that osteoporosis is an \textbf{alternative stable state}: that past
+some critical loss of oestrogen the skeleton settles into a second,
+self-sustaining low-bone-mass equilibrium, and that removing the original
+insult does not bring it back. That is what a saddle-node bifurcation
+produces, and it is an attractive account of the clinical asymmetry between
+rapid loss and slow, incomplete regain. Two positive feedbacks were built
+into the model specifically because they could generate it: remodelling
+surface is lost as bone disappears, and sensing capacity is lost as
+osteocytes die.
+
+Confirmation would have required three things: two stable equilibria
+coexisting at the same oestrogen level, a fold at which one of them
+vanishes, and hysteresis --- a path down that the system cannot retrace on
+the way back up. We find none of the three (Fig~\ref{fig7}).
+
+\begin{figure}[!h]
+\caption{{\bf Osteoporosis is a steep continuous shift, not a second stable
+state (P3).}
+(A) The oestrogen continuation with envelope geometry frozen: a single branch
+throughout, sliding steeply but continuously, with no fold. Shading marks bone
+volume fractions below the linear-elastic validity floor, where the branch is
+extrapolation. (B) The independent full-model probe with geometry free:
+driving oestrogen down and restoring it recovers 100.3\,\% of baseline with no
+hysteresis.}
+\label{fig7}
+\end{figure}
+
+Freezing the slowly-evolving envelope geometry to isolate porosity dynamics,
+and counting zeros of the bone-volume-fraction nullcline as oestrogen falls,
+gives \textbf{one} fixed point throughout. It slides continuously from
+$f_{bm}^* = 0.078$ at full oestrogen to 0.059 at $E_2 = 0.65$, passing steeply
+but continuously through a critical value near $E_2 \approx 0.92$.
+Mechanosensitivity and basal sclerostin secretion give the same answer, as
+does scanning the strength of the osteocyte-density positive feedback across
+1.5--5. There is no fold, no bistability and no hysteresis.
+
+A second, independent route agrees. Driving oestrogen down and then restoring
+it in the \textbf{full model with geometry free} --- a trajectory that stays
+inside the linear-elastic domain end to end --- takes bone volume fraction
+from 0.950 down to 0.836 and back to \textbf{0.953, that is 100.3\,\% of
+baseline}, with no hysteresis.
+
+The mechanism of monostability is instructive. Falling bone volume fraction
+collapses the apparent modulus, strain rises steeply, mechanical dose and
+modelling drift both increase, and the resulting recovery drive overwhelms the
+two positive feedbacks we built in specifically to produce bistability --- loss
+of remodelling surface as bone disappears \cite{martin1984}, and loss of
+sensing capacity as osteocytes die. \textbf{The mechanostat rescues low bone
+mass.}
+
+One caution and one nuance. The deep branch of the continuation, below
+$f_{bm} \approx 0.391$, lies outside the linear-elastic domain the mechanics
+assumes \cite{bayraktar2004} and must be read as extrapolation; the
+monostability conclusion depends on zero-counting and is unaffected. And the
+recovery cycle leaves a permanent $+0.005$\,mm of periosteal expansion,
+because modelling adds to the outer surface and nothing removes it. That is
+structural memory --- physically real, since periosteal apposition is largely
+irreversible \emph{in vivo} --- and it is emphatically not dynamical
+bistability, since bone volume fraction recovers completely.
+
+We note that a numerical artefact nearly produced the opposite conclusion. An
+early full-system test showed bone volume fraction stuck at its floor for 40
+years, which read as irreversibility. Inspection showed the ``collapsed''
+state had a cortical thickness of 99\,mm: the modelling term was linear in
+strain excess and therefore unbounded, and at pathological strain it demanded
+1513\,mm/yr of periosteal apposition. Bounding it --- at a ceiling of
+1.93\,$\mu$m/day, which the yield strain of cortical bone
+\cite{bayraktar2004,morgan2001} and the documented maximum mineral apposition
+rate independently agree on --- removed the artefact and made the
+geometry-free probe above possible.
+
+% ---------------------------------------------------------------------------
+\section*{Discussion}
+
+\subsection*{What the model buys}
+
+The end-to-end chain lets three questions be asked that neither half of the
+literature could answer alone, and each returns a number rather than a
+direction: loading outweighs calcium 15.1-fold under stated conditions; a
+systemic agent cannot produce a local asymmetry, structurally rather than
+parametrically; and an anti-sclerostin antibody and mechanical loading compete
+for a shared node to the tune of 13\,\% sub-additivity.
+
+The result we would defend most strongly is the one that cost nothing. Frost's
+set point, a phenomenological constant inferred from observation in 1987,
+emerges here at 787\,\ue{} from channel gating kinetics and signalling Hill
+functions, inside the band he proposed, without being fitted. Together with
+the six held-out tennis-player indices and the held-out withdrawal loss, this
+is evidence that the model predicts rather than accommodates.
+
+\subsection*{Falsifying our own hypothesis}
+
+P3 is the result we expected to confirm and did not. We report it in the main
+text for two reasons.
+
+First, it is more informative than confirmation would have been. Complex
+physiological models exhibit bistability readily, and such findings are
+fragile --- ours would have been, since a numerical artefact almost delivered
+exactly that conclusion. What the falsification buys instead is a boundary:
+the mechanostat's mechanical negative feedback is strong enough, at the
+porosity scale, to rescue low bone mass, so clinical irreversibility
+\textbf{cannot} originate in continuum remodelling dynamics. It must come from
+mechanisms this model does not represent --- trabecular perforation, which is
+loss of the template a continuous bone volume fraction cannot describe;
+osteocyte death; or geometric degradation.
+
+Second, that boundary is a testable prediction rather than a shrug. It says
+that a compartment which can lose its template --- a trabecular one, where
+struts perforate and cannot be rebuilt --- should show the bistability that a
+cortical one does not. Our trabecular compartment is the natural place to
+look, and we did not find bistability there either, because the compartment is
+still described by a continuous bone volume fraction. Representing perforation
+explicitly is the concrete next step.
+
+We would also distinguish two things the literature often conflates. The
+clinical asymmetry between rapid loss and slow regain is a \textbf{rate}
+asymmetry, present in our monostable model, and it is not evidence of
+dynamical irreversibility. Steepness is not bistability either: the transition
+at $E_2 \approx 0.92$ is sharp enough to look like a jump, and the sensitivity
+of disuse loss to the sclerostin Hill constant is likewise steep, but both are
+high gain near a single fixed point.
+
+\subsection*{Measurement choice is a result, not a detail}
+
+One of P1's three clauses reverses sign under a different measure: the loading
+effect is $+4.582\,\%$ in bone mineral content and $+1.778\,\%$ in areal
+density. A second clause, the calcium--loading interaction, did the same until
+the systemic calcium module was rebuilt, and is now positive on both framings
+--- which makes the point more sharply, since the sign of a reported
+interaction turned on a defect two modules away.
+
+Neither reversal is a modelling error. The areal-density dilution is a
+faithful reproduction of a known limitation \cite{haapasalo2000}: loading
+translates the cortex outward, and dividing by projected width discards much
+of the gain. The interaction reversal is a floor effect in the comparator,
+since calcium deficiency harms the sedentary arm more than the loaded one.
+
+The implication is practical. A trial powered on areal density will see
+roughly two-fifths of the loading effect that a trial measuring bone mass
+would see, and a trial reporting an interaction term may report the opposite
+sign from a trial reporting achieved gains, from identical underlying biology.
+We therefore state each clause of P1 with its measure and its loading
+intensity attached, and we would encourage the same discipline in the
+empirical literature.
+
+\subsection*{Limitations}
+
+The frequency response disagrees with experiment in sign \cite{hsieh2001},
+traced to saturation in channel opening rate; the mechanosensitive channel
+rate constants are placeholders taken from \cite{fu2025} and this is the first
+quantity to re-check against better values. The logarithmic \emph{form} of the
+frequency dependence is consistent with time-lapsed micro-computed tomography
+estimates \cite{marques2023}; only the direction is not.
+
+The specific surface function relating available remodelling surface to bone
+volume fraction is a placeholder, and we can now say exactly how wrong it is.
+Lerebours and colleagues \cite{lerebours2015} measured the relationship in human
+cortical bone and report that at high bone volume fraction it behaves as
+$(1-\mathrm{BV/TV})^{b}$ with $b = 0.5$, the square-root fit outperforming both
+the classical fifth-order polynomial and a harmonic-mean form ($r^2 = 0.84$
+against 0.82 and 0.77), and above $\mathrm{BV/TV} = 0.9$ their data converge on a
+fractional degree rather than any integer one. \textbf{Our exponent is 3}, six
+times the measured value, and our cortical compartment sits at a bone volume
+fraction of 0.95 --- inside the range they measured. Specific surface here
+therefore responds about six-fold too steeply to a change in porosity:
+$d\ln S_v/d\ln f_{bm}$ is $-56$ at our cortical baseline where Lerebours implies
+about $-9.5$. Baseline turnover is unaffected, since specific surface is
+normalised at baseline, but every rate that passes through it is exaggerated.
+
+\textbf{We report a negative result from trying to fix this, because it is more
+informative than the fix would have been.} Setting the cortical exponent to the
+measured 0.5 works mechanically --- the sensitivity becomes $-8.51$, close to
+what the measurement implies --- but it drops the disuse target to
+0.44\,\%/month, and the sclerostin sensitivity cannot recover it: scanning that
+parameter to the bottom of its admissible range saturates at 0.99\,\%/month
+without entering the 1.0--1.5\,\%/month band. A substantial part of the disuse
+loss this model produces has therefore been carried by a specific-surface
+response six times steeper than the real one, and with the measured exponent
+something else must supply it.
+
+\textbf{We should be precise about what that does and does not establish,
+because our first statement of it was too strong.} Holding the turnover
+constant fixed, as above, no setting of the sclerostin sensitivity reaches the
+band. Releasing the turnover constant as well, a refit does reach
+1.01\,\%/month --- but it puts adult turnover at 10.2\,\%/yr, outside the
+5--10\,\%/yr band that is itself the upper half of what is conventionally
+quoted \cite{parfitt2002}. The accurate claim is therefore not that the disuse
+target is unreachable with the measured exponent. It is that every route we
+have found pays for it with a different target.
+
+We then built the mechanism that would have to supply it, and the result
+changed twice --- which is why we report the sequence rather than only the
+conclusion. The candidate is forced: the mechanical arm of sclerostin
+production is already saturated in disuse, reaching 99.97\,\% of its absolute
+ceiling after 180 days of simulated bed rest, so no route through
+mechanosensing can supply further loss and the missing term must bypass
+sclerostin entirely. Dying osteocytes releasing RANKL directly is such a route,
+and we implemented it as a factor on the osteocyte deficit, exactly inert at
+baseline.
+
+Measured against the model as it then stood, the term worked and the objection
+was its cost: it returned disuse loss to its band but made calcium deficiency
+progressive, because the only thing that lowers osteocyte density here is
+resorption itself. Measured again after the osteocyte turnover constant was
+corrected (below), it does not work at all. Pushed to the top of its admissible
+range it lifts disuse loss only from 0.44 to 0.50\,\%/month, nowhere near the
+1.0--1.5 band, because the osteocyte deficit that drives it over 180 days of bed
+rest is 2.2\,\% rather than the 20.7\,\% we had measured before --- and that
+20.7\,\% was itself a product of the error. \textbf{The mechanism did not fail;
+the evidence that it could succeed was an artefact.} We report both passes
+because the first would have been a defensible published result and was wrong
+for a reason no target would have caught.
+
+Two independent checks agree with where this ended. Adding unloading-induced
+osteocyte apoptosis, so that the deficit is generated mechanically rather than
+by resorption, makes it disuse-specific as intended but changes nothing, and the
+inductions it would need are far outside measurement: two weeks of hind-limb
+unloading raises the proportion of apoptotic osteocytes by 66\,\%
+\cite{basso2006}, where this route needs a fold two orders of magnitude larger.
+And the experiment has been done. Blocking osteocyte apoptosis with a
+bisphosphonate analogue that does not itself inhibit resorption prevents the
+rise in osteocytic RANKL but does not prevent the resorption or the bone loss
+caused by unloading \cite{plotkin2015}, from which the authors conclude that
+RANKL from non-osteocytic sources carries the loss.
+
+A third mechanism completes the search, and it is the one that came closest.
+Immobilisation raises cortical \emph{porosity} --- that is resorption moving to
+the intracortical surface, and it is measured in humans: the femoral cortex of
+long-term immobilised individuals is significantly more porous, in a pattern
+distinguishable from postmenopausal osteoporosis \cite{rolvien2020}. Written as
+a bias on the resorption surface split driven by the mechanical dose deficit,
+this route is disuse-specific by construction and by measurement --- the deficit
+is 0.886 over 180 days of bed rest against 0.0016 in the low-calcium arm, so it
+does not repeat the failure above. It also has the authority the apoptotic route
+lacked: it lifts disuse loss from 0.44 to 1.04\,\%/month with the calcium
+effect, its plateau and the romosozumab response all inside their bands.
+
+\textbf{It fails on physiology instead.} Closing the gap requires a coefficient
+at which 94.5\,\% of disuse resorption is intracortical and 5.0\,\%
+endocortical, against a 50/45 baseline split --- that is nearly all resorption
+moved to one surface, and human bed rest thins the endocortex as well as opening
+porosity. A coefficient that only works where the state it produces is not
+observed is a fitting parameter wearing a mechanism's name, and we decline to
+report it as the resolution.
+
+\textbf{Three routes have now failed in three different ways, and the pattern is
+more informative than any of them.} The apoptotic arm was not scenario-specific,
+because the deficit driving it is produced by resorption itself, and it cost the
+calcium plateau. Making that deficit mechanical fixed the specificity and left
+the route with no authority, since basal apoptosis is about 1\,\% of osteocyte
+removal here. The surface bias has both specificity and authority and asks for a
+surface split that is not observed. Specificity, authority, physiology: each
+route fails a different one of the three, which is a stronger statement than
+three failures of the same kind would be. On this evidence, reproducing disuse
+loss at the measured specific-surface exponent needs a mechanism none of these
+three supplies, and we think the most likely candidate is one this model does
+not represent at all --- the loss of trabecular and endocortical \emph{template},
+which is also where the falsification of P3 points.
+
+One further consequence of the measured exponent deserves recording, because it
+survived every pass: it makes disuse loss effectively irreversible. Ten years
+of normal loading after 180 days of bed rest ends 5.7\,\% below baseline with no
+net recovery, against a full recovery at the exponent we ship.
+
+We therefore know what the exaggerated exponent was standing in for, and we know
+that \textbf{the evidence it could be replaced was itself an artefact}. The
+reason for shipping the value we do is no longer that the exchange is a bad
+bargain; it is that the candidate route cannot supply the disuse loss at all
+once the model is self-consistent. The measured 0.5 remains the sourced value and
+we ship 3, and we record that plainly.
+
+\textbf{A second and larger error came out of checking the first, and it was an
+internal contradiction rather than a disagreement with a measurement.}
+Osteocytes leave the tissue when the bone they occupy is resorbed, so the
+fractional turnover of the osteocyte population must equal the fractional
+turnover of bone. Until we checked, it did not. Bone was resorbed at
+$1.93\times10^{-4}$ per day, the rate implied by our own adult turnover, while
+osteocytes were removed at $9.9\times10^{-2}$ per day --- a factor of 514, and a
+mean osteocyte residence of ten days rather than years. No external data are
+needed to see this; the model disagreed with itself, and every target it had
+passed for two years.
+
+An independent estimate confirms which side was wrong: 42 billion osteocytes in
+the adult skeleton with 9.1 million replenished daily \cite{buenzli2015} gives
+$2.17\times10^{-4}$ per day, a residence of 12.6 years. We have corrected it,
+and the correction is structural rather than a new value: the burial constant is
+now \textbf{derived} from bone turnover at every parameter set, as the formation
+constant already was, so the contradiction cannot recur. All results in this
+paper are computed after that correction and a five-parameter recalibration.
+
+The consequences run both ways. Against: the calcium effect fell to
+$+0.663$\,\%, just outside its band, since the calcium arm had been amplified by
+an osteocyte-density feedback that a ten-day residence made unphysiologically
+fast. In favour: the post-withdrawal hold-out improved from finishing 0.75\,\%
+below pre-treatment baseline to finishing 2.68\,\% above it, with no drug
+parameter touched; ten-year recovery after bed rest became complete rather than
+partial; and the reported PTH-pathway parameter left the upper bound it had
+previously been pinned to. Baseline drift, the elastic domain and monostability
+are unaffected.
+
+We therefore report results computed with an exponent we know to be too steep,
+and say so rather than quietly adopting the measured value and reporting a
+broken disuse target. A further caution comes from the title of the same paper:
+the relationship is \textbf{subject specific}, not intrinsic --- per-subject fits
+reach $r^2$ of 0.87--0.98 against 0.84 pooled, correlating with sex and pore
+density but not with age, height or weight. A single curve is an approximation
+not only between compartments but between individuals.
+
+Complete unloading beyond about 7.5 months leaves the model's valid domain, so
+long-duration disuse is out of scope. The antibody is a step function rather
+than a pharmacokinetic profile, which sharpens the withdrawal transient ---
+the calibrated quantity is the downstream resorption overshoot, which is
+unaffected in magnitude. Two PTH-pathway parameters are identifiable only
+jointly. The cortical geometry is an idealised circular annulus.
+
+Three limitations follow directly from the four targets reported above, and we
+regard them as the most useful things a reader can take from this paper about
+where it is weakest. The systemic calcium module was rebuilt during this
+work, having failed in both directions at once: serum calcium swung 15\,\% with
+dietary intake where physiology allows about 2\,\%, and the coefficients
+carrying skeletal calcium into the serum pool were three orders of magnitude
+below the flux they were normalised against, so the coupling was bidirectional
+in structure but one-way in magnitude. Both are repaired --- the excursion is now
+1.6\,\% and unloading suppresses parathyroid hormone by 21.3\,\% against a
+reported 24\,\% \cite{spatz2012} --- but two consequences remain. The repair
+cost the calcium effect size: V7 now sits at the low edge of its band rather
+than mid-band, because the earlier value depended on the swing that has been
+removed. And it created the V7/V16 conflict described above, in which no single
+PTH$\rightarrow$RANKL gain satisfies both the calcium target and the
+withdrawal-rebound target. Neither is hidden, and both are consequences of
+making the module more physiological rather than less. The RANKL response to
+sclerostin cannot reach its reported magnitude at any parameter value, because
+the relevant half-saturation constant sits below baseline sclerostin. And the
+model does not produce postmenopausal periosteal widening, so the geometry of
+the ageing cortex is reproduced only in its thinning half. Finally, the
+model has no representation of trabecular architecture as architecture, which
+is precisely where the P3 falsification points.
+
+\subsection*{Conclusion}
+
+Joining a validated mechanotransduction front end to a validated bone-cell
+back end produces a model that predicts blind observations, computes a set
+point that was previously only observed, and settles the calcium-versus-loading
+question quantitatively --- while overturning our own hypothesis about the
+dynamical nature of osteoporosis, and showing that two of our three
+quantitative claims depend on which measure is used to state them.
+
+% ---------------------------------------------------------------------------
+\section*{Materials and methods}
+
+\subsection*{Model structure}
+
+Eight modules; full equations in \nameref{S1_Text}. State vectors: 17 (single
+compartment), 30 (two compartments; 13 local states per site plus four shared
+systemic states). Integration with \texttt{ode15s}, relative tolerance
+$1\times10^{-6}$, absolute tolerance $1\times10^{-9}$, non-negativity enforced
+on all states.
+
+The per-site biology is implemented once and called by both the single- and
+two-compartment right-hand sides, so the two cannot diverge. Mechanosensitive
+channel gating exists in exactly one place; the interface between fast
+(sub-second) and slow (daily) timescales is a single scalar, the daily
+integral of channel open probability. An earlier version represented the same
+phenomena four times over and left that scalar with no downstream consumer, so
+mechanical signalling never actually crossed the timescale boundary.
+
+\subsection*{Loading specification}
+
+Scenarios specify peak bending moment and peak axial force per loading bout,
+with cycle count, frequency, inter-cycle rest, post-bout rest and days of
+week. \textbf{Strain is never an input.} This is enforced by an automated
+check that rejects any scenario carrying a strain-like field.
+
+\subsection*{Calibration and validation}
+
+Five free parameters fitted with \texttt{surrogateopt} (fixed seed) against five
+targets; \texttt{k\_form} and \texttt{k\_ot} derived at each evaluation, from
+bone-mass balance and from bone turnover respectively. Eight observations held
+out: the six peripheral quantitative computed
+tomography indices of the loaded humerus, the post-withdrawal areal density
+change, and the emergent set point. Targets and tolerances are listed in
+\nameref{S2_Table}; all parameters, with source and confidence grading, in
+\nameref{S1_Table}. Hard-coded numerical constants in source are treated as
+defects and are caught by an automated check.
+
+\subsection*{Validity domain}
+
+Every simulation reports whether peak strain remained below the yield strain
+of cortical bone (7000\,\ue) \cite{bayraktar2004}, beyond which the linear
+elasticity assumed throughout the mechanics stack fails. Results from runs
+that leave this domain are not interpreted. This check is what identified the
+long-duration disuse scope limit and the extrapolated deep branch of the
+bifurcation diagram.
+
+\subsection*{Bifurcation analysis}
+
+Monostability was assessed two ways: by counting zeros of the
+bone-volume-fraction nullcline with envelope geometry frozen, and
+independently by a withdrawal-and-recovery trajectory in the full model with
+geometry free. Fixed-point stability from Jacobian eigenvalues.
+
+\subsection*{Software and reproducibility}
+
+MATLAB R2026a. The model, the parameter and target tables, all seven
+experiment scripts and a 91-assertion automated test suite are available at
+https://github.com/myhsieh1002/bone-mechanostat and archived on Zenodo (concept
+DOI 10.5281/zenodo.21592303; this version 10.5281/zenodo.21784609). Every figure in this
+paper is regenerated by a single named script.
+
+% ---------------------------------------------------------------------------
+\section*{Supporting information}
+
+\paragraph*{S1 Text.}
+\label{S1_Text}
+{\bf Model equations.} Full specification of modules M1--M8, state vector
+layout, the trabecular compartment, the validity domain, and the derivation of
+the bone-mass-balance constraint on the formation rate constant.
+
+\paragraph*{S1 Table.}
+\label{S1_Table}
+{\bf Parameters.} Every parameter with value, unit, bounds, owning module,
+literature source and confidence grading.
+
+\paragraph*{S2 Table.}
+\label{S2_Table}
+{\bf Validation targets.} All targets with ranges, tolerances, associated
+experiment and hold-out status.
+
+\paragraph*{S1 Fig.}
+\label{S1_Fig}
+{\bf Identifiability.} Two-dimensional $\chi^2$ surface for the correlated
+PTH-pathway pair and one-dimensional profiles for the three remaining fitted
+parameters, of which two are individually identifiable and the antibody
+clearance constant is not.
+
+% ---------------------------------------------------------------------------
+\section*{Data availability}
+
+All model code, parameter tables, validation target definitions, experiment
+scripts and the automated test suite are deposited at
+https://github.com/myhsieh1002/bone-mechanostat and archived on Zenodo (concept
+DOI 10.5281/zenodo.21592303; this version 10.5281/zenodo.21784609). No empirical data
+were generated; all validation targets are drawn from published literature and
+are listed with sources in S2 Table.
+
+\section*{Author contributions}
+
+PLOS collects contributions through the submission system using the CRediT
+taxonomy; this statement mirrors what is entered there.
+Hsiang-Lin Lee: Conceptualization; Investigation; Supervision; Validation; Writing -- review \& editing.
+Tzu-Ling Wang: Data curation; Investigation; Resources; Writing -- review \& editing.
+Ming-Yu Hsieh: Conceptualization; Data curation; Formal analysis;
+Investigation; Methodology; Project administration; Software; Validation;
+Visualization; Writing -- original draft; Writing -- review \& editing.
+
+\section*{Acknowledgments}
+
+The authors received no funding for this work.
+
+\nolinenumbers
+
+% ---------------------------------------------------------------------------
+% To use BibTeX instead, comment out the thebibliography block below and
+% uncomment these two lines (requires plos2015.bst from the PLOS template):
+% \bibliographystyle{plos2015}
+% \bibliography{references}
+
+\begin{thebibliography}{10}
+
+\bibitem{frost1987}
+Frost HM.
+\newblock Bone ``mass'' and the ``mechanostat'': a proposal.
+\newblock Anat Rec. 1987;219(1):1--9. doi:10.1002/ar.1092190104.
+
+\bibitem{fu2025}
+Fu R, Wang C, Shahneela N, Ud Din R, Yang H.
+\newblock A whole bone--lacunocanalicular network--osteocyte model examining
+  bone adaptation to distinct loading parameters.
+\newblock Int J Mech Sci. 2025;286:109931. doi:10.1016/j.ijmecsci.2025.109931.
+
+\bibitem{lemaire2004}
+Lemaire V, Tobin FL, Greller LD, Cho CR, Suva LJ.
+\newblock Modeling the interactions between osteoblast and osteoclast
+  activities in bone remodeling.
+\newblock J Theor Biol. 2004;229(3):293--309. doi:10.1016/j.jtbi.2004.03.023.
+
+\bibitem{pivonka2008}
+Pivonka P, Zimak J, Smith DW, Gardiner BS, Dunstan CR, Sims NA, et~al.
+\newblock Model structure and control of bone remodeling: a theoretical study.
+\newblock Bone. 2008;43(2):249--263. doi:10.1016/j.bone.2008.03.025.
+
+\bibitem{scheiner2013}
+Scheiner S, Pivonka P, Hellmich C.
+\newblock Coupling systems biology with multiscale mechanics, for computer
+  simulations of bone remodeling.
+\newblock Comput Methods Appl Mech Eng. 2013;254:181--196.
+
+\bibitem{tai2015}
+Tai V, Leung W, Grey A, Reid IR, Bolland MJ.
+\newblock Calcium intake and bone mineral density: systematic review and
+  meta-analysis.
+\newblock BMJ. 2015;351:h4183. doi:10.1136/bmj.h4183.
+
+\bibitem{haapasalo2000}
+Haapasalo H, Kontulainen S, Siev\"{a}nen H, Kannus P, J\"{a}rvinen M, Vuori I.
+\newblock Exercise-induced bone gain is due to enlargement in bone size without
+  a change in volumetric bone density: a peripheral quantitative computed
+  tomography study of the upper arms of male tennis players.
+\newblock Bone. 2000;27(3):351--357. doi:10.1016/s8756-3282(00)00331-8.
+
+\bibitem{peterson2010}
+Peterson MC, Riggs MM.
+\newblock A physiologically based mathematical model of integrated calcium
+  homeostasis and bone remodeling.
+\newblock Bone. 2010;46(1):49--63. doi:10.1016/j.bone.2009.08.053.
+
+\bibitem{weinbaum1994}
+Weinbaum S, Cowin SC, Zeng Y.
+\newblock A model for the excitation of osteocytes by mechanical
+  loading-induced bone fluid shear stresses.
+\newblock J Biomech. 1994;27(3):339--360. doi:10.1016/0021-9290(94)90010-8.
+
+\bibitem{srinivasan2002}
+Srinivasan S, Weimer DA, Agans SC, Bain SD, Gross TS.
+\newblock Low-magnitude mechanical loading becomes osteogenic when rest is
+  inserted between each load cycle.
+\newblock J Bone Miner Res. 2002;17(9):1613--1620.
+  doi:10.1359/jbmr.2002.17.9.1613.
+
+\bibitem{hsieh2001}
+Hsieh YF, Turner CH.
+\newblock Effects of loading frequency on mechanically induced bone formation.
+\newblock J Bone Miner Res. 2001;16(5):918--924.
+  doi:10.1359/jbmr.2001.16.5.918.
+
+\bibitem{marques2023}
+Marques FC, Boaretti D, Walle M, Scheuren AC, Schulte FA, M\"{u}ller R.
+\newblock Mechanostat parameters estimated from time-lapsed in vivo
+  micro-computed tomography data of mechanically driven bone adaptation are
+  logarithmically dependent on loading frequency.
+\newblock Front Bioeng Biotechnol. 2023;11:1140673.
+  doi:10.3389/fbioe.2023.1140673.
+
+\bibitem{schulte2026}
+Schulte FA, Marques FC, Griesbach JK, Weigt C, von Salis-Soglio M, Lambers FM,
+  et~al.
+\newblock Combined physical and pharmacological anabolic osteoporosis therapies
+  increase bone response and mechanoregulation in female mice.
+\newblock Nat Commun. 2026;17:3759. doi:10.1038/s41467-026-70309-2.
+
+\bibitem{cosman2016}
+Cosman F, Crittenden DB, Adachi JD, Binkley N, Czerwinski E, Ferrari S, et~al.
+\newblock Romosozumab treatment in postmenopausal women with osteoporosis.
+\newblock N Engl J Med. 2016;375(16):1532--1543. doi:10.1056/NEJMoa1607948.
+
+\bibitem{wijenayaka2011}
+Wijenayaka AR, Kogawa M, Lim HP, Bonewald LF, Findlay DM, Atkins GJ.
+\newblock Sclerostin stimulates osteocyte support of osteoclast activity by a
+  RANKL-dependent pathway.
+\newblock PLoS One. 2011;6(10):e25900. doi:10.1371/journal.pone.0025900.
+
+\bibitem{currey1988}
+Currey JD.
+\newblock The effect of porosity and mineral content on the Young's modulus of
+  elasticity of compact bone.
+\newblock J Biomech. 1988;21(2):131--139. doi:10.1016/0021-9290(88)90006-1.
+
+\bibitem{bayraktar2004}
+Bayraktar HH, Morgan EF, Niebur GL, Morris GE, Wong EK, Keaveny TM.
+\newblock Comparison of the elastic and yield properties of human femoral
+  trabecular and cortical bone tissue.
+\newblock J Biomech. 2004;37(1):27--35. doi:10.1016/s0021-9290(03)00257-4.
+
+\bibitem{martin1984}
+Martin RB.
+\newblock Porosity and specific surface of bone.
+\newblock Crit Rev Biomed Eng. 1984;10(3):179--222.
+
+\bibitem{lerebours2015}
+Lerebours C, Thomas CDL, Clement JG, Buenzli PR, Pivonka P.
+\newblock The relationship between porosity and specific surface in human
+  cortical bone is subject specific.
+\newblock Bone. 2015;72:109--117. doi:10.1016/j.bone.2014.11.016.
+
+\bibitem{morgan2001}
+Morgan EF, Keaveny TM.
+\newblock Dependence of yield strain of human trabecular bone on anatomic site.
+\newblock J Biomech. 2001;34(5):569--577.
+
+\bibitem{yang2017}
+Yang H, Embry RE, Main RP.
+\newblock Effects of loading duration and short rest insertion on cancellous
+  and cortical bone adaptation in the mouse tibia.
+\newblock PLoS One. 2017;12(1):e0169601.
+
+\bibitem{li2019}
+Li X, Han L, Nookaew I, Mannen E, Silva MJ, Almeida M, et~al.
+\newblock Stimulation of Piezo1 by mechanical signals promotes bone anabolism.
+\newblock eLife. 2019;8:e49631.
+
+\bibitem{spatz2012}
+Spatz JM, Fields EE, Yu EW, Divieti Pajevic P, Bouxsein ML, Sibonga JD, et~al.
+\newblock Serum sclerostin increases in healthy adult men during bed rest.
+\newblock J Clin Endocrinol Metab. 2012;97(9):E1736--40.
+
+\bibitem{parfitt2002}
+Parfitt AM.
+\newblock Misconceptions (2): turnover is always higher in cancellous than in
+  cortical bone.
+\newblock Bone. 2002;30(6):807--809.
+
+\bibitem{basso2006}
+Basso N, Heersche JNM.
+\newblock Effects of hind limb unloading and reloading on nitric oxide synthase
+  expression and apoptosis of osteocytes and chondrocytes.
+\newblock Bone. 2006;39(4):807--814. doi:10.1016/j.bone.2006.04.014
+
+\bibitem{plotkin2015}
+Plotkin LI, Gortazar AR, Davis HM, Condon KW, Gabilondo H, Maycas M, et al.
+\newblock Inhibition of osteocyte apoptosis prevents the increase in osteocytic
+  receptor activator of nuclear factor $\kappa$B ligand (RANKL) but does not
+  stop bone resorption or the loss of bone induced by unloading.
+\newblock J Biol Chem. 2015;290(31):18934--18942. doi:10.1074/jbc.M115.642090
+
+\bibitem{rolvien2020}
+Rolvien T, Milovanovic P, Schmidt FN, von Kroge S, W\"olfel EM, Krause M, et al.
+\newblock Long-term immobilization in elderly females causes a specific pattern
+  of cortical bone and osteocyte deterioration different from postmenopausal
+  osteoporosis.
+\newblock J Bone Miner Res. 2020;35(7):1343--1351. doi:10.1002/jbmr.3970
+
+\bibitem{buenzli2015}
+Buenzli PR, Sims NA.
+\newblock Quantifying the osteocyte network in the human skeleton.
+\newblock Bone. 2015;75:144--150. doi:10.1016/j.bone.2015.02.016
+
+\bibitem{mcclung2018}
+McClung MR, Brown JP, Diez-Perez A, Resch H, Caminis J, Meisner P, et~al.
+\newblock Effects of 24 months of treatment with romosozumab followed by 12
+  months of denosumab or placebo in postmenopausal women with low bone mineral
+  density: a randomized, double-blind, phase 2, parallel group study.
+\newblock J Bone Miner Res. 2018;33(8):1397--1406.
+
+\end{thebibliography}
+
+\end{document}
