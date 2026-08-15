@@ -24,9 +24,38 @@ V8 12.4593  V8cort 2.3294  V16 1.1238（未達）
 V10 -8.6991（盲測）  V14 786.7704（盲測）  chi2 4.8113
 ```
 
-### ▶ 🚩 PLOS 已退稿；下一個目標是 BMMB
+### ▶ 🚩 已於 2026-08-11 投出 BMMB，現在是「等審查意見」階段
 
-**PLOS Computational Biology 於 2026-08-07 編輯台退稿（desk reject）**，稿件編號 `PCOMPBIOL-D-26-01926`。**沒有送外審** —— 信中 Reviewers' Comments 與 Additional Editor Comments 兩欄皆空，**也沒有給任何具體理由**。編輯部提供轉投 PLOS ONE 的選項（期限 2026-10-09），主持人與兩位共同作者討論後**決定不轉投，改投 Biomechanics and Modeling in Mechanobiology（BMMB, Springer）**。
+**Biomechanics and Modeling in Mechanobiology（Springer）｜投稿系統 UUID `88204da6-3f93-4358-b585-ff1dc2ac2575`**
+（這是系統內部識別碼，**不是期刊稿件編號**；正式編號形如 `BMMB-D-26-00xxx`，收到後補在這裡。）
+
+單盲審查，編輯部通常指派兩位審稿人＋一位 Editor，且明訂「無兩份完整審查意見不予接受」。
+
+送出的內容：
+
+| 項目 | 值 |
+|---|---|
+| 稿件 | `manuscript_with_title_page.docx`（題名頁併在正文最前，因為系統無題名頁欄位） |
+| 圖 | `figures/Fig1–7.tif`，**174 mm** / 300 dpi / LZW / 8 pt |
+| 補充材料 | `ESM/ESM_1.pdf`、`ESM_2.csv`、`ESM_3.csv`、`ESM_4.pdf` = Online Resource 1–4 |
+| 投稿信 | `cover_letter.docx`（本系統可上傳檔案，不必貼 Comments 欄） |
+| **共同通訊作者** | **Tzu-Ling Wang（purplering@icloud.com）＋ Ming-Yu Hsieh（cshy1392@csh.org.tw）** |
+| 預印本 | **未掛**。In Review 會公開顯示審查狀態，已有一次 desk reject 故不採用；bioRxiv 之路仍開著 |
+| 隸屬 | 系統每位作者上限兩個，Hsieh 的小兒外科填不下 —— **完整六個隸屬在稿件檔案裡** |
+
+**⚠️ 送 PLOS 的那一版帶著七個缺陷，BMMB 版全部修掉了** —— 最嚴重的是**參考文獻 21 引到了一篇完全無關的論文**：Yang 2017 寫成 `PLoS One 12:e0169601`，那個編號是一篇腸道鐵吸收研究，正確為 **e0169519**。另有 Schulte 2026 漏列三位作者、Pivonka 2008 姓氏形式、Scheiner 2013 的 DOI 無法證實（已移除）、重複引註 `[12] [12]`、`90-assertion` 應為 91、Fig 3 圖例有幽靈項 `data1`。29 筆參考文獻已全數以 PubMed 與 Consensus 重查（舊註記「All 22 references were verified」是錯的，第 23–29 筆從未被查過）。
+
+**投稿包在 `投稿Biomechanics and Modeling in Mechanobiology/`（已 gitignore）。** 完整體例對照與檢查清單見該資料夾的 `投稿檢查清單.md`。
+
+**收到審查意見後從哪裡開始**：檢查清單 E 節列了七個「這篇會被問到的地方」與稿件現在的回答。**BMMB 審稿人是力學生物學專業，孔彈性與通道那一層會被問得比臨床結果更細** —— 最可能被要求補強的是佔位的通道速率常數。最強的三項：八項盲測全過、Frost 設定點 787 με 湧現且從未擬合、負荷以力進入而應變為輸出（閉環未被剪斷且有自動測試強制）。
+
+**模型端沒有待辦。** 任何改動都會讓 HEAD 與投出的稿件不一致，而 Zenodo v2.25（`10.5281/zenodo.21784609`）是審稿人手上那份。若必須改，先開分支。
+
+---
+
+### 📌 前情：PLOS 退稿（2026-08-07）
+
+**PLOS Computational Biology 於 2026-08-07 編輯台退稿（desk reject）**，稿件編號 `PCOMPBIOL-D-26-01926`。**沒有送外審** —— 信中 Reviewers' Comments 與 Additional Editor Comments 兩欄皆空，**也沒有給任何具體理由**。編輯部提供轉投 PLOS ONE 的選項（期限 2026-10-09），主持人與兩位共同作者討論後決定不轉投，改投 BMMB。**PLOS 那個轉投選項在 10-09 前仍然有效，但已不打算使用。**
 
 **下一個 session 不要重新診斷退稿原因。** 沒有理由可查，任何說法都是推論。當時的推論記在這裡供參考，不要當成事實：摘要與投稿信都把「我們否證了自己的假設」放在最前面，在只看摘要的影響力篩選階段容易被歸類為陰性結果論文；真正的強項（八項盲測、787 με 湧現）排在後面。BMMB 版的投稿信已據此**重排順序**，但**沒有刪改任何誠實陳述**。
 
