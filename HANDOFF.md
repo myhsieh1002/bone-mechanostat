@@ -24,7 +24,31 @@ V8 12.4593  V8cort 2.3294  V16 1.1238（未達）
 V10 -8.6991（盲測）  V14 786.7704（盲測）  chi2 4.8113
 ```
 
-### ▶ 🚩 第三次投稿：PLOS ONE（投稿包已備妥，等經費線確認後送出）
+### ▶ 🚩 已於 2026-09-26 投出 PLOS ONE，現在是「等審查意見」階段
+
+**PLOS ONE｜稿件編號 `PONE-D-26-48367`**（送出前的草稿編號是 `PONE-S-26-63856`；`S`→`D` 即代表已進入編輯審查）。
+
+| 項目 | 值 |
+|---|---|
+| Article type | Research Article |
+| Section | **Life Sciences** |
+| Subsection | Bone research and musculoskeletal disorders（主持人決定只選一個） |
+| 作者順序 | Lee → Wang → Hsieh；**系統內通訊作者為 Hsieh**，稿件標題頁標示 Wang 與 Hsieh 為共同通訊作者 |
+| **Previous Interactions** | **已勾選「曾投其他 PLOS 期刊」**，並於追問欄位填入 PLOS Comp Biol `PCOMPBIOL-D-26-01926`（2026-08-07 編輯台退稿、無外審） |
+| Oppose Reviewers | 無 |
+| 預印本 | 未掛，未請 PLOS 代為張貼 |
+| **PFA** | **未申請**。接受後 APC $2,477 |
+| 送出的 PDF | `投稿PLOS ONE/PONE-S-26-63856.pdf`（56 頁），送出前已逐項核對 |
+
+**⚠️ 與前兩次投稿的差異**：為符合 PLOS「圖須依序引用」的規範，**Fig 4／5／6 三張已重新編號**（部位專一性 6→4、廢用 4→5、藥理 5→6），影像本身未變。對應腳本為 `experiments/exportFiguresPLOSONE.m`。若審稿人拿 Zenodo 版本庫比對，那支腳本就是產生這一版圖號的來源。
+
+**收到審查意見後從哪裡開始**：`投稿PLOS ONE/投稿檢查清單.md` 的 H 節。**PLOS ONE 審的是技術正確性而非重要性** —— 最可能被追問的是兩個未達標的校正標的（V7、V16），其次是佔位的通道速率常數與 `s2_Sv` 陡度。最強的三項：八項盲測全過、Frost 設定點 787 με 湧現且從未擬合、負荷以力進入而應變為輸出。
+
+**模型端沒有待辦。** 任何改動都會讓 HEAD 與投出的稿件不一致，而 Zenodo v2.25（`10.5281/zenodo.21784609`）是審稿人手上那份。若必須改，先開分支。
+
+---
+
+### 📌 前情：PLOS ONE 投稿準備
 
 **投稿包在 `投稿PLOS ONE/`（已 gitignore），檢查清單見該資料夾的 `投稿檢查清單.md`。**
 
