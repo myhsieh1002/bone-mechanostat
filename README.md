@@ -207,7 +207,8 @@ v2.25.
 
 **Software** — concept DOI, always resolves to the newest version:
 [`10.5281/zenodo.21592303`](https://doi.org/10.5281/zenodo.21592303)
-To cite the exact version reported in the manuscript, v2.25: [`10.5281/zenodo.21784609`](https://doi.org/10.5281/zenodo.21784609)
+To cite the exact version reported in the manuscript, v2.26: [`10.5281/zenodo.24386265`](https://doi.org/10.5281/zenodo.24386265)
+v2.26 adds the figure-generating and sensitivity-probe scripts the manuscript cites; the model and every numerical result are identical to v2.25 ([`10.5281/zenodo.21784609`](https://doi.org/10.5281/zenodo.21784609)).
 
 ## Licence
 

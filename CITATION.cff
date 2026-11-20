@@ -39,8 +39,7 @@ keywords:
 # Concept DOI: always resolves to the newest version, so this citation stays
 # valid as the model advances. The v2.12 version DOI is 10.5281/zenodo.21592304.
 # The v2.25 version DOI is 10.5281/zenodo.21784609.
-# The v2.26 version DOI -- the version the manuscript reports -- is recorded in
-# README.md once Zenodo assigns it on release.
+# The v2.26 version DOI -- the version the manuscript reports -- is 10.5281/zenodo.24386265.
 doi: "10.5281/zenodo.21592303"
 
 preferred-citation:
