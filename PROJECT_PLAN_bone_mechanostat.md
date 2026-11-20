@@ -1013,7 +1013,7 @@ $$\text{V7 平台的必要條件：力學回饋增益} \gtrsim \text{PTH→SOST 
 
 ## 附錄 C9：Tier 1 文獻參數回填 — Pivonka 2008 與 Peterson & Riggs 2010 (2026-07-25)
 
-取得 #2 Pivonka 2008 與 #3 Peterson & Riggs 2010 全文（存於 `Reference/02.pdf`、`03.pdf`）。逐張表轉錄於 `data/reference_parameters.md`。#1 Lemaire 2004 仍在館際服務中，但 Pivonka 為其擴充版，多數 M6 速率常數已可由 Pivonka Table 3 取得。
+取得 #2 Pivonka 2008 與 #3 Peterson & Riggs 2010 全文（存於 `Reference/A_Bone-remodeling-systems-models/A02_Pivonka2008_Model-structure-control-bone-remodeling-theoretical-study.pdf`、`03.pdf`）。逐張表轉錄於 `data/reference_parameters.md`。#1 Lemaire 2004 仍在館際服務中，但 Pivonka 為其擴充版，多數 M6 速率常數已可由 Pivonka Table 3 取得。
 
 ### C9.1 M6 速率常數修正（Pivonka Table 3）
 
@@ -3051,3 +3051,92 @@ C33.8 把 `lambda_xi`（表面分配偏移）列為廢用缺口的最後候選�
 ---
 
 *文件結束｜v2.25（C36：P5p —— `lambda_xi` 在廢用時精確不動；力學版專一性 550:1、可辨識、補得上 V2，但需要 94.5 % 皮質內分配，敗在生理；三個廢用機制三種失敗方式）｜C35：P5o —— `k_ot` 改為導出、五參數重擬、`sost_reb` 移出自由清單、C33 反轉為「根本補不上」；C35.7–9 三份稿件完整數值對帳，查出 V5 吻合消失與 P3 零斜線描述作廢）｜C34（`k_ot` 快 500 倍 —— 模型自相矛盾 514 倍，Buenzli & Sims 獨立確認；`delta_ot_0` 的比例問題本身問錯了；`lambda_ot_mech` 倍率查得 0.66 對 C33 的 200；Plotkin 2015 以實驗獨立複製 C33 的結論）｜C33：P5n′ 執行 —— n_ot→RANKL 補得上 V2 但買不起 P1 平台，力學凋亡不救、實測指數使流失不可逆，兩機制以 0 出貨）｜C32：n_ot→RANKL 實作規格；C31：P5n′ 起步，排除感測增益一路；C30：Lerebours 證實 S_v 同一病灶；C29：P5m 小樑覆寫 kappa_E；C28：P5l 採用 nu_E=2.55、否決 kappa_E=3.13；C27：P5k 鈣模組兩半重建、重擬、V7/V16 結構衝突｜2026-07-30*
+
+---
+
+## 附錄 C37：`D_C` 的出處量測 —— 轉錄錯誤是真的，但「改回 2.1e-3」是錯的修法；真正的佔位參數是 `D_R`（2026-10-19）
+
+### C37.1 主張與判準
+
+**起因**（2026-10-18 文獻核讀）：`parameters_literature.csv` 第 77 列 `D_C = 0.210`，說明欄寫「Corrected at v1.9 from 2.1e-3, a factor of 100（Pivonka Table 3）」。以 PDF 文字複核 Pivonka 2008 Table 3（p.262）：**D_OCp = 2.100×10⁻³ pM/day**，與 Lemaire 2004 A.3 的 D_C = 2.1×10⁻³ 完全相同。`data/reference_parameters.md` 第 16 列把它抄成 2.100×10⁻¹ —— 所謂「修正 100 倍」修的是一個不存在的差異。
+
+**判準**（動手前訂）：
+1. 穩態是否變 —— V1、V14、基線漂移、最大實部特徵值。
+2. 暫態是否變 —— V2、V7、V8、V16、V10、V11 半衰期、romosozumab 下的 C 行程。
+3. 八項盲測（V6a–f、V10、V14）是否存活。
+4. 以現有五參數重擬後能否回到帶內；若能，稿件要改哪些數字。
+
+**方法**：本資料夾無 git（iCloud 副本不含 `.git`），故不開分支而以**記憶體內覆寫** `p.D_C` 後傳 `p=` 給 `simulate`／`evalTargets`，**CSV 一個字元都沒改**。腳本：`experiments/probes/C37_dcProbe.m`（stage A–E）、`C37_calibrateDC.m`（`calibrate.m` 加 `p0` 引數的複本）、`C37_runCalDC.m`。MATLAB R2025b Update 5（HANDOFF 寫 R2026a）；`runtests("tests")` 在此環境 **91 passed / 0 failed / 3 incomplete**（1368 s），基準值與 HANDOFF §0 逐字相同，唯 V8cort 2.3241 對 2.3294（差 0.005，推測為版本間 ODE 容差）。
+
+### C37.2 先問對問題：程式裡的 `D_C` 是什麼
+
+`boneCellPopulation.m:61`：`d.C = D_C * (pi_L − pC*C)`，基線相對式。Lemaire A.1 原式 `dC/dt = D_C·π_L − D_A·π_C·C`；Pivonka Eq. (6) `dOCa/dt = D_OCp·π_act − A_OCa·OCa·π_act`。把原式除以 C₀ 後，**C 的鬆弛速率是 D_A = A_OCa = 0.7/day**，D_OCp 只決定穩態水準，在相對式裡被正規化掉。所以程式裡的 `D_C` 對應的文獻量**不是 D_OCp（2.1e-3）而是 A_OCa（0.7）**；csv 的 `D_A = 0.7` 說明欄自己寫著「absorbed into the D_C timescale… NOT READ BY ANY CODE」，卻沒有人把 0.7 放進 `D_C`。同理：R 的鬆弛速率是 D_B/π_C0（Lemaire 0.035/0.197 ≈ 0.178/day [推算]）、B 的是 k_B = A_OBa = 0.189/day；程式用的 `D_R = 7e-4`、`D_B = 5.348` 都是分化速率被當成時間尺度。
+
+### C37.3 誠實比對（不重擬，五參數維持出貨值）
+
+| | HEAD `D_C` 0.210 | 2.1e-3（D_OCp 當時間尺度） | **0.7（A_OCa，相對式正解）** |
+|---|---|---|---|
+| V1 %/yr（5–10） | 7.3306 | 7.3306 | 7.3306 |
+| V2 %/mo（1.0–1.5） | 1.2202 | **0.9733 ❌** | 1.2262 |
+| V7 %（0.7–1.8） | 0.6630（未達） | **0.3610** | 0.6655（未達） |
+| V7 slope | −0.1307 | −0.1055 | −0.1307 |
+| V8 %（11.9–14.7） | 12.4593 | 13.1849 | 12.1422 |
+| V8cort % | 2.3241 | 2.4179 | 2.2060 |
+| V16（1.2–1.4 自訂） | 1.1238 | 1.0442 | 1.1290 |
+| V10 %（盲測，< 0） | −8.6991 | −8.4207 | −8.7267 |
+| V14 με（盲測） | 786.77 | 786.77 | 786.77 |
+| chi² | 4.8113 | **10.5135** | 4.9419 |
+| 最大實部特徵值 | −2.433e-4 | −2.447e-4 | −2.433e-4 |
+| 24 月漂移 % | −0.0148 | −0.0147 | −0.0148 |
+| romo 60 d 皮質 C 最低值（日） | 0.938（d10） | **0.997（d37）** | 0.924（d5） |
+| V3 sclerostin 180 d | +57.96 % | +57.94 % | +57.96 % |
+| PTH d28／d60 | −21.2／−21.3 | −19.6／−19.8 | −21.2／−21.3 |
+| V11 失半／回半（天）、比值 | 140.3／2014.0、14.36 | 134.9／2016.5、14.94 | 140.3／2012.9、14.34 |
+| V11 十年回復 | 146.5 % | 166.4 % | 146.2 % |
+| E6 全模型探針 f_bm 低點／回復 | 0.8359／100.3 % | 0.8584／100.3 % | 0.8358／100.3 % |
+| V6a–f（盲測） | +12.38 +12.17 +10.40 +24.48 +13.93 +1.79，6/6 | +12.10 +12.17 +10.33 +24.44 +14.02 +1.60，6/6 | 同 HEAD，6/6 |
+
+**答案**：
+1. **穩態不變**：三組的 V1、V14、特徵值、漂移逐字相同 —— 相對式使 C* 與 `D_C` 無關，符合預期。
+2. **暫態變，且方向可解釋**：2.1e-3 讓破骨細胞族群的時間常數變成 476 天，romosozumab 下 C 幾乎不動（最低 0.997），廢用流失由 1.22 降到 0.97 %/月、鈣效應由 0.663 腰斬到 0.361。0.7 與 0.210 之間差異 ≤ 3 %（V8 −0.32 個百分點最大）—— **C 的鬆弛速率只要快於約 0.2/day，下游就飽和**。
+3. **盲測全部存活**（三組 V6 6/6、V10 < 0、V14 787）。
+4. **重擬救不回 2.1e-3**（C37.4）。
+
+### C37.4 以現有五參數重擬（`D_C = 2.1e-3`，surrogateopt 120 評估、3 workers、1797 s）
+
+| | 出貨值 | 重擬值 |
+|---|---|---|
+| k_res | 3.816e-7 | 4.179e-7 |
+| K_S | 1.201 | 1.263 |
+| K_P_sost | 91.40 | **99.78（上界 100）** |
+| lambda_P | 6.981 | 7.022 |
+| delta_ab | 1.765 | 1.778 |
+| fval | 0.6017（C36 紀錄） | 1.898 |
+| V1／V2／V7／V8／V16 | 7.33／1.22／0.663／12.46／1.124 | 8.03／**1.0007**／**0.397**／13.36／1.042 |
+| V10／V14／chi² | −8.70／786.8／4.81 | −8.30／786.8／10.25 |
+
+K_P_sost 貼上界、V7 仍只有 0.40（差帶下緣 0.30，是容差 0.8 內但遠劣於 HEAD）、V2 剛好壓線、V1 被推到 8.0。**五個自由參數裡沒有一個能替代破骨細胞的時間尺度**，這與 C35.2「先量標的推不推得動它」同一類結論。
+
+### C37.5 順帶量到的一件更大的事：`D_R` 才是載重的佔位值
+
+把 R、B 的時間尺度也換成相對式正解各試一次（`D_C` 固定 0.7）：
+
+| | V2 %/mo | V7 | V8 | V10 | chi² | 彈性域 |
+|---|---|---|---|---|---|---|
+| 只改 `D_B` 5.348 → 0.189 | 1.1725 | 0.6657 | **11.35**（出帶） | −8.77 | 5.86 | ok |
+| 只改 `D_R` 7e-4 → 0.178 | **16.32** | 0.6466 | **28.75** | −11.99 | **3758** | **逸出** |
+| 兩者都改 | 16.32 | 0.6468 | 27.72 | −11.96 | 3742 | 逸出 |
+
+`D_R = 7e-4/day` 是 1,400 天的時間常數，比 Lemaire 的 ≈ 0.178/day 慢 250 倍；它**正在吸收整個細胞層的反應**，是廢用流失與 romosozumab 幅度之所以落在帶內的主因之一。`boneCellPopulation.m` 的檔頭註解其實早就寫了：「the CSV currently holds order-of-magnitude placeholders explicitly marked as NOT the published values」，但 csv 的 `source` 欄寫 Pivonka2008、`confidence` 寫 medium。**這一項不在本輪範圍，但必須進第二期子計畫 E（v3 重校正）的第一列**，而且比 `D_C` 重要得多：它決定 M6 是不是真的 Lemaire–Pivonka。
+
+### C37.6 裁決建議（交 PI）
+
+1. **Paper 1 不改模型數字**：`D_C` 0.210 → 0.7 的差異在飽和區，所有標的與盲測狀態不變；改了要重跑 E0–E7、對帳、重建圖表，換來的是第三位小數。
+2. **但出處要改**（不動值）：`reference_parameters.md` 第 16 列 D_OCp 10⁻¹ → 10⁻³；csv `D_C` 說明改為「osteoclast relaxation rate of the baseline-relative form; literature counterpart is A_OCa = 0.7/day (Pivonka 2008 Table 3; Lemaire 2004 D_A); shipped 0.210 lies in the saturated regime (C37)」；`D_A` 說明同步。S1 Table 同步。
+3. **稿件**：§4.4 Other simplifications 加一句「The cell-population timescales D_R, D_B, D_C are not the published differentiation rates read as relaxation rates; a sensitivity probe (C37) shows the osteoclast timescale is saturated above 0.2/day, whereas the responding-osteoblast timescale is load-bearing and is the first parameter to be re-sourced」—— 是否加由 PI 決定；不加則審稿人只要讀 csv 就能問。
+4. **第二期**：`D_R`（與 `D_B`）的文獻化列為子計畫 E 第一項；需重擬，且預期 K_S／k_res 大幅移動。
+
+### C37.7 檔案
+
+- `experiments/probes/C37_dcProbe.m`、`C37_calibrateDC.m`、`C37_runCalDC.m`（新增；結果 `.mat` 與 log 在 session scratchpad，未入 iCloud）。
+- 未改：`data/*.csv`、`src/`、`tests/`、任何投稿資料夾。

@@ -25,8 +25,8 @@ authors:
       University Hospital, Taichung, Taiwan
 repository-code: "https://github.com/myhsieh1002/bone-mechanostat"
 license: MIT
-version: "2.25"
-date-released: "2026-08-02"
+version: "2.26"
+date-released: "2026-11-20"
 keywords:
   - bone remodelling
   - mechanotransduction
@@ -38,14 +38,16 @@ keywords:
   - osteoporosis
 # Concept DOI: always resolves to the newest version, so this citation stays
 # valid as the model advances. The v2.12 version DOI is 10.5281/zenodo.21592304.
-# The v2.25 version DOI -- the version the manuscript reports -- is 10.5281/zenodo.21784609.
+# The v2.25 version DOI is 10.5281/zenodo.21784609.
+# The v2.26 version DOI -- the version the manuscript reports -- is recorded in
+# README.md once Zenodo assigns it on release.
 doi: "10.5281/zenodo.21592303"
 
 preferred-citation:
   type: article
   title: >-
-    From fluid shear to sclerostin: a mechanotransduction-resolved multiscale
-    model of bone adaptation, and what it falsifies
+    Calcium permits, loading instructs: a mechanotransduction-resolved
+    multiscale model of bone adaptation
   authors:
     - family-names: Lee
       given-names: Hsiang-Lin
@@ -65,6 +67,7 @@ preferred-citation:
         School of Medicine, Chung Shan Medical University; Division of
         Pediatric Surgery and Center for Evidence-Based Medicine, Chung Shan
         Medical University Hospital, Taichung, Taiwan
-  journal: "PLOS Computational Biology"
+  journal: "Journal of Theoretical Biology"
   year: 2026
-  # status: submitted -- update volume/pages/doi on acceptance
+  # status: prepared for submission to the Journal of Theoretical Biology;
+  # not yet submitted as of v2.26. Update volume/pages/doi on acceptance.

@@ -196,9 +196,14 @@ and how it was caught.
 
 See [`CITATION.cff`](CITATION.cff). Please cite both the software and the paper.
 
-**Paper** — Lee H-L, Wang T-L, Hsieh M-Y. *From fluid shear to sclerostin: a
-mechanotransduction-resolved multiscale model of bone adaptation, and what it
-falsifies.* Submitted to PLOS Computational Biology, 2026.
+**Paper** — Lee H-L, Wang T-L, Hsieh M-Y. *Calcium permits, loading instructs:
+a mechanotransduction-resolved multiscale model of bone adaptation.* Prepared
+for the Journal of Theoretical Biology, 2026; not yet submitted. An earlier
+version, titled *From fluid shear to sclerostin: a mechanotransduction-resolved
+multiscale model of bone adaptation, and what it falsifies*, was rejected by
+PLOS Computational Biology, Biomechanics and Modeling in Mechanobiology, and
+PLOS ONE in 2026; the model and its numerical results are unchanged since
+v2.25.
 
 **Software** — concept DOI, always resolves to the newest version:
 [`10.5281/zenodo.21592303`](https://doi.org/10.5281/zenodo.21592303)

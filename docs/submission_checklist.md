@@ -1,5 +1,11 @@
-# 投稿檢查清單 — PLOS Computational Biology
+# 投稿檢查清單 — PLOS Computational Biology（2026-08 投稿，歷史文件）
 
+> ## ⚠️ 這是歷史文件，不是現行清單（2026-11-20 加註）
+>
+> 本檔是 2026-08-04 投 PLOS Computational Biology 時的清單。該刊編輯台退稿後，稿件又經 Biomechanics and Modeling in Mechanobiology（2026-08-11 退稿）與 PLOS ONE（2026-10-12 拒稿，有外審），現改投 **Journal of Theoretical Biology**。
+>
+> **現行清單在投稿資料夾**：`投稿Journal of Theoretical Biology/投稿檢查清單.md`（未收入本公開封存）。本檔保留是為了紀錄當時查過什麼，裡面關於 PLOS 規範、檔名與圖號的敘述都不適用於現在的投稿。
+>
 > ## ✅ 已於 2026-08-04 送出｜稿件編號 `PCOMPBIOL-D-26-01926`
 >
 > A–E 節已全部完成，保留為紀錄。**現在有用的是 F 節** —— 那是回覆審稿人時的起點。

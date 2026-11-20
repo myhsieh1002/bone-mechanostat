@@ -17,7 +17,8 @@ MATLAB R2026a ｜ 計畫書：[PROJECT_PLAN_bone_mechanostat.md](PROJECT_PLAN_bo
 
 **本檔是中文工作紀錄，按時間累積而成，下面「P1 驗證結果」「P2 結果」「P4 全模型校正」三節是當時的歷史快照，數值已被後續輪次取代。當前值以本節為準**（對外英文版 [README.md](README.md) 已同步為當前值）。
 
-**v2.25｜91 測試 0 失敗｜已於 2026-08-04 投稿 PLOS Computational Biology**（編號 `PCOMPBIOL-D-26-01926`）。
+**v2.25 模型凍結｜91 測試 0 失敗（2026-11-20 於 MATLAB R2026a Update 2 重跑確認）｜稿件改投 Journal of Theoretical Biology，投稿包已備妥、尚未送出。**
+前三次投稿均未獲接受：PLOS Computational Biology（2026-08-04 投，`PCOMPBIOL-D-26-01926`，編輯台退稿）→ Biomechanics and Modeling in Mechanobiology（2026-08-11 同日退稿）→ PLOS ONE（2026-09-26 投，2026-10-12 拒稿，有外審）。**模型與所有數值自 v2.25 起未變。**
 Zenodo：concept DOI `10.5281/zenodo.21592303`｜v2.25 版本 DOI `10.5281/zenodo.21784609`。
 
 當前標的值（2026-08-04 實測，`evalTargets(getDefaultParams(reload=true), holdout=true)`）：

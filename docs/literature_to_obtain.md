@@ -2,7 +2,7 @@
 
 **更新於 2026-07-28（v2.15）。** 依對模型的價值排序。書目取自 `投稿PLOS Comp Biol/references_verified.md` 的查證紀錄；PMID 與 DOI 皆逐筆核對過 PubMed 紀錄。
 
-**已有全文（不必再借）**：Pivonka 2008（`Reference/02.pdf`）、Peterson & Riggs 2010（`03.pdf`）、Lemaire 2004（`10.pdf`）。
+**已有全文（不必再借）**：Pivonka 2008（`Reference/A_Bone-remodeling-systems-models/A02_Pivonka2008_Model-structure-control-bone-remodeling-theoretical-study.pdf`）、Peterson & Riggs 2010（`03.pdf`）、Lemaire 2004（`10.pdf`）。
 
 ---
 

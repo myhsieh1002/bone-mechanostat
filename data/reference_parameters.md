@@ -5,7 +5,7 @@
 
 ---
 
-## Pivonka et al. 2008, *Bone* 43(2):249–263（`Reference/02.pdf`）
+## Pivonka et al. 2008, *Bone* 43(2):249–263（`Reference/A_Bone-remodeling-systems-models/A02_Pivonka2008_Model-structure-control-bone-remodeling-theoretical-study.pdf`）
 ### Table 3 — Model parameters used for bone-cell dynamic model
 
 | 符號 | 值 | 單位 | 說明 |
@@ -13,7 +13,7 @@
 | D_OBu | 7.000×10⁻⁴ | [pM OBu]/day | Differentiation rate of OB progenitors |
 | D_OBp | **5.348×10⁰** | [pM OBp]/day | Differentiation rate of responding OB |
 | A_OBa | 1.890×10⁻¹ | [pM OBa]/day | Rate of elimination of active OB |
-| D_OCp | **2.100×10⁻¹** | [pM OCp]/day | Differentiation rate of OC precursor |
+| D_OCp | **2.100×10⁻³** | [pM OCp]/day | Differentiation rate of OC precursor（2026-10-19 以 PDF 文字複核更正；原抄為 10⁻¹，見附錄 C37） |
 | A_OCa | 7.000×10⁻¹ | [pM OCa]/day | Rate of OC apoptosis caused by TGF-β |
 | K_D1,TGF-β = K_D3,TGF-β | 4.545×10⁻³ | pM | Activation coeff, TGF-β binding on OBu and OCa |
 | K_D2,TGF-β | 1.416×10⁻³ | pM | Repression coeff, TGF-β binding on OBp |
@@ -42,7 +42,7 @@
 |---|---|---|---|---|
 | `D_R` | D_OBu | 7.0e-4 | 7.0e-4 | ✓ 相符 |
 | `D_B` | D_OBp | 7.0e-4 | **5.348** | ⚠️ 差 ~7600×，佔位值嚴重錯誤 |
-| `D_C` | D_OCp | 2.1e-3 | **0.210** | ⚠️ 差 100×，佔位值嚴重錯誤 |
+| `D_C` | ~~D_OCp~~ → **A_OCa**（相對式的鬆弛速率） | 2.1e-3 | **0.210**（出貨值保留） | ⚠️ **C37 更正**：D_OCp 原文即 2.1e-3，「差 100×」是本檔抄錯；且相對式的對應量是 A_OCa = 0.7，不是 D_OCp。0.210 與 0.7 在飽和區，結果差 ≤ 3 %；2.1e-3 當時間尺度會毀掉 V2/V7 |
 | `D_A` | A_OCa | 0.7 | 0.7 | ✓ 相符 |
 | `k_B` | A_OBa | 0.189 | 0.189 | ✓ 相符 |
 | `C_s_TGF` | K_D1,TGF-β | 5.0e-3 | 4.545e-3 | 近似，改用原文活化係數 |
@@ -53,7 +53,7 @@
 
 ---
 
-## Peterson & Riggs 2010, *Bone* 46(1):49–63（`Reference/03.pdf`）
+## Peterson & Riggs 2010, *Bone* 46(1):49–63（`Reference/A_Bone-remodeling-systems-models/A03_Peterson2010_physiologically-based-mathematical-model-integrated-calcium.pdf`）
 ### Table 1 — Initial conditions（set-points / baseline）
 
 28-ODE PK/PD 模型（Berkeley Madonna, RK4）。與骨相關者以相對（unitless）表示。
@@ -103,7 +103,7 @@
 
 ---
 
-## Lemaire et al. 2004, *J Theor Biol* 229(3):293–309（`Reference/10.pdf`）
+## Lemaire et al. 2004, *J Theor Biol* 229(3):293–309（`Reference/A_Bone-remodeling-systems-models/A01_Lemaire2004_Modeling-interactions-osteoblast-osteoclast-activities-bone-remodeling.pdf`）
 
 全文於 2026-07-28 取得（館際借閱，RapidILL #-27166587）。以下逐字抄自附錄 A.2 與 A.3 之參數表。
 
@@ -151,10 +151,10 @@
 | | Lemaire 2004 | Pivonka 2008（本模型採用） |
 |---|---|---|
 | D_B | 0.035（= f₀·d_B） | 5.348 |
-| D_C | 2.1 × 10⁻³ | 0.210 |
+| D_C | 2.1 × 10⁻³（= Pivonka D_OCp，兩篇相同） | 0.210（出貨；相對式正解為 A_OCa = 0.7，C37） |
 | C_s | 5 × 10⁻³ | 4.545 × 10⁻³ |
 
-Pivonka 2008 是 Lemaire 的擴充版，改用不同的無因次化與 TGF-β 顯式式，故速率常數不可逐項對應。**v1.9 曾把 D_B 由 7e-4 改為 5.348、D_C 由 2.1e-3 改為 0.210，兩者都是刻意改用 Pivonka 的參數化，不是修正筆誤。** 若日後有人拿 Lemaire 原文來「訂正」這兩個值，會把模型改壞。
+Pivonka 2008 是 Lemaire 的擴充版，改用不同的無因次化與 TGF-β 顯式式，故速率常數不可逐項對應。**v1.9 曾把 D_B 由 7e-4 改為 5.348、D_C 由 2.1e-3 改為 0.210。** ⚠️ **2026-10-19 更正（附錄 C37）**：D_C 的那次改動**是**建立在本檔抄錯的 10⁻¹ 上（Pivonka 與 Lemaire 的 D_OCp／D_C 都是 2.1e-3）；但「拿 Lemaire 原文訂正回 2.1e-3」仍然會把模型改壞 —— 因為程式裡的 D_R／D_B／D_C 是基線相對式的**鬆弛速率**，其文獻對應量分別是 D_B/π_C0（≈ 0.178/day [推算]）、k_B = A_OBa（0.189）、D_A = A_OCa（0.7），都不是分化速率。量測結果：D_C 0.210 → 0.7 無實質差異；D_R 7e-4 → 0.178 使廢用流失變 16 %/月並逸出彈性域（載重的佔位值，待 v3 重校正）。
 
 **4. π 反應函數的原始形式已取得**：`p_C = (C + f₀·C^s)/(C + C^s)`、`p_L = K_dL/K`，其中 `K_dL/K = (k₃/k₄)·…`。本模型的 `pi_L = L/(K_L3 + L + κ_OPG·O)` 是 Pivonka 的形式，非 Lemaire 的，故 `K_L3` 與 `κ_OPG` 仍須取自 Pivonka 原文（全文已有，見上）。
 
